@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
@@ -22,9 +23,12 @@ public class MainMenu {
 	static final int frameHeight = 750;
 	private JFrame frame;
 	private JLayeredPane lpane;
-	
 	private Color boardColor = new Color(185, 122, 87);
 	private boolean difficultiesVisible = false;
+	
+	private boolean ready = false;
+	private String p1Name;
+	private String p2Name;
 
 	public MainMenu() {
 
@@ -92,7 +96,6 @@ public class MainMenu {
 		hardButton.setPreferredSize(new Dimension(90, 30));
 		JButton gameOptionsButton = new JButton("Game Options");
 		gameOptionsButton = setupButton(gameOptionsButton);
-		//gameOptionsButton.setBorder(new LineBorder(Color.BLACK, 5));
 		
 		buttonPanel.add(pvpButton, BorderLayout.NORTH);
 		buttonPanel2.add(pvAIButton, BorderLayout.NORTH);
@@ -100,9 +103,6 @@ public class MainMenu {
 		buttonPanel3.add(mediumButton, BorderLayout.WEST);
 		buttonPanel3.add(hardButton, BorderLayout.WEST);
 		buttonPanel4.add(gameOptionsButton, BorderLayout.NORTH);
-		
-		
-		
 		
 		lpane.add(backgroundPanel, 0, 0);
 		lpane.add(boardPanel, 1, 0);
@@ -112,6 +112,14 @@ public class MainMenu {
 		lpane.add(buttonPanel3, 1, 0);
 		lpane.add(buttonPanel4, 1, 0);
 		
+		
+		pvpButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				enterNamesAndStart("pvp");
+			}
+
+		});
 		
 		pvAIButton.addActionListener(new ActionListener() {
 			@Override
@@ -131,11 +139,32 @@ public class MainMenu {
 
 	}
 	
+
 	public JButton setupButton(JButton btn) {
 		btn.setBackground(boardColor);
 		btn.setPreferredSize(new Dimension(175, 75));
 		btn.setBorder(new LineBorder(Color.BLACK, 3));
 		return btn;
+	}
+	
+	protected void enterNamesAndStart(String type) {
+		
+		 /*p1Name = JOptionPane.showInputDialog("Enter Player 1's Name:");
+		 if(type=="pvp") {
+			 p2Name = JOptionPane.showInputDialog("Enter Player 2's Name:");
+		 }
+		 else {
+			 p2Name = ("AI");
+		 }*/
+		 p1Name = "Ishaq";
+		 p2Name = "Test";
+		 ready = true;
+		 frame.dispose();
+		
+	}
+	
+	public boolean isReady() {
+		return ready;
 	}
 	
 
