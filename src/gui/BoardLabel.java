@@ -2,8 +2,10 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -13,7 +15,9 @@ public class BoardLabel extends JLabel {
 	
 	private static final int totalNumberOfPieces = 24;
 	private Game game;
+	private BufferedImage img;
 	private TMMMouseAdapter tmmMouseAdapter;
+	
 	
 	private int[][] piecePositionsX = {{10,30}, {55,85}, {110,140}, {215, 245}, {325,355}, {380, 410}, {435,460}}; 
 	private int[][] piecePositionsY = {{10,30}, {55,85}, {110,140}, {215, 245}, {325,355}, {380, 410}, {435,460}};  
@@ -34,12 +38,56 @@ public class BoardLabel extends JLabel {
 		}
 	}
 	
+	public void paintComponent (Graphics g)
+    { 
+		super.paintComponent(g);
+		Graphics2D g2d = (Graphics2D) g.create();
+		if (img == null) {
+	        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		}
 
+	    g2d.drawImage(img, 0, 0, this);
+	    g2d.dispose();
+		
+    }
+	
 	public void paintComponent (Graphics g, int point)
     { 
 		super.paintComponent(g);
 		g.setColor(Color.LIGHT_GRAY);  
 		g.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);
+		g.drawImage(img, 0, 0, this);
+		/*Graphics2D g2d = (Graphics2D) g.create();
+		if (img == null) {
+	        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		}
+		g2d.drawImage(img, 0, 0, this);
+	    g2d.dispose();*/
+
+    }
+	
+	public void paintComponent (Graphics g, int point, String color)
+    { 
+		super.paintComponent(g);
+		Graphics2D g2d = (Graphics2D) g.create();
+		if (img == null) {
+	        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		}
+		
+		Graphics2D gbuffer = img.createGraphics();
+		
+		if(color=="white") {
+			gbuffer.setColor(Color.WHITE);  
+		}
+		else {
+			gbuffer.setColor(Color.BLACK);  
+		}
+		gbuffer.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);
+		
+		gbuffer.dispose();
+	    g2d.drawImage(img, 0, 0, this);
+	    g2d.dispose();
+		
 
     }
 	
@@ -210,10 +258,10 @@ public class BoardLabel extends JLabel {
 		
 		for(int i=0; i<boardPieces.length; i++) {
 			if(boardPieces[i]=="white") {
-				
+				this.paintComponent(getGraphics(), i, "white");
 			}
 			else if(boardPieces[i]=="black") {
-				
+				this.paintComponent(getGraphics(), i, "black");
 			}
 		}
 		
