@@ -10,17 +10,31 @@ import javax.swing.JLabel;
 
 public class BoardLabel extends JLabel {
 
-	int[][] piecePositionsX = {{10,30}, {55,85}, {110,140}, {215, 245}, {325,355}, {380, 410}, {435,460}}; 
-	int[][] piecePositionsY = {{10,30}, {55,85}, {110,140}, {215, 245}, {325,355}, {380, 410}, {435,460}};  
-	int[][] positionsOnBoard = {{10,10}, {223,10}, {445,10}, {60,60}, {223, 60}, {385,60}, {112,115}, {223, 115}, {330, 115},
+	
+	private static final int totalNumberOfPieces = 24;
+	private Game game;
+	private TMMMouseAdapter tmmMouseAdapter;
+	
+	private int[][] piecePositionsX = {{10,30}, {55,85}, {110,140}, {215, 245}, {325,355}, {380, 410}, {435,460}}; 
+	private int[][] piecePositionsY = {{10,30}, {55,85}, {110,140}, {215, 245}, {325,355}, {380, 410}, {435,460}};  
+	private int[][] positionsOnBoard = {{10,10}, {223,10}, {445,10}, {60,60}, {223, 60}, {385,60}, {112,115}, {223, 115}, {330, 115},
 			{15, 220}, {65, 220}, {115, 220}, {335, 220}, {390, 220}, {445, 220}, {112, 330}, {223, 330}, {330, 330}, {60, 385},
 			{223, 385}, {385, 385}, {10, 440}, {223, 440}, {445, 440}};
+	private String[] boardPieces;
 	
-	public BoardLabel(ImageIcon img) {
+	public BoardLabel(ImageIcon img, Game game) {
 		super(img);
-		addMouseMotionListener(new TMMMouseAdapter());
+		this.game = game;
+		tmmMouseAdapter = new TMMMouseAdapter();
+		this.addMouseMotionListener(tmmMouseAdapter);
+		this.addMouseListener(tmmMouseAdapter);
+		boardPieces = new String[totalNumberOfPieces];
+		for(int i=0; i<totalNumberOfPieces; i++) {
+			boardPieces[i] = "null";
+		}
 	}
 	
+
 	public void paintComponent (Graphics g, int point)
     { 
 		super.paintComponent(g);
@@ -39,7 +53,17 @@ public class BoardLabel extends JLabel {
         
         @Override
         public void mouseClicked(MouseEvent e ) {
-             
+        	System.out.println("click");
+        	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
+            if(piecePosition!=-1) {
+            	boardPieces[piecePosition] = game.getTurn();
+            }
+            repaintPieces();
+            /*String test = "[";
+            for(int i=0; i<totalNumberOfPieces; i++) {
+    			test += boardPieces[i] + ", ";
+    		}
+            System.out.println(test);*/
 
         }
 
@@ -181,4 +205,17 @@ public class BoardLabel extends JLabel {
 		}
 		
     }
+
+	public void repaintPieces() {
+		
+		for(int i=0; i<boardPieces.length; i++) {
+			if(boardPieces[i]=="white") {
+				
+			}
+			else if(boardPieces[i]=="black") {
+				
+			}
+		}
+		
+	}
 }

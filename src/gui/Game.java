@@ -23,6 +23,8 @@ public class Game {
 	private JLabel[] whitePieces;
 	private JLabel[] blackPieces;
 	
+	private String turn = "white";
+	
 	public Game(String p1Name, String p2Name) {
 		
 		frame = new JFrame("Twelve Men's Morris");
@@ -44,7 +46,7 @@ public class Game {
 		
 		JPanel boardPanel = new JPanel();
 		ImageIcon boardImage = new ImageIcon(this.getClass().getResource("/tmmDiagonalBoardColor.png"));
-		board = new BoardLabel(boardImage);
+		board = new BoardLabel(boardImage, this);
 		boardPanel.setBounds(250, 100, boardImage.getIconWidth(), boardImage.getIconHeight());
 		boardPanel.add(board, BorderLayout.CENTER);
 		boardPanel.setOpaque(false);
@@ -106,5 +108,9 @@ public class Game {
 		//lpane.add(exitPanel, 1, 0);
 		
 		
+	}
+	
+	public String getTurn() {
+		return turn;
 	}
 }
