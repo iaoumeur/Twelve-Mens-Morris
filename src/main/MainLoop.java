@@ -16,8 +16,9 @@ public class MainLoop {
 		    }
 		}
 		
-		Game game = new Game();
+		Game game = new Game(menu.getP1Name(), menu.getP2Name());
 		
 	}
+	
 
 }

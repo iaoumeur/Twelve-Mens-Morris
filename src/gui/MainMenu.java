@@ -27,8 +27,8 @@ public class MainMenu {
 	private boolean difficultiesVisible = false;
 	
 	private boolean ready = false;
-	private String p1Name;
-	private String p2Name;
+	private String p1Name = "NoName";
+	private String p2Name = "NoName";
 
 	public MainMenu() {
 
@@ -157,7 +157,7 @@ public class MainMenu {
 			 p2Name = ("AI");
 		 }*/
 		 p1Name = "Ishaq";
-		 p2Name = "Test";
+		 p2Name = "Rival";
 		 ready = true;
 		 frame.dispose();
 		
@@ -165,6 +165,14 @@ public class MainMenu {
 	
 	public boolean isReady() {
 		return ready;
+	}
+	
+	public String getP1Name() {
+		return p1Name;
+	}
+	
+	public String getP2Name() {
+		return p2Name;
 	}
 	
 
