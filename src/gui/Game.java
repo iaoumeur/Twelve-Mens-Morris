@@ -3,6 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,8 +21,13 @@ public class Game {
 	private JLayeredPane lpane;
 	
 	private BoardLabel board;
-	private JLabel[] whitePieces;
-	private JLabel[] blackPieces;
+	private ArrayList<JLabel> whitePieces;
+	private ArrayList<JLabel> blackPieces;
+	private JPanel whitePiecePanel;
+	private JPanel blackPiecePanel;
+	
+	ImageIcon whitePieceImage; 
+	ImageIcon blackPieceImage;
 	
 	private String turn = "white";
 	
@@ -40,33 +46,33 @@ public class Game {
 		
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setBounds(0, 0, frameWidth, frameHeight);
-		ImageIcon backgroundImage = new ImageIcon(this.getClass().getResource("/woodBackground.jpg"));
+		ImageIcon backgroundImage = new ImageIcon(this.getClass().getResource("/GameBackground.jpg"));
 		JLabel backgroundLabel = new JLabel(backgroundImage);
 		backgroundPanel.add(backgroundLabel);
 		
 		JPanel boardPanel = new JPanel();
-		ImageIcon boardImage = new ImageIcon(this.getClass().getResource("/tmmDiagonalBoardColor.png"));
+		ImageIcon boardImage = new ImageIcon(this.getClass().getResource("/BoardInvisible.png"));
 		board = new BoardLabel(boardImage, this);
 		boardPanel.setBounds(250, 100, boardImage.getIconWidth(), boardImage.getIconHeight());
 		boardPanel.add(board, BorderLayout.CENTER);
 		boardPanel.setOpaque(false);
 		
-		ImageIcon whitePieceImage = new ImageIcon(this.getClass().getResource("/WhitePiece.png"));
-		whitePieces = new JLabel[numberOfPieces];
-		JPanel whitePiecePanel = new JPanel();
+		whitePieceImage = new ImageIcon(this.getClass().getResource("/WhitePiece.png"));
+		whitePieces = new ArrayList<JLabel>();
+		whitePiecePanel = new JPanel();
 		for(int i=0; i<numberOfPieces; i++) {
-			whitePieces[i] = new JLabel(whitePieceImage);
-			whitePiecePanel.add(whitePieces[i]);
+			whitePieces.add(new JLabel(whitePieceImage));
+			whitePiecePanel.add(whitePieces.get(i));
 		}
 		whitePiecePanel.setBounds(165, 120, 70, 300);
 		whitePiecePanel.setOpaque(false);
 		
-		ImageIcon blackPieceImage = new ImageIcon(this.getClass().getResource("/BlackPiece.png"));
-		blackPieces = new JLabel[numberOfPieces];
-		JPanel blackPiecePanel = new JPanel();
+		blackPieceImage = new ImageIcon(this.getClass().getResource("/BlackPiece.png"));
+		blackPieces = new ArrayList<JLabel>();
+		blackPiecePanel = new JPanel();
 		for(int i=0; i<numberOfPieces; i++) {
-			blackPieces[i] = new JLabel(blackPieceImage);
-			blackPiecePanel.add(blackPieces[i]);
+			blackPieces.add(new JLabel(blackPieceImage));
+			blackPiecePanel.add(blackPieces.get(i));
 		}
 		blackPiecePanel.setBounds(730, 345, 70, 300);
 		blackPiecePanel.setOpaque(false);
@@ -113,4 +119,64 @@ public class Game {
 	public String getTurn() {
 		return turn;
 	}
+	
+	public void switchTurn() {
+		if(turn=="white") 
+			turn = "black";
+		else if(turn=="black")
+			turn = "white";
+	}
+	
+	public void removeWhitePieceFromPanel() {
+		if(whitePieces.size()==0) {
+			return;
+		}
+		whitePieces.remove(whitePieces.size()-1);
+		whitePieces.trimToSize();
+		whitePiecePanel.removeAll();
+		for(int i=0; i<whitePieces.size(); i++) {
+			whitePiecePanel.add(whitePieces.get(i));				
+		}
+		whitePiecePanel.repaint();
+	}
+	
+	public void removeBlackPieceFromPanel() {
+		if(blackPieces.size()==0) {
+			return;
+		}
+		blackPieces.remove(blackPieces.size()-1);
+		blackPieces.trimToSize();
+		blackPiecePanel.removeAll();
+		for(int i=0; i<blackPieces.size(); i++) {
+			blackPiecePanel.add(blackPieces.get(i));				
+		}
+		blackPiecePanel.repaint();
+	}
+
+	public boolean isFinished() {
+		return false;
+	}
+
+	/*public void showRemainingPieces(int numWhite, int numBlack) {
+		System.out.println(numWhite);
+		int whitePiecesLeft = numberOfPieces-numWhite;
+		whitePieces = new JLabel[whitePiecesLeft];
+		whitePiecePanel.removeAll();
+		for(int i=0; i<whitePiecesLeft; i++) {
+			whitePieces[i] = new JLabel(whitePieceImage);
+			whitePiecePanel.add(whitePieces[i]);
+		}
+		whitePiecePanel.repaint();
+		
+		int blackPiecesLeft = numberOfPieces-numBlack;
+		blackPieces = new JLabel[blackPiecesLeft];
+		blackPiecePanel.removeAll();
+		for(int i=0; i<blackPiecesLeft; i++) {
+			blackPieces[i] = new JLabel(blackPieceImage);
+			blackPiecePanel.add(blackPieces[i]);
+		}
+		
+		
+		
+	}*/
 }

@@ -26,6 +26,9 @@ public class BoardLabel extends JLabel {
 			{223, 385}, {385, 385}, {10, 440}, {223, 440}, {445, 440}};
 	private String[] boardPieces;
 	
+	int numWhite = 0;
+	int numBlack = 0;
+	
 	public BoardLabel(ImageIcon img, Game game) {
 		super(img);
 		this.game = game;
@@ -34,7 +37,7 @@ public class BoardLabel extends JLabel {
 		this.addMouseListener(tmmMouseAdapter);
 		boardPieces = new String[totalNumberOfPieces];
 		for(int i=0; i<totalNumberOfPieces; i++) {
-			boardPieces[i] = "null";
+			boardPieces[i] = null;
 		}
 	}
 	
@@ -45,7 +48,7 @@ public class BoardLabel extends JLabel {
 		if (img == null) {
 	        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		}
-
+		
 	    g2d.drawImage(img, 0, 0, this);
 	    g2d.dispose();
 		
@@ -103,15 +106,18 @@ public class BoardLabel extends JLabel {
         public void mouseClicked(MouseEvent e ) {
         	System.out.println("click");
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
-            if(piecePosition!=-1) {
+            if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
             	boardPieces[piecePosition] = game.getTurn();
+            	repaintPieces();
+                if(game.getTurn()=="white") {
+                	game.removeWhitePieceFromPanel();
+                }
+                else if(game.getTurn()=="black") {
+                	game.removeBlackPieceFromPanel();
+                }
+                game.switchTurn();
             }
-            repaintPieces();
-            /*String test = "[";
-            for(int i=0; i<totalNumberOfPieces; i++) {
-    			test += boardPieces[i] + ", ";
-    		}
-            System.out.println(test);*/
+            
 
         }
 
@@ -255,12 +261,15 @@ public class BoardLabel extends JLabel {
     }
 
 	public void repaintPieces() {
-		
+		numWhite = 0;
+		numBlack = 0;
 		for(int i=0; i<boardPieces.length; i++) {
 			if(boardPieces[i]=="white") {
+				numWhite++;
 				this.paintComponent(getGraphics(), i, "white");
 			}
 			else if(boardPieces[i]=="black") {
+				numBlack++;
 				this.paintComponent(getGraphics(), i, "black");
 			}
 		}
