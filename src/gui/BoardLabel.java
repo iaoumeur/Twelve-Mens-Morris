@@ -100,7 +100,23 @@ public class BoardLabel extends JLabel {
         @Override
         public void mouseClicked(MouseEvent e ) {
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
-            if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
+        	if(game.isPieceRemovalTurn()) {
+        		if(game.getTurn()=="white" && boardPieces[piecePosition]=="black" && game.inMill(piecePosition)==false)  {
+        			System.out.println("Remove black piece successful");
+        			boardPieces[piecePosition]=null;
+        			repaintPieces();
+        			game.togglePieceRemovalTurn();
+        			game.switchTurn();
+        		}
+        		if(game.getTurn()=="black" && boardPieces[piecePosition]=="white" && game.inMill(piecePosition)==false)  {
+        			System.out.println("Remove white piece successful");
+        			boardPieces[piecePosition]=null;
+        			repaintPieces();
+        			game.togglePieceRemovalTurn();
+        			game.switchTurn();
+        		}
+        	}
+        	else if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
             	boardPieces[piecePosition] = game.getTurn();
             	repaintPieces();
                 if(game.getTurn()=="white") {
@@ -109,8 +125,12 @@ public class BoardLabel extends JLabel {
                 else if(game.getTurn()=="black") {
                 	game.removeBlackPieceFromPanel();
                 }
-                game.checkForMill(boardPieces);
-                game.switchTurn();
+                if(game.checkForMill(boardPieces)) {
+                	 game.togglePieceRemovalTurn();
+                }
+                else {
+                	game.switchTurn();                	
+                }
             }
             
 
@@ -258,6 +278,8 @@ public class BoardLabel extends JLabel {
 	public void repaintPieces() {
 		numWhite = 0;
 		numBlack = 0;
+		img = null;
+		this.repaint();
 		for(int i=0; i<boardPieces.length; i++) {
 			if(boardPieces[i]=="white") {
 				numWhite++;

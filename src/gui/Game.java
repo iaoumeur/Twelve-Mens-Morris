@@ -44,6 +44,7 @@ public class Game {
 			{23,20,17}
 	};
 	private String[] millsFound = new String[millLocations.length];
+	private boolean pieceRemovalTurn = false;
 	
 	public Game(String p1Name, String p2Name) {
 		
@@ -138,6 +139,7 @@ public class Game {
 		lpane.add(blackPiecePanel, 1, 0);
 		lpane.add(p1Panel, 1, 0);
 		lpane.add(p2Panel, 1, 0);
+		lpane.add(msgPanel, 1, 0);
 		lpane.add(turnPanel,1, 0);
 		//lpane.add(exitPanel, 1, 0);
 		
@@ -187,14 +189,29 @@ public class Game {
 	public boolean isFinished() {
 		return false;
 	}
+	
+	public boolean isPieceRemovalTurn() {
+		return pieceRemovalTurn;
+	}
+	
+	public void togglePieceRemovalTurn() {
+		pieceRemovalTurn = !pieceRemovalTurn;
+		if(pieceRemovalTurn) {
+			msgLabel.setText(gameMessages[0]);
+		}
+		else {
+			msgLabel.setText("");
+		}
+	}
 
-	public void checkForMill(String[] boardPieces) {
+	public boolean checkForMill(String[] boardPieces) {
 		String arr = "[";
 		for(int i=0; i<millLocations.length; i++) {
-			if(boardPieces[millLocations[i][0]]!=null && boardPieces[millLocations[i][1]]!=null && boardPieces[millLocations[i][2]]!=null) {
+			if(boardPieces[millLocations[i][0]]==turn && boardPieces[millLocations[i][1]]==turn && boardPieces[millLocations[i][2]]==turn) {
 				if(millsFound[i]==null) {
 					//new mill
 					millsFound[i] = turn;
+					return true;
 				}
 				else {
 					//already existing mill
@@ -204,7 +221,22 @@ public class Game {
 		}
 		System.out.println(arr + "]");
 		
+		return false;
 		
+	}
+
+
+	public boolean inMill(int piecePosition) {
+		for(int i=0; i<millLocations.length; i++) {
+			for(int j=0; j<millLocations[i].length; j++) {
+				if(piecePosition==millLocations[i][j]) {
+					if(millsFound[i]!=null) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 
