@@ -57,15 +57,10 @@ public class BoardLabel extends JLabel {
 	public void paintComponent (Graphics g, int point)
     { 
 		super.paintComponent(g);
-		g.setColor(Color.LIGHT_GRAY);  
-		g.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);
-		g.drawImage(img, 0, 0, this);
-		/*Graphics2D g2d = (Graphics2D) g.create();
-		if (img == null) {
-	        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		if(boardPieces[point]==null) {
+			g.setColor(Color.LIGHT_GRAY);  
+			g.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);			
 		}
-		g2d.drawImage(img, 0, 0, this);
-	    g2d.dispose();*/
 
     }
 	
@@ -104,7 +99,6 @@ public class BoardLabel extends JLabel {
         
         @Override
         public void mouseClicked(MouseEvent e ) {
-        	System.out.println("click");
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
             if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
             	boardPieces[piecePosition] = game.getTurn();
@@ -115,6 +109,7 @@ public class BoardLabel extends JLabel {
                 else if(game.getTurn()=="black") {
                 	game.removeBlackPieceFromPanel();
                 }
+                game.checkForMill(boardPieces);
                 game.switchTurn();
             }
             
@@ -273,6 +268,7 @@ public class BoardLabel extends JLabel {
 				this.paintComponent(getGraphics(), i, "black");
 			}
 		}
-		
 	}
+	
+	
 }

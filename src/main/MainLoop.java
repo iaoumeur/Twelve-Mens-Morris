@@ -23,15 +23,13 @@ public class MainLoop {
 		while(game.isFinished()==false) {
 			while(game.getTurn()=="white") {
 				try {
-				       Thread.sleep(200);
-				       System.out.println("white turn");
+				       Thread.sleep(1000);
 				    } catch(InterruptedException e) {
 				    }
 			}
 			while(game.getTurn()=="black") {
 				try {
-				       Thread.sleep(200);
-				       System.out.println("black turn");
+				       Thread.sleep(1000);
 				    } catch(InterruptedException e) {
 				    }
 			}

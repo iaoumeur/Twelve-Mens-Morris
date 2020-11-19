@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -25,11 +26,24 @@ public class Game {
 	private ArrayList<JLabel> blackPieces;
 	private JPanel whitePiecePanel;
 	private JPanel blackPiecePanel;
+	private JLabel turnLabel;
+	private JLabel msgLabel;
 	
 	ImageIcon whitePieceImage; 
 	ImageIcon blackPieceImage;
 	
 	private String turn = "white";
+	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove"};
+	private String[] turnMessages = {"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
+			+ "\">Turn:   </span><span style=\"color:white;font-size:23px;\">White</span></html>", 
+			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
+					+ "\">Turn:   </span><span style=\"color:black;font-size:23px;\">Black</span></html>"};
+	
+	private int[][] millLocations = {{0,1,2}, {3,4,5}, {6,7,8}, {9,10,11}, {12,13,14}, {15,16,17}, {18,19,20}, {21,22, 23},
+			{0,9,21}, {3,10,18}, {6,11,15}, {1,4,7}, {16,19,22}, {8,12,17}, {5,13,20}, {2,14,23}, {0,3,6}, {2,5,8}, {21,18,15},
+			{23,20,17}
+	};
+	private String[] millsFound = new String[millLocations.length];
 	
 	public Game(String p1Name, String p2Name) {
 		
@@ -95,6 +109,19 @@ public class Game {
 		p2Panel.add(p2Label, BorderLayout.CENTER);
 		p2Panel.setOpaque(false);
 		
+		JPanel msgPanel = new JPanel();
+		msgLabel= new JLabel();
+		msgPanel.setBounds(50, 650, 600, 100);
+		msgPanel.add(msgLabel, BorderLayout.CENTER);
+		msgPanel.setOpaque(false);
+		
+		JPanel turnPanel = new JPanel();
+		turnLabel = new JLabel("Turn: White");
+		turnLabel.setForeground(Color.WHITE);
+		turnPanel.setBounds(700, 650, 300, 100);
+		turnPanel.add(turnLabel, BorderLayout.CENTER);
+		turnPanel.setOpaque(false);
+		
 		/*JPanel exitPanel = new JPanel();
 		ImageIcon exitImage = new ImageIcon(this.getClass().getResource("/ExitButton.png"));
 		exitPanel.setBounds(frameWidth - exitImage.getIconWidth()-30, exitImage.getIconHeight()-40, exitImage.getIconWidth(), exitImage.getIconHeight()+10);
@@ -111,8 +138,8 @@ public class Game {
 		lpane.add(blackPiecePanel, 1, 0);
 		lpane.add(p1Panel, 1, 0);
 		lpane.add(p2Panel, 1, 0);
+		lpane.add(turnPanel,1, 0);
 		//lpane.add(exitPanel, 1, 0);
-		
 		
 	}
 	
@@ -121,10 +148,14 @@ public class Game {
 	}
 	
 	public void switchTurn() {
-		if(turn=="white") 
+		if(turn=="white") { 
 			turn = "black";
-		else if(turn=="black")
+			turnLabel.setText(turnMessages[1]);
+		}
+		else if(turn=="black") {
 			turn = "white";
+			turnLabel.setText(turnMessages[0]);
+		}
 	}
 	
 	public void removeWhitePieceFromPanel() {
@@ -157,26 +188,24 @@ public class Game {
 		return false;
 	}
 
-	/*public void showRemainingPieces(int numWhite, int numBlack) {
-		System.out.println(numWhite);
-		int whitePiecesLeft = numberOfPieces-numWhite;
-		whitePieces = new JLabel[whitePiecesLeft];
-		whitePiecePanel.removeAll();
-		for(int i=0; i<whitePiecesLeft; i++) {
-			whitePieces[i] = new JLabel(whitePieceImage);
-			whitePiecePanel.add(whitePieces[i]);
+	public void checkForMill(String[] boardPieces) {
+		String arr = "[";
+		for(int i=0; i<millLocations.length; i++) {
+			if(boardPieces[millLocations[i][0]]!=null && boardPieces[millLocations[i][1]]!=null && boardPieces[millLocations[i][2]]!=null) {
+				if(millsFound[i]==null) {
+					//new mill
+					millsFound[i] = turn;
+				}
+				else {
+					//already existing mill
+				}
+			}
+			arr += millsFound[i] + ", ";
 		}
-		whitePiecePanel.repaint();
-		
-		int blackPiecesLeft = numberOfPieces-numBlack;
-		blackPieces = new JLabel[blackPiecesLeft];
-		blackPiecePanel.removeAll();
-		for(int i=0; i<blackPiecesLeft; i++) {
-			blackPieces[i] = new JLabel(blackPieceImage);
-			blackPiecePanel.add(blackPieces[i]);
-		}
+		System.out.println(arr + "]");
 		
 		
-		
-	}*/
+	}
+
+
 }
