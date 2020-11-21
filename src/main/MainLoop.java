@@ -20,7 +20,7 @@ public class MainLoop {
 		if(Math.random() < 0.5) {
 			game.switchTurn();
 		}
-		while(game.isFinished()==false) {
+		while(game.getGameState()!=5) {
 			while(game.getTurn()=="white") {
 				try {
 				       Thread.sleep(1000);

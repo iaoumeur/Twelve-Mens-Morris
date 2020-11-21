@@ -57,7 +57,7 @@ public class BoardLabel extends JLabel {
 	public void paintComponent (Graphics g, int point)
     { 
 		super.paintComponent(g);
-		if(boardPieces[point]==null) {
+		if(boardPieces[point]==null && game.getGameState()!=4) {
 			g.setColor(Color.LIGHT_GRAY);  
 			g.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);			
 		}
@@ -99,23 +99,29 @@ public class BoardLabel extends JLabel {
         
         @Override
         public void mouseClicked(MouseEvent e ) {
+        	//check which piece position has been clicked 
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
-        	if(game.isPieceRemovalTurn()) {
-        		if(game.getTurn()=="white" && boardPieces[piecePosition]=="black" && game.inMill(piecePosition)==false)  {
+        	//in game state 4 (a mill has been created) needs to check if piece removal is valid
+        	if(game.getGameState()==4) {
+        		if(game.inMill(piecePosition)) {
+        			game.invalidPieceRemoval();
+        		}
+        		else if(game.getTurn()=="white" && boardPieces[piecePosition]=="black")  {
         			System.out.println("Remove black piece successful");
         			boardPieces[piecePosition]=null;
         			repaintPieces();
-        			game.togglePieceRemovalTurn();
+        			game.setGameState(1);
         			game.switchTurn();
         		}
-        		if(game.getTurn()=="black" && boardPieces[piecePosition]=="white" && game.inMill(piecePosition)==false)  {
+        		else if(game.getTurn()=="black" && boardPieces[piecePosition]=="white")  {
         			System.out.println("Remove white piece successful");
         			boardPieces[piecePosition]=null;
         			repaintPieces();
-        			game.togglePieceRemovalTurn();
+        			game.setGameState(1);
         			game.switchTurn();
         		}
         	}
+        	//other game state - place a new piece
         	else if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
             	boardPieces[piecePosition] = game.getTurn();
             	repaintPieces();
@@ -126,7 +132,12 @@ public class BoardLabel extends JLabel {
                 	game.removeBlackPieceFromPanel();
                 }
                 if(game.checkForMill(boardPieces)) {
-                	 game.togglePieceRemovalTurn();
+                	 game.setGameState(4);
+                	 String str = "";
+                	 for(int i=0; i<game.millsFound.length; i++) {
+                		 str += game.millsFound[i] + ", ";
+                	 }
+                	 System.out.println(str);
                 }
                 else {
                 	game.switchTurn();                	

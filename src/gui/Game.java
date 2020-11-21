@@ -32,8 +32,10 @@ public class Game {
 	ImageIcon whitePieceImage; 
 	ImageIcon blackPieceImage;
 	
+
 	private String turn = "white";
-	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove"};
+	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove", "Invalid Piece Removal", 
+			};
 	private String[] turnMessages = {"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 			+ "\">Turn:   </span><span style=\"color:white;font-size:23px;\">White</span></html>", 
 			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
@@ -43,8 +45,16 @@ public class Game {
 			{0,9,21}, {3,10,18}, {6,11,15}, {1,4,7}, {16,19,22}, {8,12,17}, {5,13,20}, {2,14,23}, {0,3,6}, {2,5,8}, {21,18,15},
 			{23,20,17}
 	};
-	private String[] millsFound = new String[millLocations.length];
+	String[] millsFound = new String[millLocations.length];
 	private boolean pieceRemovalTurn = false;
+	
+	//1 = phase 1 - placing stage
+	//2 = phase 2 - movement stage
+	//3 = phase 3 - "flying" movement stage
+	//4 = mill created - remove opponent's piece
+	//5 = game end - draw, or player wins
+	private int gameState = 1; 
+	private int prevGameState = 1;
 	
 	public Game(String p1Name, String p2Name) {
 		
@@ -112,7 +122,7 @@ public class Game {
 		
 		JPanel msgPanel = new JPanel();
 		msgLabel= new JLabel();
-		msgPanel.setBounds(50, 650, 600, 100);
+		msgPanel.setBounds(30, 650, 650, 100);
 		msgPanel.add(msgLabel, BorderLayout.CENTER);
 		msgPanel.setOpaque(false);
 		
@@ -186,40 +196,51 @@ public class Game {
 		blackPiecePanel.repaint();
 	}
 
-	public boolean isFinished() {
-		return false;
+	public int getGameState() {
+		return gameState;
 	}
 	
-	public boolean isPieceRemovalTurn() {
-		return pieceRemovalTurn;
-	}
-	
-	public void togglePieceRemovalTurn() {
-		pieceRemovalTurn = !pieceRemovalTurn;
-		if(pieceRemovalTurn) {
-			msgLabel.setText(gameMessages[0]);
+	public void setGameState(int state) {
+		prevGameState = gameState;
+		gameState = state;
+		if(gameState==4) {
+			msgLabel.setText("<html><span style=\"font-size:16px;color:white;"
+					+ "\">" + gameMessages[0] + "</span></html>");
 		}
 		else {
 			msgLabel.setText("");
 		}
+		
+	}
+	
+	public void invalidPieceRemoval() {
+		msgLabel.setText("<html><span style=\"font-size:16px;color:white;"
+				+ "\">" + gameMessages[1] + "</span></html>");
 	}
 
 	public boolean checkForMill(String[] boardPieces) {
-		String arr = "[";
 		for(int i=0; i<millLocations.length; i++) {
-			if(boardPieces[millLocations[i][0]]==turn && boardPieces[millLocations[i][1]]==turn && boardPieces[millLocations[i][2]]==turn) {
+			if(boardPieces[millLocations[i][0]]=="white" && boardPieces[millLocations[i][1]]=="white" && boardPieces[millLocations[i][2]]=="white") {
 				if(millsFound[i]==null) {
 					//new mill
-					millsFound[i] = turn;
+					millsFound[i] = "white";
 					return true;
 				}
 				else {
 					//already existing mill
 				}
 			}
-			arr += millsFound[i] + ", ";
+			if(boardPieces[millLocations[i][0]]=="black" && boardPieces[millLocations[i][1]]=="black" && boardPieces[millLocations[i][2]]=="black") {
+				if(millsFound[i]==null) {
+					//new mill
+					millsFound[i] = "black";
+					return true;
+				}
+				else {
+					//already existing mill
+				}
+			}
 		}
-		System.out.println(arr + "]");
 		
 		return false;
 		
