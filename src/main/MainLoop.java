@@ -20,14 +20,14 @@ public class MainLoop {
 		if(Math.random() < 0.5) {
 			game.switchTurn();
 		}
-		while(game.getGameState()!=5) {
-			while(game.getTurn()=="white") {
+		while(game.getState().getGameStage()!=5) {
+			while(game.getState().getTurn()=="white") {
 				try {
 				       Thread.sleep(1000);
 				    } catch(InterruptedException e) {
 				    }
 			}
-			while(game.getTurn()=="black") {
+			while(game.getState().getTurn()=="black") {
 				try {
 				       Thread.sleep(1000);
 				    } catch(InterruptedException e) {

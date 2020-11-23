@@ -13,7 +13,6 @@ import javax.swing.JLabel;
 public class BoardLabel extends JLabel {
 
 	
-	private static final int totalNumberOfPieces = 24;
 	private Game game;
 	private BufferedImage img;
 	private TMMMouseAdapter tmmMouseAdapter;
@@ -24,7 +23,6 @@ public class BoardLabel extends JLabel {
 	private int[][] positionsOnBoard = {{10,10}, {223,10}, {445,10}, {60,60}, {223, 60}, {385,60}, {112,115}, {223, 115}, {330, 115},
 			{15, 220}, {65, 220}, {115, 220}, {335, 220}, {390, 220}, {445, 220}, {112, 330}, {223, 330}, {330, 330}, {60, 385},
 			{223, 385}, {385, 385}, {10, 440}, {223, 440}, {445, 440}};
-	private String[] boardPieces;
 	
 	int numWhite = 0;
 	int numBlack = 0;
@@ -35,10 +33,6 @@ public class BoardLabel extends JLabel {
 		tmmMouseAdapter = new TMMMouseAdapter();
 		this.addMouseMotionListener(tmmMouseAdapter);
 		this.addMouseListener(tmmMouseAdapter);
-		boardPieces = new String[totalNumberOfPieces];
-		for(int i=0; i<totalNumberOfPieces; i++) {
-			boardPieces[i] = null;
-		}
 	}
 	
 	public void paintComponent (Graphics g)
@@ -57,7 +51,7 @@ public class BoardLabel extends JLabel {
 	public void paintComponent (Graphics g, int point)
     { 
 		super.paintComponent(g);
-		if(boardPieces[point]==null && game.getGameState()!=4) {
+		if(game.getState().getBoardPieces()[point]==null && game.getState().getGameStage()!=4) {
 			g.setColor(Color.LIGHT_GRAY);  
 			g.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);			
 		}
@@ -102,40 +96,40 @@ public class BoardLabel extends JLabel {
         	//check which piece position has been clicked 
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
         	//in game state 4 (a mill has been created) needs to check if piece removal is valid
-        	if(game.getGameState()==4) {
-        		if(game.inMill(piecePosition)) {
+        	if(game.getState().getGameStage()==4) {
+        		if(game.getState().inMill(piecePosition)) {
         			game.invalidPieceRemoval();
         		}
-        		else if(game.getTurn()=="white" && boardPieces[piecePosition]=="black")  {
+        		else if(game.getState().getTurn()=="white" && game.getState().getBoardPieces()[piecePosition]=="black")  {
         			System.out.println("Remove black piece successful");
-        			boardPieces[piecePosition]=null;
+        			game.getState().setBoardPiece(piecePosition, null);
         			repaintPieces();
-        			game.setGameState(1);
+        			game.setGameStage(1);
         			game.switchTurn();
         		}
-        		else if(game.getTurn()=="black" && boardPieces[piecePosition]=="white")  {
+        		else if(game.getState().getTurn()=="black" && game.getState().getBoardPieces()[piecePosition]=="white")  {
         			System.out.println("Remove white piece successful");
-        			boardPieces[piecePosition]=null;
+        			game.getState().setBoardPiece(piecePosition, null);
         			repaintPieces();
-        			game.setGameState(1);
+        			game.setGameStage(1);
         			game.switchTurn();
         		}
         	}
         	//other game state - place a new piece
-        	else if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
-            	boardPieces[piecePosition] = game.getTurn();
+        	else if(piecePosition!=-1 && game.getState().getBoardPieces()[piecePosition]==null) {
+        		game.getState().setBoardPiece(piecePosition, game.getState().getTurn());
             	repaintPieces();
-                if(game.getTurn()=="white") {
+                if(game.getState().getTurn()=="white") {
                 	game.removeWhitePieceFromPanel();
                 }
-                else if(game.getTurn()=="black") {
+                else if(game.getState().getTurn()=="black") {
                 	game.removeBlackPieceFromPanel();
                 }
-                if(game.checkForMill(boardPieces)) {
-                	 game.setGameState(4);
+                if(game.getState().checkForMill()) {
+                	 game.setGameStage(4);
                 	 String str = "";
-                	 for(int i=0; i<game.millsFound.length; i++) {
-                		 str += game.millsFound[i] + ", ";
+                	 for(int i=0; i<game.getState().getMillsFound().length; i++) {
+                		 str += game.getState().getMillsFound()[i] + ", ";
                 	 }
                 	 System.out.println(str);
                 }
@@ -291,12 +285,12 @@ public class BoardLabel extends JLabel {
 		numBlack = 0;
 		img = null;
 		this.repaint();
-		for(int i=0; i<boardPieces.length; i++) {
-			if(boardPieces[i]=="white") {
+		for(int i=0; i<game.getState().getBoardPieces().length; i++) {
+			if(game.getState().getBoardPieces()[i]=="white") {
 				numWhite++;
 				this.paintComponent(getGraphics(), i, "white");
 			}
-			else if(boardPieces[i]=="black") {
+			else if(game.getState().getBoardPieces()[i]=="black") {
 				numBlack++;
 				this.paintComponent(getGraphics(), i, "black");
 			}
