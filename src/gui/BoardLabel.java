@@ -121,6 +121,10 @@ public class BoardLabel extends JLabel {
         	}
         	else if(action=="millNoRemoval") {
         		game.displayMessage(2);
+        		game.switchTurn();
+        	}
+        	else if(action=="validPieceSelected") {
+        		//showAvailablePositionsToMove();
         	}
         	repaintPieces();
 

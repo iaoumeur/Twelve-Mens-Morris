@@ -12,6 +12,7 @@ public class GameState {
 			{0,9,21}, {3,10,18}, {6,11,15}, {1,4,7}, {16,19,22}, {8,12,17}, {5,13,20}, {2,14,23}, {0,3,6}, {2,5,8}, {21,18,15},
 			{23,20,17}
 	};
+	private int[][] adjacentPositions;
 	private String[] millsFound = new String[millLocations.length];
 	
 	//1 = phase 1 - placing stage
@@ -20,7 +21,6 @@ public class GameState {
 	//4 = mill created - remove opponent's piece
 	//5 = game end - draw, or player wins
 	private int gameStage = 1; 
-	
 	private String turn = "white";
 	
 	public GameState() {
@@ -118,31 +118,38 @@ public class GameState {
 	public String boardMouseClick(int piecePosition) {
 		
 		if(gameStage==1) {
+			
+			//clicked position is valid - place a piece
 			if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
 	    		boardPieces[piecePosition] = turn;
 	    		piecesPlaced++;
 	    		if(piecesPlaced>=totalNumberOfPieces) {
 	    			allPiecesPlaced=true;
 	    		}
+	    		
+	    		//mill has been formed 
 	            if(checkForMill()) {
-	            	
 	            	 if(!canPieceBeRemoved()) {
 	            		 return "millNoRemoval";
 	            	 }
-	            	 
-	            	 gameStage = 4;
-	            	 
+	            	 gameStage = 4;    	 
 	            	 if(turn=="white") {
 	                 	return "whitePlacedMill";
 	                 }
 	                 else if(turn=="black") {
 	                 	return "blackPlacedMill";
-	                 }
-	            	 
+	                 }	            
 	            }
-	            else {
+	            
+	            //no mill is formed 
+	            else {	            
 	            	if(allPiecesPlaced) {
 	            		if(checkForDraw()) {
+	            			gameStage=5;
+	            			return "end";
+	            		}
+	            		String winner = checkForWin();
+	            		if(winner!=null) {
 	            			gameStage=5;
 	            			return "end";
 	            		}
@@ -158,32 +165,58 @@ public class GameState {
 	            
 	        }
 		}
+		
+		else if(gameStage==2) {
+			
+			//piece selected is valid for the player's turn
+			if(piecePosition!=-1 && turn=="white" && boardPieces[piecePosition]=="white") {
+				return "validPieceSelected";
+			}
+			
+		}
+		
 		else if(gameStage==4) {
+			
+			//cannot remove a piece in mill
     		if(inMill(piecePosition)) {
     			return "invalidRemoval";
     		}
+    		
+    		//white removing a valid black piece
     		else if(piecePosition!=-1 && turn=="white" && boardPieces[piecePosition]=="black")  {
-    			System.out.println("Remove black piece successful");
     			boardPieces[piecePosition] = null;
     			if(!allPiecesPlaced) {
     				gameStage = 1;
     			}
     			else {
+    				String winner = checkForWin();
+    				if(winner!=null) {
+    					gameStage=5;
+    					return "end";
+    				}
     				gameStage = 2;
     			}
     			return "blackRemoval";
     		}
+    		
+    		//black removing a valid white piece
     		else if(piecePosition!=-1 && turn=="black" && boardPieces[piecePosition]=="white")  {
-    			System.out.println("Remove white piece successful");
     			boardPieces[piecePosition] = null;
     			if(!allPiecesPlaced) {
     				gameStage = 1;
     			}
     			else {
+    				String winner = checkForWin();
+    				if(winner!=null) {
+    					gameStage=5;
+    					return "end";
+    				}
     				gameStage = 2;
     			}
     			return "whiteRemoval";
     		}
+    		
+    		//invalid piece removal
     		else {
     			return "invalidRemoval";
     		}
@@ -191,6 +224,7 @@ public class GameState {
 		
 		return "invalid";
 	}
+
 
 	private boolean canPieceBeRemoved() {
 		
@@ -219,5 +253,45 @@ public class GameState {
 		
    	 
 	}
+	
+	private String checkForWin() {
+		
+		int whitePieces = 0;
+		int blackPieces = 0;
+		
+		for(int i=0; i<boardPieces.length; i++) {
+			if(boardPieces[i]=="white")
+				whitePieces++;
+			else if(boardPieces[i]=="black") 
+				blackPieces++;
+		}
+		if(whitePieces==2) 
+			return "black";
+		else if(blackPieces==2) 
+			return "white";
+		
+		for(int i=0; i<boardPieces.length; i++) {
+			if(boardPieces[i]==turn) {
+				if(checkForValidMove(i)) 
+					return null;
+			}	
+		}
+		
+		if(turn=="white") 
+			return "black";
+		else if(turn=="black")
+			return "white";
+		else 
+			return null;
+		
+	}
+
+	private boolean checkForValidMove(int i) {
+		
+		return true;
+		
+	}
+
+	
 	
 }
