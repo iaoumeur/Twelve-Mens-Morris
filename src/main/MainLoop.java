@@ -22,12 +22,14 @@ public class MainLoop {
 		}
 		while(game.getState().getGameStage()!=5) {
 			while(game.getState().getTurn()=="white") {
+				System.out.println("Game Stage: " + game.getState().getGameStage());
 				try {
 				       Thread.sleep(1000);
 				    } catch(InterruptedException e) {
 				    }
 			}
 			while(game.getState().getTurn()=="black") {
+				System.out.println("Game Stage: " + game.getState().getGameStage());
 				try {
 				       Thread.sleep(1000);
 				    } catch(InterruptedException e) {

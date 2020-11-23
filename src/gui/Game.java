@@ -35,7 +35,7 @@ public class Game {
 	ImageIcon blackPieceImage;
 	
 	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove", "Invalid Piece Removal", 
-			};
+			"A mill was formed, but no pieces are available to remove"};
 	private String[] turnMessages = {"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 			+ "\">Turn:   </span><span style=\"color:white;font-size:23px;\">White</span></html>", 
 			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
@@ -199,10 +199,11 @@ public class Game {
 		state.setGameStage(stage);
 	}
 	
-	public void invalidPieceRemoval() {
+	public void displayMessage(int messageNumber) {
 		msgLabel.setText("<html><span style=\"font-size:16px;color:white;"
-				+ "\">" + gameMessages[1] + "</span></html>");
+				+ "\">" + gameMessages[messageNumber] + "</span></html>");
 	}
+
 
 
 

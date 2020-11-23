@@ -51,7 +51,7 @@ public class BoardLabel extends JLabel {
 	public void paintComponent (Graphics g, int point)
     { 
 		super.paintComponent(g);
-		if(game.getState().getBoardPieces()[point]==null && game.getState().getGameStage()!=4) {
+		if(game.getState().getBoardPieces()[point]==null && game.getState().getGameStage()==1) {
 			g.setColor(Color.LIGHT_GRAY);  
 			g.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);			
 		}
@@ -117,7 +117,10 @@ public class BoardLabel extends JLabel {
         		game.switchTurn();
         	}
         	else if(action =="invalidRemoval") {
-        		game.invalidPieceRemoval();
+        		game.displayMessage(1);
+        	}
+        	else if(action=="millNoRemoval") {
+        		game.displayMessage(2);
         	}
         	repaintPieces();
 

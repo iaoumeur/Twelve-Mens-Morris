@@ -4,6 +4,8 @@ public class GameState {
 
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
+	private int piecesPlaced = 0;
+	private boolean allPiecesPlaced = false;
 	
 	private String[] boardPieces;
 	private int[][] millLocations = {{0,1,2}, {3,4,5}, {6,7,8}, {9,10,11}, {12,13,14}, {15,16,17}, {18,19,20}, {21,22, 23},
@@ -115,71 +117,106 @@ public class GameState {
 	
 	public String boardMouseClick(int piecePosition) {
 		
-		if(gameStage==4) {
+		if(gameStage==1) {
+			if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
+	    		boardPieces[piecePosition] = turn;
+	    		piecesPlaced++;
+	    		if(piecesPlaced>=totalNumberOfPieces) {
+	    			allPiecesPlaced=true;
+	    		}
+	            if(checkForMill()) {
+	            	
+	            	 if(!canPieceBeRemoved()) {
+	            		 return "millNoRemoval";
+	            	 }
+	            	 
+	            	 gameStage = 4;
+	            	 
+	            	 if(turn=="white") {
+	                 	return "whitePlacedMill";
+	                 }
+	                 else if(turn=="black") {
+	                 	return "blackPlacedMill";
+	                 }
+	            	 
+	            }
+	            else {
+	            	if(allPiecesPlaced) {
+	            		if(checkForDraw()) {
+	            			gameStage=5;
+	            			return "end";
+	            		}
+	            		gameStage=2;
+	            	}
+	            	if(turn=="white") {
+	                 	return "whitePlaced";
+	                }
+	                else if(turn=="black") {
+	                 	return "blackPlaced";
+	                }    
+	            }
+	            
+	        }
+		}
+		else if(gameStage==4) {
     		if(inMill(piecePosition)) {
     			return "invalidRemoval";
     		}
     		else if(piecePosition!=-1 && turn=="white" && boardPieces[piecePosition]=="black")  {
     			System.out.println("Remove black piece successful");
     			boardPieces[piecePosition] = null;
-    			gameStage = 1;
+    			if(!allPiecesPlaced) {
+    				gameStage = 1;
+    			}
+    			else {
+    				gameStage = 2;
+    			}
     			return "blackRemoval";
     		}
     		else if(piecePosition!=-1 && turn=="black" && boardPieces[piecePosition]=="white")  {
     			System.out.println("Remove white piece successful");
     			boardPieces[piecePosition] = null;
-    			gameStage = 1;
+    			if(!allPiecesPlaced) {
+    				gameStage = 1;
+    			}
+    			else {
+    				gameStage = 2;
+    			}
     			return "whiteRemoval";
     		}
     		else {
     			return "invalidRemoval";
     		}
     	}
-    	//other game state - place a new piece
-    	else if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
-    		boardPieces[piecePosition] = turn;
-            if(checkForMill()) {
-            	 if(checkForDraw()) {
-            		 gameStage=5;
-            		 return "end";
-            	 }
-            	 gameStage = 4;
-            	 /*String str = "";
-            	 for(int i=0; i<millsFound.length; i++) {
-            		 str += millsFound[i] + ", ";
-            	 }
-            	 System.out.println(str);*/
-            	 
-            	 if(turn=="white") {
-                 	return "whitePlacedMill";
-                 }
-                 else if(turn=="black") {
-                 	return "blackPlacedMill";
-                 }
-            }
-            else {
-            	if(turn=="white") {
-                 	return "whitePlaced";
-                 }
-                 else if(turn=="black") {
-                 	return "blackPlaced";
-                 }         	
-            }
-            
-        }
+		
 		return "invalid";
 	}
 
-	private boolean checkForDraw() {
+	private boolean canPieceBeRemoved() {
 		
 		for(int i=0; i<boardPieces.length; i++) {
 			if(boardPieces[i]!=null) {
 				if(!inMill(i)) {
-					return false;
+					return true;
 				}
 			}
 		}
-		return true;
+		return false;
+		
+	}
+	private boolean checkForDraw() {
+		
+		if(gameStage==1) {
+			for(int i=0; i<boardPieces.length; i++) {
+				if(boardPieces[i]==null) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		return false;
+		
    	 
 	}
 	
