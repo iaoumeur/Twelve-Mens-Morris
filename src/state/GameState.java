@@ -52,6 +52,15 @@ public class GameState {
 		turn = newTurn;
 	}
 	
+	public void switchTurn() {
+		if(turn=="white") { 
+			turn = "black";
+		}
+		else if(turn=="black") {
+			turn = "white";
+		}
+	}
+	
 	public String[] getBoardPieces() {
 		return boardPieces;
 	}
@@ -102,6 +111,58 @@ public class GameState {
 			}
 		}
 		return false;
+	}
+	
+	public String boardMouseClick(int piecePosition) {
+		
+		if(gameStage==4) {
+    		if(inMill(piecePosition)) {
+    			return "invalidRemoval";
+    		}
+    		else if(piecePosition!=-1 && turn=="white" && boardPieces[piecePosition]=="black")  {
+    			System.out.println("Remove black piece successful");
+    			boardPieces[piecePosition] = null;
+    			gameStage = 1;
+    			return "blackRemoval";
+    		}
+    		else if(piecePosition!=-1 && turn=="black" && boardPieces[piecePosition]=="white")  {
+    			System.out.println("Remove white piece successful");
+    			boardPieces[piecePosition] = null;
+    			gameStage = 1;
+    			return "whiteRemoval";
+    		}
+    		else {
+    			return "invalidRemoval";
+    		}
+    	}
+    	//other game state - place a new piece
+    	else if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
+    		boardPieces[piecePosition] = turn;
+            if(checkForMill()) {
+            	 gameStage = 4;
+            	 String str = "";
+            	 for(int i=0; i<millsFound.length; i++) {
+            		 str += millsFound[i] + ", ";
+            	 }
+            	 System.out.println(str);
+            	 if(turn=="white") {
+                 	return "whitePlacedMill";
+                 }
+                 else if(turn=="black") {
+                 	return "blackPlacedMill";
+                 }
+            }
+            else {
+            	if(turn=="white") {
+                 	return "whitePlaced";
+                 }
+                 else if(turn=="black") {
+                 	return "blackPlaced";
+                 }         	
+            }
+            
+        }
+		return "invalid";
 	}
 	
 }

@@ -95,49 +95,31 @@ public class BoardLabel extends JLabel {
         public void mouseClicked(MouseEvent e ) {
         	//check which piece position has been clicked 
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
-        	//in game state 4 (a mill has been created) needs to check if piece removal is valid
-        	if(game.getState().getGameStage()==4) {
-        		if(game.getState().inMill(piecePosition)) {
-        			game.invalidPieceRemoval();
-        		}
-        		else if(game.getState().getTurn()=="white" && game.getState().getBoardPieces()[piecePosition]=="black")  {
-        			System.out.println("Remove black piece successful");
-        			game.getState().setBoardPiece(piecePosition, null);
-        			repaintPieces();
-        			game.setGameStage(1);
-        			game.switchTurn();
-        		}
-        		else if(game.getState().getTurn()=="black" && game.getState().getBoardPieces()[piecePosition]=="white")  {
-        			System.out.println("Remove white piece successful");
-        			game.getState().setBoardPiece(piecePosition, null);
-        			repaintPieces();
-        			game.setGameStage(1);
-        			game.switchTurn();
-        		}
+        	
+        	String action = game.getState().boardMouseClick(piecePosition);
+        	game.showGameMessage();
+        	
+        	if(action=="whitePlaced") {
+        		game.removeWhitePieceFromPanel();
+        		game.switchTurn();
         	}
-        	//other game state - place a new piece
-        	else if(piecePosition!=-1 && game.getState().getBoardPieces()[piecePosition]==null) {
-        		game.getState().setBoardPiece(piecePosition, game.getState().getTurn());
-            	repaintPieces();
-                if(game.getState().getTurn()=="white") {
-                	game.removeWhitePieceFromPanel();
-                }
-                else if(game.getState().getTurn()=="black") {
-                	game.removeBlackPieceFromPanel();
-                }
-                if(game.getState().checkForMill()) {
-                	 game.setGameStage(4);
-                	 String str = "";
-                	 for(int i=0; i<game.getState().getMillsFound().length; i++) {
-                		 str += game.getState().getMillsFound()[i] + ", ";
-                	 }
-                	 System.out.println(str);
-                }
-                else {
-                	game.switchTurn();                	
-                }
-            }
-            
+        	else if(action=="whitePlacedMill") {
+        		game.removeWhitePieceFromPanel();
+        	}
+        	else if(action=="blackPlaced") {
+        		game.removeBlackPieceFromPanel();
+        		game.switchTurn();
+        	}
+        	else if(action=="blackPlacedMill") {
+        		game.removeBlackPieceFromPanel();
+        	}
+        	else if(action=="whiteRemoval" || action=="blackRemoval") {
+        		game.switchTurn();
+        	}
+        	else if(action =="invalidRemoval") {
+        		game.invalidPieceRemoval();
+        	}
+        	repaintPieces();
 
         }
 

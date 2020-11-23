@@ -185,9 +185,7 @@ public class Game {
 	}
 
 
-	
-	public void setGameStage(int stage) {
-		state.setGameStage(stage);
+	public void showGameMessage() {
 		if(state.getGameStage()==4) {
 			msgLabel.setText("<html><span style=\"font-size:16px;color:white;"
 					+ "\">" + gameMessages[0] + "</span></html>");
@@ -195,7 +193,10 @@ public class Game {
 		else {
 			msgLabel.setText("");
 		}
-		
+	}
+	
+	public void setGameStage(int stage) {
+		state.setGameStage(stage);
 	}
 	
 	public void invalidPieceRemoval() {
