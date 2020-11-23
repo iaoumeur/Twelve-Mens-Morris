@@ -139,12 +139,17 @@ public class GameState {
     	else if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
     		boardPieces[piecePosition] = turn;
             if(checkForMill()) {
+            	 if(checkForDraw()) {
+            		 gameStage=5;
+            		 return "end";
+            	 }
             	 gameStage = 4;
-            	 String str = "";
+            	 /*String str = "";
             	 for(int i=0; i<millsFound.length; i++) {
             		 str += millsFound[i] + ", ";
             	 }
-            	 System.out.println(str);
+            	 System.out.println(str);*/
+            	 
             	 if(turn=="white") {
                  	return "whitePlacedMill";
                  }
@@ -163,6 +168,19 @@ public class GameState {
             
         }
 		return "invalid";
+	}
+
+	private boolean checkForDraw() {
+		
+		for(int i=0; i<boardPieces.length; i++) {
+			if(boardPieces[i]!=null) {
+				if(!inMill(i)) {
+					return false;
+				}
+			}
+		}
+		return true;
+   	 
 	}
 	
 }

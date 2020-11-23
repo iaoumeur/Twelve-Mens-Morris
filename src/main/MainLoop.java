@@ -34,6 +34,7 @@ public class MainLoop {
 				    }
 			}
 		}
+		System.out.print("Game ended");
 		
 	}
 	
