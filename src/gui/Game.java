@@ -23,7 +23,7 @@ public class Game {
 	private JLayeredPane lpane;
 	
 	private GameState state;
-	private BoardLabel board;
+	private Board board;
 	private ArrayList<JLabel> whitePieces;
 	private ArrayList<JLabel> blackPieces;
 	private JPanel whitePiecePanel;
@@ -64,7 +64,7 @@ public class Game {
 		
 		JPanel boardPanel = new JPanel();
 		ImageIcon boardImage = new ImageIcon(this.getClass().getResource("/BoardInvisible.png"));
-		board = new BoardLabel(boardImage, this);
+		board = new Board(boardImage, this);
 		boardPanel.setBounds(250, 100, boardImage.getIconWidth(), boardImage.getIconHeight());
 		boardPanel.add(board, BorderLayout.CENTER);
 		boardPanel.setOpaque(false);
