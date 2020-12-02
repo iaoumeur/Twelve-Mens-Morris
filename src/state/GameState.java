@@ -28,6 +28,7 @@ public class GameState {
 	//5 = game end - draw, or player wins
 	private int gameStage = 1; 
 	private String turn = "white";
+	private int selectedPiece = -1;
 	
 	public GameState() {
 		boardPieces = new String[totalNumberOfPieces];
@@ -94,6 +95,14 @@ public class GameState {
 	}
 	public void setBoardPiece(int index, String value) {
 		boardPieces[index] = value;
+	}
+	
+	public int getSelectedPiece() {
+		return selectedPiece;
+	}
+	
+	public void setSelectedPiece(int piece) {
+		selectedPiece = piece;
 	}
 	
 	
@@ -211,6 +220,12 @@ public class GameState {
 			if(piecePosition==-1) {
 				gameStage = 2;
 				return "resetPieceSelected";
+			}
+			if(piecePosition!=-1 && movablePositions.contains(piecePosition)) {
+				boardPieces[selectedPiece] = null;
+				boardPieces[piecePosition] = turn;
+				gameStage = 2;
+				return "pieceMoved";
 			}
 		}
 		
