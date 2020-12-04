@@ -29,6 +29,7 @@ public class GameState {
 	private int gameStage = 1; 
 	private String turn = "white";
 	private int selectedPiece = -1;
+	private boolean movementPhase = false;
 	
 	public GameState() {
 		boardPieces = new String[totalNumberOfPieces];
@@ -118,7 +119,7 @@ public class GameState {
 					//already existing mill
 				}
 			}
-			if(boardPieces[millLocations[i][0]]=="black" && boardPieces[millLocations[i][1]]=="black" && boardPieces[millLocations[i][2]]=="black") {
+			else if(boardPieces[millLocations[i][0]]=="black" && boardPieces[millLocations[i][1]]=="black" && boardPieces[millLocations[i][2]]=="black") {
 				if(millsFound[i]==null) {
 					//new mill
 					millsFound[i] = "black";
@@ -127,6 +128,9 @@ public class GameState {
 				else {
 					//already existing mill
 				}
+			}
+			else {
+				millsFound[i] = null;
 			}
 		}
 		
@@ -186,6 +190,7 @@ public class GameState {
 	            			return "end";
 	            		}
 	            		gameStage=2;
+	            		movementPhase = true;
 	            	}
 	            	if(turn=="white") {
 	                 	return "whitePlaced";
@@ -224,6 +229,18 @@ public class GameState {
 			if(piecePosition!=-1 && movablePositions.contains(piecePosition)) {
 				boardPieces[selectedPiece] = null;
 				boardPieces[piecePosition] = turn;
+				if(checkForMill()) {
+	            	 if(!canPieceBeRemoved()) {
+	            		 return "millNoRemoval";
+	            	 }
+	            	 gameStage = 4;    	 
+	            	 if(turn=="white") {
+	                 	return "whitePlacedMill";
+	                 }
+	                 else if(turn=="black") {
+	                 	return "blackPlacedMill";
+	                 }	            
+	            }
 				gameStage = 2;
 				return "pieceMoved";
 			}
