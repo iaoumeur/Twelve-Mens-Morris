@@ -111,22 +111,16 @@ public class GameState {
 		for(int i=0; i<millLocations.length; i++) {
 			if(boardPieces[millLocations[i][0]]=="white" && boardPieces[millLocations[i][1]]=="white" && boardPieces[millLocations[i][2]]=="white") {
 				if(millsFound[i]==null) {
-					//new mill
 					millsFound[i] = "white";
+					gameStage = 4;   
 					return true;
-				}
-				else {
-					//already existing mill
 				}
 			}
 			else if(boardPieces[millLocations[i][0]]=="black" && boardPieces[millLocations[i][1]]=="black" && boardPieces[millLocations[i][2]]=="black") {
 				if(millsFound[i]==null) {
-					//new mill
 					millsFound[i] = "black";
+					gameStage = 4;   
 					return true;
-				}
-				else {
-					//already existing mill
 				}
 			}
 			else {
@@ -153,64 +147,34 @@ public class GameState {
 	
 	public String boardMouseClick(int piecePosition) {
 		
-		if(gameStage==1) {
-			
-			//clicked position is valid - place a piece
-			if(piecePosition!=-1 && boardPieces[piecePosition]==null) {
-	    		boardPieces[piecePosition] = turn;
-	    		piecesPlaced++;
-	    		if(piecesPlaced>=totalNumberOfPieces) {
-	    			allPiecesPlaced=true;
-	    		}
-	    		
-	    		//mill has been formed 
-	            if(checkForMill()) {
-	            	 if(!canPieceBeRemoved()) {
-	            		 return "millNoRemoval";
-	            	 }
-	            	 gameStage = 4;    	 
-	            	 if(turn=="white") {
-	                 	return "whitePlacedMill";
-	                 }
-	                 else if(turn=="black") {
-	                 	return "blackPlacedMill";
-	                 }	            
-	            }
-	            
-	            //no mill is formed 
-	            else {	            
-	            	if(allPiecesPlaced) {
-	            		if(checkForDraw()) {
-	            			gameStage=5;
-	            			return "end";
-	            		}
-	            		String winner = checkForWin();
-	            		if(winner!=null) {
-	            			gameStage=5;
-	            			return "end";
-	            		}
-	            		gameStage=2;
-	            		movementPhase = true;
-	            	}
-	            	if(turn=="white") {
-	                 	return "whitePlaced";
-	                }
-	                else if(turn=="black") {
-	                 	return "blackPlaced";
-	                }    
-	            }
-	            
-	        }
+		if(piecePosition==-1 && gameStage!=3) {
+			return "invalidClick";
 		}
 		
-		else if(gameStage==2) {
-			
-			//piece selected is valid for the player's turn
-			if(piecePosition!=-1 && turn=="white" && boardPieces[piecePosition]=="white") {
-				gameStage = 3;
-				return "validPieceSelected";
+		switch(gameStage) {
+		
+		case 1:
+			if(boardPieces[piecePosition]==null) {
+				boardPieces[piecePosition] = turn;
+	    		piecesPlaced++;
+				if(checkForMill()) {
+					if(!canPieceBeRemoved()) {
+			       		return "millNoRemoval";
+			       	}    	 
+			        return turn + "PlacedMill";
+				}
+				else if(piecesPlaced>=totalNumberOfPieces){
+					if(hasGameEnded()!=null) {
+						return "end";
+					}
+					gameStage=2;
+				}
+				return turn + "Placed";
 			}
-			else if(piecePosition!=-1 && turn=="black" && boardPieces[piecePosition]=="black") {
+			break;
+			
+		case 2:
+			if((turn=="white" && boardPieces[piecePosition]=="white") || (turn=="black" && boardPieces[piecePosition]=="black")) {
 				gameStage = 3;
 				return "validPieceSelected";
 			}
@@ -218,85 +182,64 @@ public class GameState {
 				return "invalidPieceSelected";
 			}
 			
-		}
-		
-		else if(gameStage==3) {
-			
+		case 3:
 			if(piecePosition==-1) {
 				gameStage = 2;
 				return "resetPieceSelected";
 			}
-			if(piecePosition!=-1 && movablePositions.contains(piecePosition)) {
+			if(movablePositions.contains(piecePosition)) {
 				boardPieces[selectedPiece] = null;
 				boardPieces[piecePosition] = turn;
 				if(checkForMill()) {
-	            	 if(!canPieceBeRemoved()) {
-	            		 return "millNoRemoval";
-	            	 }
-	            	 gameStage = 4;    	 
-	            	 if(turn=="white") {
-	                 	return "whitePlacedMill";
-	                 }
-	                 else if(turn=="black") {
-	                 	return "blackPlacedMill";
-	                 }	            
-	            }
+					if(!canPieceBeRemoved()) {
+			       		return "millNoRemoval";
+			       	}    	 
+			        return turn + "PlacedMill";
+				}
 				gameStage = 2;
 				return "pieceMoved";
 			}
-		}
-		
-		else if(gameStage==4) {
+			break;
 			
-			//cannot remove a piece in mill
-    		if(inMill(piecePosition)) {
+		case 4:
+			if(inMill(piecePosition)) {
     			return "invalidRemoval";
     		}
-    		
-    		//white removing a valid black piece
-    		else if(piecePosition!=-1 && turn=="white" && boardPieces[piecePosition]=="black")  {
+    		if((turn=="white" && boardPieces[piecePosition]=="black") || (turn=="black" && boardPieces[piecePosition]=="white"))  {
     			boardPieces[piecePosition] = null;
-    			if(!allPiecesPlaced) {
+    			if(piecesPlaced<totalNumberOfPieces) {
     				gameStage = 1;
     			}
-    			else {
-    				String winner = checkForWin();
-    				if(winner!=null) {
-    					gameStage=5;
-    					return "end";
-    				}
-    				gameStage = 2;
-    			}
-    			return "blackRemoval";
-    		}
-    		
-    		//black removing a valid white piece
-    		else if(piecePosition!=-1 && turn=="black" && boardPieces[piecePosition]=="white")  {
-    			boardPieces[piecePosition] = null;
-    			if(!allPiecesPlaced) {
-    				gameStage = 1;
+    			else if(hasGameEnded()!=null) {
+					return "end";
     			}
     			else {
-    				String winner = checkForWin();
-    				if(winner!=null) {
-    					gameStage=5;
-    					return "end";
-    				}
     				gameStage = 2;
     			}
-    			return "whiteRemoval";
-    		}
-    		
-    		//invalid piece removal
-    		else {
-    			return "invalidRemoval";
-    		}
-    	}
+    			return turn + "Removal";
+    		}		
+    		break;
+		}
 		
 		return "invalid";
 	}
 
 
+	private String hasGameEnded() {
+		
+		if(checkForDraw()) {
+			gameStage=5;
+			return "draw";
+		}
+		String winner = checkForWin();
+		if(winner!=null) {
+			gameStage=5;
+			return winner;
+		}
+		
+		return null;
+		
+	}
 	private boolean canPieceBeRemoved() {
 		
 		for(int i=0; i<boardPieces.length; i++) {
@@ -317,6 +260,7 @@ public class GameState {
 					return false;
 				}
 			}
+			gameStage=5;
 			return true;
 		}
 		
