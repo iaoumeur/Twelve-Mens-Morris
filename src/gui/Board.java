@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -124,7 +125,6 @@ public class Board extends JLabel {
         	}
         	else if(action.equals("whitePlacedMill")) {
         		game.removeWhitePieceFromPanel();
-        		resetAvailablePositionsToMove();
         	}
         	else if(action.equals("blackPlaced")) {
         		game.removeBlackPieceFromPanel();
@@ -132,7 +132,6 @@ public class Board extends JLabel {
         	}
         	else if(action.equals("blackPlacedMill")) {
         		game.removeBlackPieceFromPanel();
-        		resetAvailablePositionsToMove();
         	}
         	else if(action.equals("whiteRemoval") || action.equals("blackRemoval")) {
         		game.switchTurn();
@@ -142,21 +141,27 @@ public class Board extends JLabel {
         	}
         	else if(action.equals("millNoRemoval")) {
         		game.displayMessage(2);
-        		game.switchTurn();
         	}
         	else if(action.equals("validPieceSelected")) {
-        		game.getState().setSelectedPiece(piecePosition);
-        		System.out.println("SelectedPiece:" + game.getState().getSelectedPiece());
-        		showAvailablePositionsToMove(piecePosition);
+        		
         	}
         	else if(action.equals("resetPieceSelected")) {
-        		game.getState().setSelectedPiece(-1);
-        		resetAvailablePositionsToMove();
+        		
         	}
         	else if(action.equals("pieceMoved")) {
-        		game.getState().setSelectedPiece(-1);
-        		resetAvailablePositionsToMove();
         		game.switchTurn();
+        	}
+        	else if(action=="white") {
+        		game.displayMessage(3);
+        		game.getState().setGameStage(5);
+        	}
+        	else if(action=="black") {
+        		game.displayMessage(4);
+        		game.getState().setGameStage(5);
+        	}
+        	else if(action=="draw") {
+        		game.displayMessage(5);
+        		game.getState().setGameStage(5);
         	}
         	/*System.out.println();
         	String output = " Board Pieces: [";
@@ -314,21 +319,6 @@ public class Board extends JLabel {
 		}
 		
     }
-	
-	private void showAvailablePositionsToMove(int piecePosition) {
-		int[][] adjacentLocations = game.getState().getAdjacentPositions();
-		int size = adjacentLocations[piecePosition].length;
-		for(int i=0; i<size; i++) {
-			if(game.getState().getBoardPieces()[adjacentLocations[piecePosition][i]]==null) {
-				game.getState().appendMovablePositions(adjacentLocations[piecePosition][i]);
-			}
-		}
-		
-	}
-	
-	private void resetAvailablePositionsToMove() {
-		game.getState().resetMovablePositions();
-	}
 
 
 	public void repaintPieces() {

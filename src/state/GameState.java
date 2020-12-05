@@ -7,7 +7,6 @@ public class GameState {
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
 	private int piecesPlaced = 0;
-	private boolean allPiecesPlaced = false;
 	
 	private String[] boardPieces;
 	private int[][] millLocations = {{0,1,2}, {3,4,5}, {6,7,8}, {9,10,11}, {12,13,14}, {15,16,17}, {18,19,20}, {21,22, 23},
@@ -19,6 +18,7 @@ public class GameState {
 			{16,18,20,22}, {13,17,19,23}, {9,18,22}, {19,21,23}, {14,20,22}
 	};
 	private ArrayList<Integer> movablePositions = new ArrayList<Integer>();
+	private ArrayList<Integer> emptySpaces = new ArrayList<Integer>();
 	private String[] millsFound = new String[millLocations.length];
 	
 	//1 = phase 1 - placing stage
@@ -29,13 +29,23 @@ public class GameState {
 	private int gameStage = 1; 
 	private String turn = "white";
 	private int selectedPiece = -1;
-	private boolean movementPhase = false;
+	private boolean flyingWhite = false;
+	private boolean flyingBlack = false;
+	private String endgame;
 	
 	public GameState() {
 		boardPieces = new String[totalNumberOfPieces];
 		for(int i=0; i<totalNumberOfPieces; i++) {
 			boardPieces[i] = null;
 		}
+	}
+	
+	public boolean getFlyingWhite() {
+		return flyingWhite;
+	}
+	
+	public boolean getFlyingBlack() {
+		return flyingBlack;
 	}
 	
 	public int[][] getMillLocations() {
@@ -161,11 +171,13 @@ public class GameState {
 					if(!canPieceBeRemoved()) {
 			       		return "millNoRemoval";
 			       	}    	 
+					resetMovablePositions();
 			        return turn + "PlacedMill";
 				}
 				else if(piecesPlaced>=totalNumberOfPieces){
-					if(hasGameEnded()!=null) {
-						return "end";
+					endgame = hasGameEnded();
+					if(endgame!=null) {
+						return endgame;
 					}
 					gameStage=2;
 				}
@@ -176,6 +188,8 @@ public class GameState {
 		case 2:
 			if((turn=="white" && boardPieces[piecePosition]=="white") || (turn=="black" && boardPieces[piecePosition]=="black")) {
 				gameStage = 3;
+				selectedPiece = piecePosition;
+        		showAvailablePositionsToMove(piecePosition);
 				return "validPieceSelected";
 			}
 			else {
@@ -185,6 +199,8 @@ public class GameState {
 		case 3:
 			if(piecePosition==-1) {
 				gameStage = 2;
+				selectedPiece = -1;
+        		resetMovablePositions();
 				return "resetPieceSelected";
 			}
 			if(movablePositions.contains(piecePosition)) {
@@ -196,17 +212,24 @@ public class GameState {
 			       	}    	 
 			        return turn + "PlacedMill";
 				}
+				endgame = hasGameEnded();
+				if(endgame!=null) {
+					return endgame;
+				}
 				gameStage = 2;
+				selectedPiece = -1;
+        		resetMovablePositions();
 				return "pieceMoved";
 			}
 			break;
 			
 		case 4:
-			if(inMill(piecePosition)) {
+			if(inMill(piecePosition) && canPieceBeRemoved()) {
     			return "invalidRemoval";
     		}
     		if((turn=="white" && boardPieces[piecePosition]=="black") || (turn=="black" && boardPieces[piecePosition]=="white"))  {
     			boardPieces[piecePosition] = null;
+    			checkForMill();
     			if(piecesPlaced<totalNumberOfPieces) {
     				gameStage = 1;
     			}
@@ -228,12 +251,10 @@ public class GameState {
 	private String hasGameEnded() {
 		
 		if(checkForDraw()) {
-			gameStage=5;
 			return "draw";
 		}
 		String winner = checkForWin();
 		if(winner!=null) {
-			gameStage=5;
 			return winner;
 		}
 		
@@ -260,7 +281,6 @@ public class GameState {
 					return false;
 				}
 			}
-			gameStage=5;
 			return true;
 		}
 		
@@ -280,32 +300,80 @@ public class GameState {
 			else if(boardPieces[i]=="black") 
 				blackPieces++;
 		}
+		if(whitePieces==3) {
+			flyingWhite = true;
+		}
+		if(blackPieces==3) {
+			flyingBlack = true;
+		}
 		if(whitePieces==2) 
 			return "black";
 		else if(blackPieces==2) 
 			return "white";
 		
+		String otherTurn;
+		if(turn=="white") {
+			otherTurn="black";
+			if(flyingBlack) {
+				return null;
+			}
+		}
+		else {
+			otherTurn = "white";
+			if(flyingWhite) {
+				return null;
+			}
+		}
+		
 		for(int i=0; i<boardPieces.length; i++) {
-			if(boardPieces[i]==turn) {
+			if(boardPieces[i]==otherTurn) {
 				if(checkForValidMove(i)) 
 					return null;
 			}	
 		}
 		
-		if(turn=="white") 
-			return "black";
-		else if(turn=="black")
-			return "white";
-		else 
-			return null;
+		//returns the winner
+		return turn;
 		
 	}
 
-	private boolean checkForValidMove(int i) {
+	private boolean checkForValidMove(int piece) {
 		
-		return true;
+		for(int i=0; i<adjacentPositions[piece].length; i++) {
+			if(boardPieces[adjacentPositions[piece][i]]==null) {
+				return true;
+			}
+		}
+		return false;
 		
 	}
+	
+	private void showAvailablePositionsToMove(int piecePosition) {
+		if((flyingWhite && turn=="white") || (flyingBlack && turn=="black")) {
+			emptySpaces = getEmptySpaces();
+			for(int i=0; i<emptySpaces.size(); i++) {
+				appendMovablePositions(emptySpaces.get(i));
+			}
+		}
+		int size = adjacentPositions[piecePosition].length;
+		for(int i=0; i<size; i++) {
+			if(boardPieces[adjacentPositions[piecePosition][i]]==null) {
+				appendMovablePositions(adjacentPositions[piecePosition][i]);
+			}
+		}
+		
+	}
+	
+	public ArrayList<Integer> getEmptySpaces() {
+		emptySpaces.clear();
+		for(int i=0; i<boardPieces.length; i++) {
+			if(boardPieces[i]==null) {
+				emptySpaces.add(i);
+			}
+		}
+		return emptySpaces;
+	}
+
 
 	
 	

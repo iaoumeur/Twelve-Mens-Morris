@@ -35,7 +35,7 @@ public class Game {
 	ImageIcon blackPieceImage;
 	
 	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove", "Invalid Piece Removal", 
-			"A mill was formed, but no pieces are available to remove"};
+			"A mill was formed, you may select a piece inside a mill to remove", "The winner is White", "The winner is Black", "The game is a draw"};
 	private String[] turnMessages = {"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 			+ "\">Turn:   </span><span style=\"color:white;font-size:23px;\">White</span></html>", 
 			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
