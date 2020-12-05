@@ -23,7 +23,7 @@ public class Game {
 	private JLayeredPane lpane;
 	
 	private GameState state;
-	private BoardLabel board;
+	private Board board;
 	private ArrayList<JLabel> whitePieces;
 	private ArrayList<JLabel> blackPieces;
 	private JPanel whitePiecePanel;
@@ -35,7 +35,7 @@ public class Game {
 	ImageIcon blackPieceImage;
 	
 	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove", "Invalid Piece Removal", 
-			};
+			"A mill was formed, you may select a piece inside a mill to remove", "The winner is White", "The winner is Black", "The game is a draw"};
 	private String[] turnMessages = {"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 			+ "\">Turn:   </span><span style=\"color:white;font-size:23px;\">White</span></html>", 
 			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
@@ -64,7 +64,7 @@ public class Game {
 		
 		JPanel boardPanel = new JPanel();
 		ImageIcon boardImage = new ImageIcon(this.getClass().getResource("/BoardInvisible.png"));
-		board = new BoardLabel(boardImage, this);
+		board = new Board(boardImage, this);
 		boardPanel.setBounds(250, 100, boardImage.getIconWidth(), boardImage.getIconHeight());
 		boardPanel.add(board, BorderLayout.CENTER);
 		boardPanel.setOpaque(false);
@@ -185,9 +185,7 @@ public class Game {
 	}
 
 
-	
-	public void setGameStage(int stage) {
-		state.setGameStage(stage);
+	public void showGameMessage() {
 		if(state.getGameStage()==4) {
 			msgLabel.setText("<html><span style=\"font-size:16px;color:white;"
 					+ "\">" + gameMessages[0] + "</span></html>");
@@ -195,13 +193,17 @@ public class Game {
 		else {
 			msgLabel.setText("");
 		}
-		
 	}
 	
-	public void invalidPieceRemoval() {
-		msgLabel.setText("<html><span style=\"font-size:16px;color:white;"
-				+ "\">" + gameMessages[1] + "</span></html>");
+	public void setGameStage(int stage) {
+		state.setGameStage(stage);
 	}
+	
+	public void displayMessage(int messageNumber) {
+		msgLabel.setText("<html><span style=\"font-size:16px;color:white;"
+				+ "\">" + gameMessages[messageNumber] + "</span></html>");
+	}
+
 
 
 

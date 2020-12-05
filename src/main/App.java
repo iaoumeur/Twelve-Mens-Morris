@@ -3,7 +3,7 @@ package main;
 import gui.Game;
 import gui.MainMenu;
 
-public class MainLoop {
+public class App {
 
 	public static void main(String[] args) {
 		MainMenu menu = new MainMenu();
@@ -17,23 +17,29 @@ public class MainLoop {
 		}
 		
 		Game game = new Game(menu.getP1Name(), menu.getP2Name());
+		/*String[] boardPieces = {"white","white","white","black", "black", null, "white","black","white","black","white", "black", "white","black","white",
+		                        "black", "white","black","white","black","white", "black","white","black"};
+		game.getState().setBoardPieces(boardPieces);*/
 		if(Math.random() < 0.5) {
 			game.switchTurn();
 		}
 		while(game.getState().getGameStage()!=5) {
 			while(game.getState().getTurn()=="white") {
+				//System.out.println("Game Stage: " + game.getState().getGameStage());
 				try {
 				       Thread.sleep(1000);
 				    } catch(InterruptedException e) {
 				    }
 			}
 			while(game.getState().getTurn()=="black") {
+				//System.out.println("Game Stage: " + game.getState().getGameStage());
 				try {
 				       Thread.sleep(1000);
 				    } catch(InterruptedException e) {
 				    }
 			}
 		}
+		System.out.print("Game ended");
 		
 	}
 	

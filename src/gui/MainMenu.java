@@ -149,15 +149,15 @@ public class MainMenu {
 	
 	protected void enterNamesAndStart(String type) {
 		
-		 /*p1Name = JOptionPane.showInputDialog("Enter Player 1's Name:");
+		 p1Name = JOptionPane.showInputDialog("Enter Player 1's Name:");
 		 if(type=="pvp") {
 			 p2Name = JOptionPane.showInputDialog("Enter Player 2's Name:");
 		 }
 		 else {
 			 p2Name = ("AI");
-		 }*/
-		 p1Name = "Ishaq";
-		 p2Name = "Rival";
+		 }
+		 //p1Name = "Ishaq";
+		 //p2Name = "Rival";
 		 ready = true;
 		 frame.dispose();
 		
