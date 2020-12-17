@@ -191,6 +191,13 @@ public class GameState {
 				gameStage = 3;
 				selectedPiece = piecePosition;
         		showAvailablePositionsToMove(piecePosition);
+        		System.out.println();
+            	String output = " Possible places to move: [";
+        		for(int i=0; i<movablePositions.size(); i++) {
+        			output += movablePositions.get(i)+", ";	
+        		}
+        		output += "]";
+        		System.out.println(output);
 				return "validPieceSelected";
 			}
 			else {
@@ -241,6 +248,7 @@ public class GameState {
     			else {
     				gameStage = 2;
     			}
+    			resetMovablePositions();
     			return turn + "Removal";
     		}		
     		break;
@@ -292,9 +300,7 @@ public class GameState {
 			}
 			return true;
 		}
-		
 		return false;
-		
    	 
 	}
 	
@@ -309,15 +315,15 @@ public class GameState {
 			else if(boardPieces[i]=="black") 
 				blackPieces++;
 		}
-		if(whitePieces==3) {
+		if(whitePieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingWhite = true;
 		}
-		if(blackPieces==3) {
+		if(blackPieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingBlack = true;
 		}
-		if(whitePieces==2) 
+		if(whitePieces==2 && piecesPlaced>=totalNumberOfPieces) 
 			return "black";
-		else if(blackPieces==2) 
+		else if(blackPieces==2 && piecesPlaced>=totalNumberOfPieces) 
 			return "white";
 		
 		String otherTurn;
