@@ -118,19 +118,20 @@ public class GameState {
 	
 	
 	public boolean checkForMill() {
+		boolean newMillFound = false;
 		for(int i=0; i<millLocations.length; i++) {
 			if(boardPieces[millLocations[i][0]]=="white" && boardPieces[millLocations[i][1]]=="white" && boardPieces[millLocations[i][2]]=="white") {
 				if(millsFound[i]==null) {
 					millsFound[i] = "white";
 					gameStage = 4;   
-					return true;
+					newMillFound=true;
 				}
 			}
 			else if(boardPieces[millLocations[i][0]]=="black" && boardPieces[millLocations[i][1]]=="black" && boardPieces[millLocations[i][2]]=="black") {
 				if(millsFound[i]==null) {
 					millsFound[i] = "black";
 					gameStage = 4;   
-					return true;
+					newMillFound=true;
 				}
 			}
 			else {
@@ -138,7 +139,7 @@ public class GameState {
 			}
 		}
 		
-		return false;
+		return newMillFound;
 		
 	}
 	
@@ -230,11 +231,12 @@ public class GameState {
     		if((turn=="white" && boardPieces[piecePosition]=="black") || (turn=="black" && boardPieces[piecePosition]=="white"))  {
     			boardPieces[piecePosition] = null;
     			checkForMill();
+    			endgame = hasGameEnded();
+    			if(endgame!=null) {
+    				return endgame;
+    			}
     			if(piecesPlaced<totalNumberOfPieces) {
     				gameStage = 1;
-    			}
-    			else if(hasGameEnded()!=null) {
-					return "end";
     			}
     			else {
     				gameStage = 2;
@@ -263,8 +265,15 @@ public class GameState {
 	}
 	private boolean canPieceBeRemoved() {
 		
+		String otherTurn;
+		if(turn=="black") {
+			otherTurn = "white";
+		}
+		else {
+			otherTurn = "black";
+		}
 		for(int i=0; i<boardPieces.length; i++) {
-			if(boardPieces[i]!=null) {
+			if(boardPieces[i]==otherTurn) {
 				if(!inMill(i)) {
 					return true;
 				}

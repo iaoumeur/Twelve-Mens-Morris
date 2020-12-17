@@ -112,7 +112,7 @@ public class Board extends JLabel {
         }
         
         @Override
-        public void mouseClicked(MouseEvent e ) {
+        public void mousePressed(MouseEvent e ) {
         	//check which piece position has been clicked 
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
         	
@@ -163,7 +163,7 @@ public class Board extends JLabel {
         		game.displayMessage(5);
         		game.getState().setGameStage(5);
         	}
-        	/*System.out.println();
+        	System.out.println();
         	String output = " Board Pieces: [";
     		for(int i=0; i<game.getState().getBoardPieces().length; i++) {
     			output += game.getState().getBoardPieces()[i]+", ";	
@@ -175,7 +175,7 @@ public class Board extends JLabel {
     			output += game.getState().getMillsFound()[i]+", ";	
     		}
     		output += "]";
-    		System.out.println(output);*/
+    		System.out.println(output);
         	repaintPieces();
 
         }
