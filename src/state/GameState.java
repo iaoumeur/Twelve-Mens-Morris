@@ -191,13 +191,6 @@ public class GameState {
 				gameStage = 3;
 				selectedPiece = piecePosition;
         		showAvailablePositionsToMove(piecePosition);
-        		System.out.println();
-            	String output = " Possible places to move: [";
-        		for(int i=0; i<movablePositions.size(); i++) {
-        			output += movablePositions.get(i)+", ";	
-        		}
-        		output += "]";
-        		System.out.println(output);
 				return "validPieceSelected";
 			}
 			else {
