@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import player.Minimax;
 import state.GameState;
 
 public class Game {
@@ -24,6 +25,7 @@ public class Game {
 	
 	private GameState state;
 	private Board board;
+	private Minimax computer;
 	private ArrayList<JLabel> whitePieces;
 	private ArrayList<JLabel> blackPieces;
 	private JPanel whitePiecePanel;
@@ -44,6 +46,8 @@ public class Game {
 	public Game(String p1Name, String p2Name) {
 		
 		state = new GameState();
+		computer = new Minimax(state);
+		
 		
 		frame = new JFrame("Twelve Men's Morris");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

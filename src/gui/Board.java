@@ -112,7 +112,7 @@ public class Board extends JLabel {
         }
         
         @Override
-        public void mouseClicked(MouseEvent e ) {
+        public void mousePressed(MouseEvent e ) {
         	//check which piece position has been clicked 
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
         	
