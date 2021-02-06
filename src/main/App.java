@@ -17,14 +17,15 @@ public class App {
 		}
 		
 		Game game = new Game(menu.getP1Name(), menu.getP2Name());
-		/*String[] boardPieces = {"white","white","white","black", "black", null, "white","black","white","black","white", "black", "white","black","white",
-		                        "black", "white","black","white","black","white", "black","white","black"};
-		game.getState().setBoardPieces(boardPieces);*/
+		
+
 		if(Math.random() < 0.5) {
 			game.switchTurn();
 		}
 		while(game.getState().getGameStage()!=5) {
 			while(game.getState().getTurn()=="white") {
+				game.getState().evaluateState("white");
+				//System.out.println("White Evaluation: " + game.getState().evaluateState("white"));
 				//System.out.println("Game Stage: " + game.getState().getGameStage());
 				try {
 				       Thread.sleep(1000);
@@ -32,6 +33,8 @@ public class App {
 				    }
 			}
 			while(game.getState().getTurn()=="black") {
+				game.getState().evaluateState("black");
+				//System.out.println("Black Evaluation: " + game.getState().evaluateState("black"));
 				//System.out.println("Game Stage: " + game.getState().getGameStage());
 				try {
 				       Thread.sleep(1000);

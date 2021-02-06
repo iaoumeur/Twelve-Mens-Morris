@@ -156,6 +156,16 @@ public class GameState {
 		return false;
 	}
 	
+	public int countMills(String color) {
+		int mills = 0;
+		for(int i=0; i<millsFound.length; i++) {
+			if(millsFound[i]==color) {
+				mills++;
+			}
+		}
+		return mills;
+	}
+	
 	public String boardMouseClick(int piecePosition) {
 		
 		if(piecePosition==-1 && gameStage!=3) {
@@ -380,6 +390,84 @@ public class GameState {
 			}
 		}
 		return emptySpaces;
+	}
+	
+	public boolean pieceBlocked(int piece) {
+		for(int i=0; i<adjacentPositions[piece].length; i++) {
+			if(boardPieces[adjacentPositions[piece][i]]==null) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public int countBlockedPieces(String player) {
+		int blockedPieces = 0;
+		for(int i=0; i<boardPieces.length; i++) {
+			if(boardPieces[i]==player) {
+				if(pieceBlocked(i)) {
+					blockedPieces++;
+				}
+			}
+		}
+		System.out.println(player + " blocked pieces: " + blockedPieces);
+		return blockedPieces;
+	}
+	
+	/*want to look at the following evaluation features:
+	
+	-Closed Morris: 1 if a morris was closed in the last move by the player (and an opponent’s piece should be grabbed in this move), -1 if a 
+	morris was closed by the opponent in the last move, 0 otherwise.
+	
+	-Number of Morrises: Difference between the number of yours and yours opponent’s morrises
+	
+	-Number of blocked opponent pieces: Difference between the number of yours opponent’s and yours blocked pieces 
+	(pieces which don’t have an empty adjacent point)
+	
+	-Number of pieces: Difference between the number of yours and yours opponent’s pieces
+	
+	-Number of 2 piece configurations: Difference between the number of yours and yours opponent’s 
+	2 piece configurations (A 2-piece configuration is one to which adding one more piece would close a morris)
+	
+	-Number of 3-piece configurations: Difference between the number of yours and yours opponent’s 3 piece configurations 
+	(A 3-piece configuration is one to which a piece can be added in which one of two ways to close a morris)
+	
+	-Winning configuration: 1 if the state is winning for the player, -1 if losing, 0 otherwise
+	
+*/
+	public int evaluateState(String player) {
+		int score = 0;
+		String otherPlayer;
+		if(player=="white") {
+			otherPlayer="black";
+		}
+		else {
+			otherPlayer="white";
+		}
+		
+		
+		//evaluation 1
+		/*if(gameStage==4) {
+			if(player==turn) 
+				score++;
+			else 
+				score--;
+		}*/
+		
+		//evaluation 2
+		score += countMills(player) - countMills(otherPlayer);
+		
+		//evaluation 3
+		score+=  countBlockedPieces(otherPlayer) - countBlockedPieces(player);
+		
+		//evaluation 4
+		
+		
+		
+		
+		
+		
+		return score;
 	}
 
 
