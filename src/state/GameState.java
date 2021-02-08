@@ -1,6 +1,7 @@
 package state;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GameState {
 
@@ -410,10 +411,124 @@ public class GameState {
 				}
 			}
 		}
-		System.out.println(player + " blocked pieces: " + blockedPieces);
 		return blockedPieces;
 	}
 	
+	
+	public int countPieces(String player) {
+		int pieces = 0;
+		
+		for(int i=0; i<boardPieces.length; i++) {
+			if(boardPieces[i]==player) {
+				pieces++;
+			}
+		}
+		return pieces;
+		
+	}
+	
+	public int countTwoPieceConfigurations(String player) {
+		int number = 0;
+		
+		for(int i=0; i<millLocations.length; i++) {
+			if(boardPieces[millLocations[i][0]]==player && boardPieces[millLocations[i][1]]==player && boardPieces[millLocations[i][2]]==null) {
+				number++;
+			}
+			else if(boardPieces[millLocations[i][0]]==player && boardPieces[millLocations[i][1]]==null && boardPieces[millLocations[i][2]]==player) {
+				number++;
+			}
+			else if(boardPieces[millLocations[i][0]]==null && boardPieces[millLocations[i][1]]==player && boardPieces[millLocations[i][2]]==player) {
+				number++;
+			}
+		} 
+		
+		
+		return number;
+	}
+	
+	public ArrayList<ArrayList<Integer>> findTwoPieceConfigurations(String player) {
+		
+		ArrayList<ArrayList<Integer>> configs = new ArrayList<ArrayList<Integer>>();
+		
+		for(int i=0; i<millLocations.length; i++) {
+			if(boardPieces[millLocations[i][0]]==player && boardPieces[millLocations[i][1]]==player && boardPieces[millLocations[i][2]]==null) {
+				ArrayList<Integer> config = new ArrayList<Integer>();
+				config.add(millLocations[i][0]);
+				config.add(millLocations[i][1]);
+				configs.add(config);
+			}
+			else if(boardPieces[millLocations[i][0]]==null && boardPieces[millLocations[i][1]]==player && boardPieces[millLocations[i][2]]==player) {
+				ArrayList<Integer> config = new ArrayList<Integer>();
+				config.add(millLocations[i][1]);
+				config.add(millLocations[i][2]);
+				configs.add(config);
+			}
+		} 
+		
+		return configs;
+		
+	}
+	
+	public int countThreePieceConfigurations(String player) {
+		ArrayList<ArrayList<Integer>> configs = findTwoPieceConfigurations(player);
+		int number = 0;
+		
+		for(int i=0; i<configs.size(); i++) {
+			for(int j=i; j<configs.size(); j++) {
+				if(i==j) {
+					continue;
+				}
+				if(configs.get(i).contains(configs.get(j).get(0)) || configs.get(i).contains(configs.get(j).get(1))) {
+					number++;
+				}
+			}
+		}
+		
+		/*
+		for(int i=0; i<millLocations.length; i++) {
+			int piece1 = millLocations[i][0];
+			int piece2 = millLocations[i][1];
+			int piece3 = millLocations[i][2];
+			
+			if(boardPieces[piece1]==player && boardPieces[piece2]==player && boardPieces[piece3]==null) {
+				ArrayList<Integer> otherMills1 = findOtherMills(piece1, i);
+				ArrayList<Integer> otherMills2 = findOtherMills(piece2, i);
+				
+				for(int j=0; j<otherMills1.size(); j++) {
+					int otherPiece1 = millLocations[otherMills1.get(j)][0];
+					int otherPiece2 = millLocations[otherMills1.get(j)][1];
+					int otherPiece3 = millLocations[otherMills1.get(j)][2];
+				}
+			}
+			else if(boardPieces[piece1]==player && boardPieces[piece2]==null && boardPieces[piece3]==player) {
+				number++;
+			}
+			else if(boardPieces[piece1]==null && boardPieces[piece2]==player && boardPieces[piece3]==player) {
+				number++;
+			}
+		} */
+		
+		System.out.println(player + " three piece configurations: " + number);
+		return number;
+	}
+	
+	public ArrayList<Integer> findOtherMills(int piece, int currentMillIndex) {
+		ArrayList<Integer> mills = new ArrayList<Integer>();
+		
+		for(int i=0; i<millLocations.length; i++) {
+			if(i==currentMillIndex) {
+				continue;
+			}
+			for(int j=0; j<millLocations[i].length; j++) {
+				if(millLocations[i][j]==piece) {
+					mills.add(i);
+					continue;
+				}
+			}
+		}
+		
+		return mills;
+	}
 	/*want to look at the following evaluation features:
 	
 	-Closed Morris: 1 if a morris was closed in the last move by the player (and an opponent’s piece should be grabbed in this move), -1 if a 
@@ -447,23 +562,27 @@ public class GameState {
 		
 		
 		//evaluation 1
-		/*if(gameStage==4) {
+		if(gameStage==4) {
 			if(player==turn) 
 				score++;
 			else 
 				score--;
-		}*/
+		}
 		
 		//evaluation 2
 		score += countMills(player) - countMills(otherPlayer);
 		
 		//evaluation 3
-		score+=  countBlockedPieces(otherPlayer) - countBlockedPieces(player);
+		score +=  countBlockedPieces(otherPlayer) - countBlockedPieces(player);
 		
 		//evaluation 4
+		score += countPieces(player) - countPieces(otherPlayer);
 		
+		//evaluation 5
+		score += countTwoPieceConfigurations(player) - countTwoPieceConfigurations(otherPlayer);
 		
-		
+		//evaluation 6
+		score += countThreePieceConfigurations(player) - countThreePieceConfigurations(otherPlayer);
 		
 		
 		
