@@ -5,6 +5,12 @@ import java.util.Arrays;
 
 public class GameState {
 
+	//18 * (1) + 26 * (2) + 1 * (3) + 9 * (4) + 10 * (5) + 7 * (6)
+	//14 * (1) + 43 * (2) + 10 * (3) + 11 * (4) + 8 * (7) + 1086 * (8)
+	//16 * (1) + 10 * (5) + 1 * (6) + 1190 * (8)
+	int[] phaseOneEvaluationWeights = new int[] { 20, 15, 1, 10, 10, 5, 0 };
+	int[] phaseTwoEvaluationWeights = new int[] { 10, 45, 15, 10, 10, 10, 1000 };
+	int[] phaseThreeEvaluationWeights = new int[] { 15, 0, 0, 0, 10, 1, 1000 };
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
 	private int piecesPlaced = 0;
@@ -275,7 +281,7 @@ public class GameState {
 		return null;
 		
 	}
-	private boolean canPieceBeRemoved() {
+	public boolean canPieceBeRemoved() {
 		
 		String otherTurn;
 		if(turn=="black") {
@@ -367,7 +373,7 @@ public class GameState {
 		
 	}
 	
-	private void showAvailablePositionsToMove(int piecePosition) {
+	public void showAvailablePositionsToMove(int piecePosition) {
 		if((flyingWhite && turn=="white") || (flyingBlack && turn=="black")) {
 			emptySpaces = getEmptySpaces();
 			for(int i=0; i<emptySpaces.size(); i++) {
@@ -484,30 +490,7 @@ public class GameState {
 			}
 		}
 		
-		/*
-		for(int i=0; i<millLocations.length; i++) {
-			int piece1 = millLocations[i][0];
-			int piece2 = millLocations[i][1];
-			int piece3 = millLocations[i][2];
-			
-			if(boardPieces[piece1]==player && boardPieces[piece2]==player && boardPieces[piece3]==null) {
-				ArrayList<Integer> otherMills1 = findOtherMills(piece1, i);
-				ArrayList<Integer> otherMills2 = findOtherMills(piece2, i);
-				
-				for(int j=0; j<otherMills1.size(); j++) {
-					int otherPiece1 = millLocations[otherMills1.get(j)][0];
-					int otherPiece2 = millLocations[otherMills1.get(j)][1];
-					int otherPiece3 = millLocations[otherMills1.get(j)][2];
-				}
-			}
-			else if(boardPieces[piece1]==player && boardPieces[piece2]==null && boardPieces[piece3]==player) {
-				number++;
-			}
-			else if(boardPieces[piece1]==null && boardPieces[piece2]==player && boardPieces[piece3]==player) {
-				number++;
-			}
-		} */
-		
+	
 		System.out.println(player + " three piece configurations: " + number);
 		return number;
 	}
@@ -551,7 +534,9 @@ public class GameState {
 	
 */
 	public int evaluateState(String player) {
+		
 		int score = 0;
+		
 		String otherPlayer;
 		if(player=="white") {
 			otherPlayer="black";
@@ -584,10 +569,18 @@ public class GameState {
 		//evaluation 6
 		score += countThreePieceConfigurations(player) - countThreePieceConfigurations(otherPlayer);
 		
-		
+		//evaluation 7
+		String winner = checkForWin();
+		if(winner==player) {
+			score++;
+		}
+		else {
+			score--;
+		}
 		
 		return score;
 	}
+	
 
 
 	

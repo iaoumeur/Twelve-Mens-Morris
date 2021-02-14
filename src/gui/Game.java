@@ -43,10 +43,13 @@ public class Game {
 			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 					+ "\">Turn:   </span><span style=\"color:black;font-size:23px;\">Black</span></html>"};
 	
-	public Game(String p1Name, String p2Name) {
+	public Game(String p1Name, String p2Name, String gameType) {
 		
 		state = new GameState();
-		computer = new Minimax(state);
+		if(gameType=="pvAI") {
+			computer = new Minimax(state);
+		}
+		
 		
 		
 		frame = new JFrame("Twelve Men's Morris");
@@ -148,6 +151,10 @@ public class Game {
 	
 	public GameState getState() {
 		return state;
+	}
+	
+	public Minimax getComputer() {
+		return computer;
 	}
 	
 	

@@ -16,33 +16,47 @@ public class App {
 		    }
 		}
 		
-		Game game = new Game(menu.getP1Name(), menu.getP2Name());
+		Game game = new Game(menu.getP1Name(), menu.getP2Name(), menu.getGameType());
 		
 
 		if(Math.random() < 0.5) {
 			game.switchTurn();
 		}
-		while(game.getState().getGameStage()!=5) {
-			while(game.getState().getTurn()=="white") {
-				game.getState().evaluateState("white");
-				//System.out.println("White Evaluation: " + game.getState().evaluateState("white"));
-				//System.out.println("Game Stage: " + game.getState().getGameStage());
-				try {
-				       Thread.sleep(1000);
-				    } catch(InterruptedException e) {
-				    }
+		
+		if(menu.getGameType()=="pvp") {
+			while(game.getState().getGameStage()!=5) {
+				while(game.getState().getTurn()=="white") {
+					game.getState().evaluateState("white");
+					try {
+					       Thread.sleep(1000);
+					    } catch(InterruptedException e) {
+					    }
+				}
+				while(game.getState().getTurn()=="black") {
+					game.getState().evaluateState("black");
+					//System.out.println("Black Evaluation: " + game.getState().evaluateState("black"));
+					//System.out.println("Game Stage: " + game.getState().getGameStage());
+					try {
+					       Thread.sleep(1000);
+					    } catch(InterruptedException e) {
+					    }
+				}
 			}
-			while(game.getState().getTurn()=="black") {
-				game.getState().evaluateState("black");
-				//System.out.println("Black Evaluation: " + game.getState().evaluateState("black"));
-				//System.out.println("Game Stage: " + game.getState().getGameStage());
-				try {
-				       Thread.sleep(1000);
-				    } catch(InterruptedException e) {
-				    }
-			}
+			System.out.print("Game ended");
 		}
-		System.out.print("Game ended");
+		else if(menu.getGameType()=="pvAI") {
+			while(game.getState().getGameStage()!=5) {
+				while(game.getState().getTurn()=="white") {
+					try {
+					       Thread.sleep(1000);
+					    } catch(InterruptedException e) {
+					    }
+				}
+				game.getComputer().makeMove();
+			}
+			System.out.print("Game ended");
+		}
+		
 		
 	}
 	

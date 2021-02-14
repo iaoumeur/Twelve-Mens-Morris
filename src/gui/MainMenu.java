@@ -29,6 +29,7 @@ public class MainMenu {
 	private boolean ready = false;
 	private String p1Name = "NoName";
 	private String p2Name = "NoName";
+	private String gameType = "pvp";
 
 	public MainMenu() {
 
@@ -116,7 +117,8 @@ public class MainMenu {
 		pvpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				enterNamesAndStart("pvp");
+				gameType = "pvp";
+				enterNamesAndStart();
 			}
 
 		});
@@ -136,6 +138,15 @@ public class MainMenu {
 			}
 
 		});
+		
+		easyButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				gameType = "pvAI";
+				enterNamesAndStart();
+			}
+
+		});
 
 	}
 	
@@ -147,10 +158,10 @@ public class MainMenu {
 		return btn;
 	}
 	
-	protected void enterNamesAndStart(String type) {
+	protected void enterNamesAndStart() {
 		
 		 p1Name = JOptionPane.showInputDialog("Enter Player 1's Name:");
-		 if(type=="pvp") {
+		 if(gameType=="pvp") {
 			 p2Name = JOptionPane.showInputDialog("Enter Player 2's Name:");
 		 }
 		 else {
@@ -173,6 +184,10 @@ public class MainMenu {
 	
 	public String getP2Name() {
 		return p2Name;
+	}
+	
+	public String getGameType() {
+		return gameType;
 	}
 	
 
