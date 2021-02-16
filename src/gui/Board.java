@@ -40,6 +40,9 @@ public class Board extends JLabel {
 	public void paintComponent (Graphics g)
     { 
 		super.paintComponent(g);
+		if(game.getStopPaining()) {
+			return;
+		}
 		Graphics2D g2d = (Graphics2D) g.create();
 		if (img == null) {
 	        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -53,6 +56,9 @@ public class Board extends JLabel {
 	public void paintComponent (Graphics g, int point)
     { 
 		super.paintComponent(g);
+		if(game.getStopPaining()) {
+			return;
+		}
 		if(game.getState().getBoardPieces()[point]==null && game.getState().getGameStage()==1) {
 			g.setColor(Color.LIGHT_GRAY);  
 			g.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);			
@@ -72,6 +78,9 @@ public class Board extends JLabel {
 	public void paintComponent (Graphics g, int point, String color)
     { 
 		super.paintComponent(g);
+		if(game.getStopPaining()) {
+			return;
+		}
 		Graphics2D g2d = (Graphics2D) g.create();
 		if (img == null) {
 	        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -107,12 +116,18 @@ public class Board extends JLabel {
 		
         @Override
         public void mouseMoved(MouseEvent e) {
+        	if(game.getStopPaining()) {
+    			return;
+    		}
              checkMouseBoundaries(e.getX(), e.getY());	
 
         }
         
         @Override
         public void mousePressed(MouseEvent e ) {
+        	if(game.getStopPaining()) {
+    			return;
+    		}
         	//check which piece position has been clicked 
         	int piecePosition = checkMouseBoundaries(e.getX(), e.getY());
         	
@@ -322,6 +337,9 @@ public class Board extends JLabel {
 
 
 	public void repaintPieces() {
+		if(game.getStopPaining()) {
+			return;
+		}
 		numWhite = 0;
 		numBlack = 0;
 		img = null;

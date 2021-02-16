@@ -18,7 +18,6 @@ public class App {
 		
 		Game game = new Game(menu.getP1Name(), menu.getP2Name(), menu.getGameType());
 		
-
 		if(Math.random() < 0.5) {
 			game.switchTurn();
 		}
@@ -52,6 +51,7 @@ public class App {
 					    } catch(InterruptedException e) {
 					    }
 				}
+				game.getComputer().setCopyState(game.getState().saveGameState());
 				game.getComputer().makeMove();
 			}
 			System.out.print("Game ended");

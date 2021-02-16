@@ -36,6 +36,8 @@ public class Game {
 	ImageIcon whitePieceImage; 
 	ImageIcon blackPieceImage;
 	
+	private boolean stopPainting = false;
+
 	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove", "Invalid Piece Removal", 
 			"A mill was formed, you may select a piece inside a mill to remove", "The winner is White", "The winner is Black", "The game is a draw"};
 	private String[] turnMessages = {"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
@@ -47,7 +49,7 @@ public class Game {
 		
 		state = new GameState();
 		if(gameType=="pvAI") {
-			computer = new Minimax(state);
+			computer = new Minimax(this, state);
 		}
 		
 		
@@ -157,6 +159,14 @@ public class Game {
 		return computer;
 	}
 	
+	public boolean getStopPaining() {
+		return stopPainting;
+	}
+	
+	public void setStopPaining(boolean painting) {
+		stopPainting = painting;
+	}
+	
 	
 	public void switchTurn() {
 		if(state.getTurn()=="white") { 
@@ -208,6 +218,14 @@ public class Game {
 	
 	public void setGameStage(int stage) {
 		state.setGameStage(stage);
+	}
+	
+	public void setGameState(GameState newState) {
+		state = newState;
+	}
+	
+	public Board getBoard() {
+		return board;
 	}
 	
 	public void displayMessage(int messageNumber) {

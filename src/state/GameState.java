@@ -13,7 +13,6 @@ public class GameState {
 	int[] phaseThreeEvaluationWeights = new int[] { 15, 0, 0, 0, 10, 1, 1000 };
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
-	private int piecesPlaced = 0;
 	
 	private String[] boardPieces;
 	private int[][] millLocations = {{0,1,2}, {3,4,5}, {6,7,8}, {9,10,11}, {12,13,14}, {15,16,17}, {18,19,20}, {21,22, 23},
@@ -34,6 +33,9 @@ public class GameState {
 	//4 = mill created - remove opponent's piece
 	//5 = game end - draw, or player wins
 	private int gameStage = 1; 
+	private int piecesPlaced = 0;
+	public int whitePiecesPlaced = 0;
+	public int blackPiecesPlaced = 0;
 	private String turn = "white";
 	private int selectedPiece = -1;
 	private boolean flyingWhite = false;
@@ -45,6 +47,14 @@ public class GameState {
 		for(int i=0; i<totalNumberOfPieces; i++) {
 			boardPieces[i] = null;
 		}
+	}
+	
+	public void setFlyingWhite(boolean bool) {
+		flyingWhite=bool;
+	}
+	
+	public void setFlyingBlack(boolean bool) {
+		flyingBlack=bool;
 	}
 	
 	public boolean getFlyingWhite() {
@@ -73,6 +83,10 @@ public class GameState {
 	
 	public void resetMovablePositions() {
 		movablePositions.clear();
+	}
+	
+	public void setMillsFound(String[] mills) {
+		millsFound = mills;
 	}
 	
 	public String[] getMillsFound() {
@@ -109,10 +123,37 @@ public class GameState {
 	}
 
 	public void setBoardPieces(String[] pieces) {
-		boardPieces = pieces;
+		for(int i=0; i<pieces.length; i++) {
+			boardPieces[i]=pieces[i];
+		}
 	}
 	public void setBoardPiece(int index, String value) {
 		boardPieces[index] = value;
+	}
+	
+	public String getBoardPiece(int index) {
+		return boardPieces[index];
+	}
+	
+	public int getWhitePiecesPlaced() {
+		return whitePiecesPlaced;
+	}
+	
+	public int getBlackPiecesPlaced() {
+		return blackPiecesPlaced;
+	}
+	
+	public void setWhitePiecesPlaced(int pieces) {
+		whitePiecesPlaced = pieces;
+		
+	}
+	
+	public void setBlackPiecesPlaced(int pieces) {
+		blackPiecesPlaced = pieces;
+	}
+	
+	public void setPiecesPlaced(int pieces) {
+		piecesPlaced = pieces;
 	}
 	
 	public int getSelectedPiece() {
@@ -184,6 +225,10 @@ public class GameState {
 		case 1:
 			if(boardPieces[piecePosition]==null) {
 				boardPieces[piecePosition] = turn;
+				if(turn=="white") 
+					whitePiecesPlaced++;
+				else 
+					blackPiecesPlaced++;
 	    		piecesPlaced++;
 				if(checkForMill()) {
 					if(!canPieceBeRemoved()) {
@@ -295,7 +340,7 @@ public class GameState {
 				if(!inMill(i)) {
 					return true;
 				}
-			}
+			} 
 		}
 		return false;
 		
@@ -490,8 +535,6 @@ public class GameState {
 			}
 		}
 		
-	
-		System.out.println(player + " three piece configurations: " + number);
 		return number;
 	}
 	
@@ -579,6 +622,26 @@ public class GameState {
 		}
 		
 		return score;
+	}
+	
+	
+	public GameState saveGameState() {
+		
+		GameState saveState = new GameState();
+		
+		saveState.setBoardPieces(this.getBoardPieces());
+		saveState.setWhitePiecesPlaced(this.getWhitePiecesPlaced());
+		saveState.setBlackPiecesPlaced(this.getBlackPiecesPlaced());
+		saveState.setPiecesPlaced(this.whitePiecesPlaced + this.blackPiecesPlaced);
+		saveState.setGameStage(this.getGameStage());
+		saveState.setMillsFound(this.getMillsFound());
+		saveState.setTurn(this.getTurn());
+		saveState.setSelectedPiece(this.getSelectedPiece());
+		saveState.setFlyingWhite(this.getFlyingWhite());
+		saveState.setFlyingBlack(this.getFlyingBlack());
+		
+		return saveState;
+		
 	}
 	
 
