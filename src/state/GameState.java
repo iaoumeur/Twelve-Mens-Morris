@@ -33,6 +33,7 @@ public class GameState {
 	//4 = mill created - remove opponent's piece
 	//5 = game end - draw, or player wins
 	private int gameStage = 1; 
+	private int phase = 1;
 	private int piecesPlaced = 0;
 	public int whitePiecesPlaced = 0;
 	public int blackPiecesPlaced = 0;
@@ -243,6 +244,7 @@ public class GameState {
 						return endgame;
 					}
 					gameStage=2;
+					phase = 2;
 				}
 				return turn + "Placed";
 			}
@@ -313,7 +315,7 @@ public class GameState {
 	}
 
 
-	private String hasGameEnded() {
+	public String hasGameEnded() {
 		
 		if(checkForDraw()) {
 			return "draw";
@@ -359,7 +361,7 @@ public class GameState {
    	 
 	}
 	
-	private String checkForWin() {
+	public String checkForWin() {
 		
 		int whitePieces = 0;
 		int blackPieces = 0;
@@ -372,9 +374,11 @@ public class GameState {
 		}
 		if(whitePieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingWhite = true;
+			phase = 3;
 		}
 		if(blackPieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingBlack = true;
+			phase = 3;
 		}
 		if(whitePieces==2 && piecesPlaced>=totalNumberOfPieces) 
 			return "black";
@@ -578,6 +582,21 @@ public class GameState {
 */
 	public int evaluateState(String player) {
 		
+		int[] evaluationWeights;
+		switch(phase) {
+		case 1:
+			evaluationWeights = phaseOneEvaluationWeights;
+			break;
+		case 2:
+			evaluationWeights = phaseTwoEvaluationWeights;
+			break;
+		case 3:
+			evaluationWeights = phaseThreeEvaluationWeights;
+			break;
+		default:
+			evaluationWeights = phaseOneEvaluationWeights;
+		}
+		
 		int score = 0;
 		
 		String otherPlayer;
@@ -592,33 +611,33 @@ public class GameState {
 		//evaluation 1
 		if(gameStage==4) {
 			if(player==turn) 
-				score++;
+				score+=(1*evaluationWeights[0]);
 			else 
-				score--;
+				score-=(1*evaluationWeights[0]);
 		}
 		
 		//evaluation 2
-		score += countMills(player) - countMills(otherPlayer);
+		score += ((countMills(player) - countMills(otherPlayer))*evaluationWeights[1]);
 		
 		//evaluation 3
-		score +=  countBlockedPieces(otherPlayer) - countBlockedPieces(player);
+		score +=  ((countBlockedPieces(otherPlayer) - countBlockedPieces(player))*evaluationWeights[2]);
 		
 		//evaluation 4
-		score += countPieces(player) - countPieces(otherPlayer);
+		score += ((countPieces(player) - countPieces(otherPlayer))*evaluationWeights[3]);
 		
 		//evaluation 5
-		score += countTwoPieceConfigurations(player) - countTwoPieceConfigurations(otherPlayer);
+		score += ((countTwoPieceConfigurations(player) - countTwoPieceConfigurations(otherPlayer))*evaluationWeights[4]);
 		
 		//evaluation 6
-		score += countThreePieceConfigurations(player) - countThreePieceConfigurations(otherPlayer);
+		score += ((countThreePieceConfigurations(player) - countThreePieceConfigurations(otherPlayer))*evaluationWeights[5]);
 		
 		//evaluation 7
 		String winner = checkForWin();
 		if(winner==player) {
-			score++;
+			score+=(1*evaluationWeights[6]);
 		}
 		else {
-			score--;
+			score-=(1*evaluationWeights[6]);
 		}
 		
 		return score;
@@ -629,12 +648,12 @@ public class GameState {
 		
 		GameState saveState = new GameState();
 		
-		saveState.setBoardPieces(this.getBoardPieces());
+		saveState.setBoardPieces(this.getBoardPieces().clone());
 		saveState.setWhitePiecesPlaced(this.getWhitePiecesPlaced());
 		saveState.setBlackPiecesPlaced(this.getBlackPiecesPlaced());
 		saveState.setPiecesPlaced(this.whitePiecesPlaced + this.blackPiecesPlaced);
 		saveState.setGameStage(this.getGameStage());
-		saveState.setMillsFound(this.getMillsFound());
+		saveState.setMillsFound(this.getMillsFound().clone());
 		saveState.setTurn(this.getTurn());
 		saveState.setSelectedPiece(this.getSelectedPiece());
 		saveState.setFlyingWhite(this.getFlyingWhite());

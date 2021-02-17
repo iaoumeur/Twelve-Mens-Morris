@@ -2,6 +2,7 @@ package main;
 
 import gui.Game;
 import gui.MainMenu;
+import player.MoveScore;
 
 public class App {
 
@@ -52,7 +53,8 @@ public class App {
 					    }
 				}
 				game.getComputer().setCopyState(game.getState().saveGameState());
-				game.getComputer().makeMove();
+				MoveScore bestMove = game.getComputer().minimax("black", 2);
+				System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
 			}
 			System.out.print("Game ended");
 		}
