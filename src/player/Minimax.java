@@ -21,6 +21,7 @@ public class Minimax {
 	
 	public void setCopyState(GameState newState) {
 		this.copyState = newState;
+		states.push(state);
 	}
 	
 	public MoveScore minimax(String player, int depth) {
@@ -36,6 +37,7 @@ public class Minimax {
 		System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
 		ArrayList<Move> validMoves = findValidMoves(player); 
 		System.out.println("There are " + validMoves.size() + " valid moves");
+		
 		if (copyState.hasGameEnded()=="black"){
 			System.out.println("Black has won");
 			return new MoveScore(-1, 10000);
@@ -60,35 +62,39 @@ public class Minimax {
 			
 			// set the empty spot to the current player
 			if(move.getGameStage()==1) {
-				String action = copyState.boardMouseClick(move.getPiecePosition());
-				alterGame(action);
-				//copyState.setBoardPiece(move.getPiecePosition(), player);
+				//String action = copyState.boardMouseClick(move.getPiecePosition());
+				//alterGame(action);
+				copyState.setBoardPiece(move.getPiecePosition(), player);
 				score = copyState.evaluateState(player);
+				copyState.printBoardPieces();
 				System.out.println("Trying valid move " + i + " gives a score of " + score);
 			}
 			
 			/*collect the score resulted from calling minimax 
 		      on the opponent of the current player*/
 			
-			MoveScore result;
+			MoveScore result = new MoveScore(0,0);
 			states.push(copyState.saveGameState());
 			System.out.println("Saving this game state and pushing to stack");
 			
 			if (copyState.getTurn() == "black" && depth !=0){
+				copyState.switchTurn();
 				result = minimax("white", depth-1);
 			}
 			else if(copyState.getTurn() == "white" && depth !=0){
+				copyState.switchTurn();
 				result = minimax("black", depth-1);
 			}
-			else {
+			else if(depth==0){
 				System.out.println("Maximum depth is reached, setting the result to be the latest score");
 				result = new MoveScore(i, score);
 			}
 			
 			// reset the spot to empty
-			copyState = states.pop();
-			System.out.println("Setting the state to be the last one on the stack");
+			states.pop();
+			copyState = states.lastElement().saveGameState();
 			
+			System.out.println("Setting the state to be the last one on the stack");
 			// push the object to the array
 			moves.add(result);
 			System.out.println("Adding the result " + result.index + ", " + result.score + " to the moves array");

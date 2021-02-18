@@ -663,6 +663,15 @@ public class GameState {
 		
 	}
 	
+	public void printBoardPieces() {
+		
+		String pieces = "[";
+		for(int i=0; i<boardPieces.length; i++) {
+			pieces += boardPieces[i] + ", ";
+		}
+		System.out.println(pieces + "]");
+	}
+	
 
 
 	
