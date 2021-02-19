@@ -26,16 +26,9 @@ public class Minimax {
 	
 	public MoveScore minimax(String player, int depth) {
 		
-		String otherPlayer;
-		if(player=="black") {
-			otherPlayer = "white";
-		}
-		else {
-			otherPlayer = "black";
-		}
-		
-		System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
 		ArrayList<Move> validMoves = findValidMoves(player); 
+
+		System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
 		System.out.println("There are " + validMoves.size() + " valid moves");
 		
 		if (copyState.hasGameEnded()=="black"){
@@ -72,22 +65,21 @@ public class Minimax {
 			
 			/*collect the score resulted from calling minimax 
 		      on the opponent of the current player*/
+			copyState.switchTurn();
 			
 			MoveScore result = new MoveScore(0,0);
 			states.push(copyState.saveGameState());
 			System.out.println("Saving this game state and pushing to stack");
 			
-			if (copyState.getTurn() == "black" && depth !=0){
-				copyState.switchTurn();
-				result = minimax("white", depth-1);
-			}
-			else if(copyState.getTurn() == "white" && depth !=0){
-				copyState.switchTurn();
-				result = minimax("black", depth-1);
-			}
-			else if(depth==0){
+			if(depth==0){
 				System.out.println("Maximum depth is reached, setting the result to be the latest score");
 				result = new MoveScore(i, score);
+			}
+			else if(player=="white" && depth !=0){
+				result = minimax("black", depth-1);
+			}
+			else if (player =="black" && depth !=0){
+				result = minimax("white", depth-1);
 			}
 			
 			// reset the spot to empty

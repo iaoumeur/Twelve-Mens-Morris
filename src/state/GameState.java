@@ -406,6 +406,10 @@ public class GameState {
 			}	
 		}
 		
+		if(gameStage==1) {
+			return null;
+		}
+		
 		//returns the winner
 		return turn;
 		
