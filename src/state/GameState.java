@@ -33,8 +33,8 @@ public class GameState {
 	//4 = mill created - remove opponent's piece
 	//5 = game end - draw, or player wins
 	private int gameStage = 1; 
-	private int phase = 1;
-	private int piecesPlaced = 0;
+	public int phase = 1;
+	public int piecesPlaced = 0;
 	public int whitePiecesPlaced = 0;
 	public int blackPiecesPlaced = 0;
 	private String turn = "white";
@@ -636,8 +636,11 @@ public class GameState {
 		score += ((countThreePieceConfigurations(player) - countThreePieceConfigurations(otherPlayer))*evaluationWeights[5]);
 		
 		//evaluation 7
-		String winner = checkForWin();
-		if(winner==player) {
+		String winner = hasGameEnded();
+		if(winner=="draw") {
+			score+=0;
+		}
+		else if(winner==player) {
 			score+=(1*evaluationWeights[6]);
 		}
 		else {
