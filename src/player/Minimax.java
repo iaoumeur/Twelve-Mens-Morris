@@ -35,44 +35,116 @@ public class Minimax {
 		ArrayList<MoveScore> moves = new ArrayList<MoveScore>();
 		int score = 0;
 		
-		// loop through available spots
 		for (int i=0; i<validMoves.size(); i++){
-			//create an object for each and store the index of that spot 
+			
 			Move move = validMoves.get(i);
+			MoveScore result = new MoveScore(-1, -1, 0);
 			
 			// set the empty spot to the current player
 			if(move.getGameStage()==1) {
-				//String action = copyState.boardMouseClick(move.getPiecePosition());
 				copyState.setBoardPiece(move.getPiecePosition(), player);
-				states.push(copyState.saveGameState());
-				alterGame(1, player);
-				score = copyState.evaluateState(player);
 				copyState.printBoardPieces();
+				states.push(copyState.saveGameState());
+				System.out.println("Saving this game state and pushing to stack");
+				alterGame(1, player, copyState);
+				score = copyState.evaluateState(player);
 				System.out.println("Trying valid move " + i + " gives a score of " + score);
-				copyState.switchTurn();
+				
+				if(depth==0){
+					System.out.println("Maximum depth is reached, setting the result to be the latest score");
+					result = new MoveScore(move.getPiecePosition(), -1, score);
+				}
+				else if(copyState.getTurn()=="white" && depth !=0){
+					result = minimax("black", depth-1);
+					System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
+				}
+				else if (copyState.getTurn()=="black" && depth !=0){
+					result = minimax("white", depth-1);
+					System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
+				}
+				
+				// reset the spot to empty
+				states.pop();
+				System.out.println("Setting the state to be the last one on the stack");
+				copyState = states.lastElement().saveGameState();
+				moves.add(result);
+				System.out.println("Adding the result " + result.index + ", " + result.score + " to the moves array");
 			}
 			else if(move.getGameStage()==2) {
 			
-				for(int j=0; j<validMoves.get(i).getAvailablePositionsToMove().size(); j++) {
-					copyState.setBoardPiece(validMoves.get(i).getPiecePosition(), null);
-					copyState.setBoardPiece(validMoves.get(i).getAvailablePositionsToMove().get(j), player);
+				for(int j=0; j<move.getAvailablePositionsToMove().size(); j++) {
+					copyState.setBoardPiece(move.getPiecePosition(), null);
+					copyState.setBoardPiece(move.getAvailablePositionsToMove().get(j), player);
+					System.out.println("Saving this game state and pushing to stack");
+					states.push(copyState.saveGameState());
+					score = copyState.evaluateState(player);
+					alterGame(2, player, copyState);
+					System.out.println("Moving piece " + move.getPiecePosition() + " to " + move.getAvailablePositionsToMove().get(j) + " gives a score of " + score);
+					
+					if(depth==0){
+						System.out.println("Maximum depth is reached, setting the result to be the latest score");
+						result = new MoveScore(move.getPiecePosition(), move.getAvailablePositionsToMove().get(j), score);
+					}
+					else if(player=="white" && depth !=0){
+						result = minimax("black", depth-1);
+						System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
+					}
+					else if (player =="black" && depth !=0){
+						result = minimax("white", depth-1);
+						System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
+					}
+					
+					// reset the spot to empty
+					states.pop();
+					copyState = states.lastElement().saveGameState();
+					
+					System.out.println("Setting the state to be the last one on the stack");
+					// push the object to the array
+					moves.add(result);
+					System.out.println("Adding the result " + result.index + ", " + result.score + " to the moves array");
 				}
-				score = copyState.evaluateState(player);
+
+			}
+			else if(move.getGameStage()==4) {
+				copyState.setBoardPiece(move.getPiecePosition(), null);
 				copyState.printBoardPieces();
+				states.push(copyState.saveGameState());
+				System.out.println("Saving this game state and pushing to stack");
+				alterGame(4, player, copyState);
+				score = copyState.evaluateState(player);
 				System.out.println("Trying valid move " + i + " gives a score of " + score);
-				copyState.switchTurn();
+				
+				if(depth==0){
+					System.out.println("Maximum depth is reached, setting the result to be the latest score");
+					result = new MoveScore(move.getPiecePosition(), -1, score);
+				}
+				else if(copyState.getTurn()=="white" && depth !=0){
+					result = minimax("black", depth-1);
+					System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
+				}
+				else if (copyState.getTurn() =="black" && depth !=0){
+					result = minimax("white", depth-1);
+					System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
+				}
+				
+				// reset the spot to empty
+				states.pop();
+				System.out.println("Setting the state to be the last one on the stack");
+				copyState = states.lastElement().saveGameState();
+				moves.add(result);
+				System.out.println("Adding the result " + result.index + ", " + result.score + " to the moves array");
 			}
 			
 			/*collect the score resulted from calling minimax 
 		      on the opponent of the current player*/
 			
 			
-			MoveScore result = new MoveScore(0,0);
+			/*MoveScore result = new MoveScore(0,0);
 			System.out.println("Saving this game state and pushing to stack");
 			
 			if(depth==0){
 				System.out.println("Maximum depth is reached, setting the result to be the latest score");
-				result = new MoveScore(move.getPiecePosition(), score);
+				result = new MoveScore(move.getPiecePosition(), -1, score);
 			}
 			else if(player=="white" && depth !=0){
 				result = minimax("black", depth-1);
@@ -90,7 +162,7 @@ public class Minimax {
 			System.out.println("Setting the state to be the last one on the stack");
 			// push the object to the array
 			moves.add(result);
-			System.out.println("Adding the result " + result.index + ", " + result.score + " to the moves array");
+			System.out.println("Adding the result " + result.index + ", " + result.score + " to the moves array");*/
 
 		}
 		
@@ -134,76 +206,74 @@ public class Minimax {
 		
 		// return the chosen move (object) from the moves array
 		return moves.get(bestMoveIndex);
-	
-		
-		//return 0;
-		
-		
 		
 	}
 	
-	public void alterGame(int gameStage, String player) {
+	public void alterGame(int gameStage, String player, GameState gameState) {
 		
 		if(gameStage==1) {
 			if(player=="white") {
-				copyState.whitePiecesPlaced++;
+				gameState.whitePiecesPlaced++;
 			}
 			else {
-				copyState.blackPiecesPlaced++;
+				gameState.blackPiecesPlaced++;
 			}
-			copyState.piecesPlaced++;
-			if(copyState.checkForMill()) {
-				
+			gameState.piecesPlaced++;
+			if(gameState.checkForMill()) {
+				System.out.println("***** THIS MOVE MADE A MILL *****");
 			}
-			else if(copyState.piecesPlaced>=copyState.totalNumberOfPieces){
-				copyState.setGameStage(2);
-				copyState.phase = 2;
+			else {
+				copyState.switchTurn();
+				if(gameState.piecesPlaced>=gameState.totalNumberOfPieces){
+					gameState.setGameStage(2);
+					gameState.phase = 2;
+				}	
 			}
 		}
 		else if(gameStage==2) {
+			if(gameState.checkForMill()) {
+			}
+			else {
+				copyState.switchTurn();
+				gameState.setGameStage(2);
+			}
 			
+    		gameState.resetMovablePositions();
 		}
+		else if(gameStage==4) {
+			gameState.checkForMill();
+			if(gameState.piecesPlaced<gameState.totalNumberOfPieces) {
+				gameState.setGameStage(1);
+			}
+			else {
+				gameState.setGameStage(2);
+			}
+			copyState.switchTurn();
+			gameState.resetMovablePositions();
+		}
+		
 		
 	}
 
-	public void makeMove() {
-		int bestScore = -10000;
-		int bestMoveIndex = 0;
-		
-		ArrayList<Move> validMoves = findValidMoves("black"); 
-		
-		String temp = null;
-		/*String[] tempBoardPieces = new String[state.getBoardPieces().length];
-		for(int i=0; i<state.getBoardPieces().length; i++) {
-			tempBoardPieces[i] = state.getBoardPiece(i);
-		}*/
-		
-		for(int i=0; i<validMoves.size(); i++) {
-			Move move = validMoves.get(i);
-			if(move.getGameStage()==1) {
-				copyState.setBoardPiece(move.getPiecePosition(), "black");
-				int score = copyState.evaluateState("black");
-				System.out.println("Valid move: " + i + ", Score: " + score);
-				if(score>bestScore) {
-					bestMoveIndex = i;
-					bestScore = score;
-				}
+	public void makeMove(MoveScore move, String player) {
+		if(state.getGameStage()==1) {
+			state.setBoardPiece(move.index, player);
+			alterGame(1, player, state);
+			if(player=="white") {
+				game.removeWhitePieceFromPanel();
 			}
-			//state.setBoardPiece(move.getPiecePosition(), temp);
-			copyState = state.saveGameState();
-			//state.setBoardPieces(tempBoardPieces);
-	
-			
+			else {
+				game.removeBlackPieceFromPanel();
+			}
 		}
-		
-		System.out.println("Best move index: " + bestMoveIndex);
-		System.out.println("Game Stage: " + state.getGameStage());
-		Move bestMove = validMoves.get(bestMoveIndex);
-		if(bestMove.getGameStage()==1) {
-			state.boardMouseClick(bestMove.getPiecePosition());
-			game.getBoard().repaintPieces();
-			game.switchTurn();
+		else if(state.getGameStage()==2) {
+			state.setBoardPiece(move.index, null);
+			state.setBoardPiece(move.to, player);
 		}
+		else if(state.getGameStage()==4) {
+			state.setBoardPiece(move.index, null);
+		}
+		game.getBoard().repaintPieces();
 	}
 	
 	public ArrayList<Move> findValidMoves(String player) {

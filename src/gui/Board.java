@@ -194,6 +194,7 @@ public class Board extends JLabel {
         	repaintPieces();
 
         }
+        
 
 	
 		private int checkMouseBoundaries(int x, int y) {
