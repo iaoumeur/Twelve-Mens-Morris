@@ -614,33 +614,34 @@ public class GameState {
 		
 		//evaluation 1
 		if(gameStage==4) {
-			if(player==turn) 
+			if(player=="black")  {
 				score+=(1*evaluationWeights[0]);
+			}
 			else 
 				score-=(1*evaluationWeights[0]);
 		}
 		
 		//evaluation 2
-		score += ((countMills(player) - countMills(otherPlayer))*evaluationWeights[1]);
+		score += ((countMills("black") - countMills("white"))*evaluationWeights[1]);
 		
 		//evaluation 3
-		score +=  ((countBlockedPieces(otherPlayer) - countBlockedPieces(player))*evaluationWeights[2]);
+		score +=  ((countBlockedPieces("white") - countBlockedPieces("black"))*evaluationWeights[2]);
 		
 		//evaluation 4
-		score += ((countPieces(player) - countPieces(otherPlayer))*evaluationWeights[3]);
+		score += ((countPieces("black") - countPieces("white"))*evaluationWeights[3]);
 		
 		//evaluation 5
-		score += ((countTwoPieceConfigurations(player) - countTwoPieceConfigurations(otherPlayer))*evaluationWeights[4]);
+		score += ((countTwoPieceConfigurations("black") - countTwoPieceConfigurations("white"))*evaluationWeights[4]);
 		
 		//evaluation 6
-		score += ((countThreePieceConfigurations(player) - countThreePieceConfigurations(otherPlayer))*evaluationWeights[5]);
+		score += ((countThreePieceConfigurations("black") - countThreePieceConfigurations("white"))*evaluationWeights[5]);
 		
 		//evaluation 7
 		String winner = hasGameEnded();
 		if(winner=="draw") {
 			score+=0;
 		}
-		else if(winner==player) {
+		else if(winner=="black") {
 			score+=(1*evaluationWeights[6]);
 		}
 		else {

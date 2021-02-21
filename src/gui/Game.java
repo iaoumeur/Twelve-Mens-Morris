@@ -17,7 +17,7 @@ import player.Minimax;
 import state.GameState;
 
 public class Game {
-
+	
 	static final int frameWidth = 1000;
 	static final int frameHeight = 750;
 	private JFrame frame;
@@ -50,6 +50,7 @@ public class Game {
 		state = new GameState();
 		if(gameType=="pvAI") {
 			computer = new Minimax(this, state);
+			
 		}
 		
 		
