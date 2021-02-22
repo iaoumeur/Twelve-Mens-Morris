@@ -644,7 +644,7 @@ public class GameState {
 		else if(winner=="black") {
 			score+=(1*evaluationWeights[6]);
 		}
-		else {
+		else if(winner=="white") {
 			score-=(1*evaluationWeights[6]);
 		}
 		

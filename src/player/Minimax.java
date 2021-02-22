@@ -27,7 +27,20 @@ public class Minimax {
 	public MoveScore minimax(String player, int depth) {
 		
 		ArrayList<Move> validMoves = findValidMoves(player); 
-
+		if(validMoves.isEmpty()) {
+			String winner = copyState.hasGameEnded();
+			if(winner=="draw") {
+				return new MoveScore(-1, -1, 0);
+			}
+			else if(winner=="black") {
+				return new MoveScore(-1, -1, 100000);
+			}
+			else if(winner=="white") {
+				return new MoveScore(-1, -1, -100000);
+			}
+			
+		}
+		
 		System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
 		System.out.println("There are " + validMoves.size() + " valid moves");
 		
