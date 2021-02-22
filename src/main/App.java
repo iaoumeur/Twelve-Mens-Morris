@@ -52,6 +52,7 @@ public class App {
 					    } catch(InterruptedException e) {
 					    }
 				}
+				game.getState().hasGameEnded();
 				game.getComputer().setCopyState(game.getState().saveGameState());
 				MoveScore bestMove = game.getComputer().minimax("black", 2);
 				System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
@@ -59,6 +60,14 @@ public class App {
 					game.switchTurn();					
 				}
 				game.getBoard().repaintPieces();
+				if(bestMove.to==-1 && game.getState().getGameStage()!=4) {
+					game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "red");	
+				}
+				else if(game.getState().getGameStage()!=4){
+					game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "smallred");	
+					game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, "red");	
+				}
+				
 			}
 			System.out.print("Game ended");
 		}

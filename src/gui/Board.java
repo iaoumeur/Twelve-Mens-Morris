@@ -92,6 +92,10 @@ public class Board extends JLabel {
 			gbuffer.setColor(Color.WHITE);
 			gbuffer.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);
 		}
+		else if(color=="smallwhite") {
+			gbuffer.setColor(Color.WHITE); 
+			gbuffer.fillOval(positionsOnBoard[point][0]+4, positionsOnBoard[point][1]+4, 10, 10);
+		}
 		else if(color=="black"){
 			gbuffer.setColor(Color.BLACK); 
 			gbuffer.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);
@@ -104,6 +108,15 @@ public class Board extends JLabel {
 			gbuffer.setColor(Color.GREEN); 
 			gbuffer.fillOval(positionsOnBoard[point][0]+4, positionsOnBoard[point][1]+4, 10, 10);
 		}
+		else if(color=="red") {
+			gbuffer.setColor(Color.RED); 
+			gbuffer.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);
+		}
+		else if(color=="smallred") {
+			gbuffer.setColor(Color.RED); 
+			gbuffer.fillOval(positionsOnBoard[point][0]+4, positionsOnBoard[point][1]+4, 10, 10);
+		}
+		
 		
 		gbuffer.dispose();
 	    g2d.drawImage(img, 0, 0, this);
