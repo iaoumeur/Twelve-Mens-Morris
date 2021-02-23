@@ -28,7 +28,9 @@ public class Minimax {
 		
 		ArrayList<Move> validMoves = findValidMoves(player); 
 		if(validMoves.isEmpty()) {
+			copyState.switchTurn();
 			String winner = copyState.hasGameEnded();
+			System.out.println("Winner: " + winner);
 			if(winner=="draw") {
 				return new MoveScore(-1, -1, 0);
 			}
@@ -38,6 +40,7 @@ public class Minimax {
 			else if(winner=="white") {
 				return new MoveScore(-1, -1, -10000);
 			}
+			copyState.switchTurn();
 			
 		}
 		
