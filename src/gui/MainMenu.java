@@ -95,15 +95,15 @@ public class MainMenu {
 		JButton hardButton = new JButton("Hard");
 		hardButton.setBackground(Color.RED);
 		hardButton.setPreferredSize(new Dimension(90, 30));
-		JButton gameOptionsButton = new JButton("Game Options");
-		gameOptionsButton = setupButton(gameOptionsButton);
+		JButton aivaiButton = new JButton("AI vs AI");
+		aivaiButton = setupButton(aivaiButton);
 		
 		buttonPanel.add(pvpButton, BorderLayout.NORTH);
 		buttonPanel2.add(pvAIButton, BorderLayout.NORTH);
 		buttonPanel3.add(easyButton, BorderLayout.WEST);
 		buttonPanel3.add(mediumButton, BorderLayout.WEST);
 		buttonPanel3.add(hardButton, BorderLayout.WEST);
-		buttonPanel4.add(gameOptionsButton, BorderLayout.NORTH);
+		buttonPanel4.add(aivaiButton, BorderLayout.NORTH);
 		
 		lpane.add(backgroundPanel, 0, 0);
 		lpane.add(boardPanel, 1, 0);
@@ -135,6 +135,15 @@ public class MainMenu {
 					buttonPanel3.setVisible(false);
 					buttonPanel4.setBounds(120, 400, 200, 150);
 				}
+			}
+
+		});
+		
+		aivaiButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				gameType = "AIvAI";
+				enterNamesAndStart();
 			}
 
 		});

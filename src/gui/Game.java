@@ -26,6 +26,7 @@ public class Game {
 	private GameState state;
 	private Board board;
 	private Minimax computer;
+	private Minimax otherComputer;
 	private ArrayList<JLabel> whitePieces;
 	private ArrayList<JLabel> blackPieces;
 	private JPanel whitePiecePanel;
@@ -50,7 +51,10 @@ public class Game {
 		state = new GameState();
 		if(gameType=="pvAI") {
 			computer = new Minimax(this, state);
-			
+		}
+		if(gameType=="AIvAI") {
+			computer = new Minimax(this, state);
+			otherComputer = new Minimax(this, state);
 		}
 		
 		
@@ -124,7 +128,7 @@ public class Game {
 		msgPanel.setOpaque(false);
 		
 		JPanel turnPanel = new JPanel();
-		turnLabel = new JLabel("Turn: White");
+		turnLabel = new JLabel(turnMessages[0]);
 		turnLabel.setForeground(Color.WHITE);
 		turnPanel.setBounds(700, 650, 300, 100);
 		turnPanel.add(turnLabel, BorderLayout.CENTER);
@@ -158,6 +162,10 @@ public class Game {
 	
 	public Minimax getComputer() {
 		return computer;
+	}
+	
+	public Minimax getOtherComputer() {
+		return otherComputer;
 	}
 	
 	public boolean getStopPaining() {

@@ -52,10 +52,14 @@ public class App {
 					    } catch(InterruptedException e) {
 					    }
 				}
+				game.setStopPaining(true);
 				game.getState().hasGameEnded();
 				game.getComputer().setCopyState(game.getState().saveGameState());
-				MoveScore bestMove = game.getComputer().minimax("black", 2);
-				System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
+				
+				MoveScore bestMove = game.getComputer().minimax("black", 4);
+				
+				game.setStopPaining(false);
+				//System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
 				if(!game.getComputer().makeMove(bestMove, "black")) {
 					game.switchTurn();					
 				}
@@ -67,11 +71,50 @@ public class App {
 					game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "smallred");	
 					game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, "red");	
 				}
+			}
+			System.out.print("Game ended");
+		}
+		else if(menu.getGameType()=="AIvAI") {
+			while(game.getState().getGameStage()!=5) {
+				if(game.getState().getTurn()=="white") {
+					game.getState().hasGameEnded();
+					game.getComputer().setCopyState(game.getState().saveGameState());
+					MoveScore bestMove = game.getComputer().minimax("white", 4);
+					//System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
+					if(!game.getComputer().makeMove(bestMove, "white")) {
+						game.switchTurn();					
+					}
+					game.getBoard().repaintPieces();
+					if(bestMove.to==-1 && game.getState().getGameStage()!=4) {
+						game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "red");	
+					}
+					else if(game.getState().getGameStage()!=4){
+						game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "smallred");	
+						game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, "red");	
+					}
+				}
+				else if(game.getState().getTurn()=="black") {
+					game.getState().hasGameEnded();
+					game.getOtherComputer().setCopyState(game.getState().saveGameState());
+					MoveScore bestMove = game.getOtherComputer().minimax("black", 4);
+					//System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
+					if(!game.getOtherComputer().makeMove(bestMove, "black")) {
+						game.switchTurn();					
+					}
+					game.getBoard().repaintPieces();
+					if(bestMove.to==-1 && game.getState().getGameStage()!=4) {
+						game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "red");	
+					}
+					else if(game.getState().getGameStage()!=4){
+						game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "smallred");	
+						game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, "red");	
+					}
+				}
+				
 				
 			}
 			System.out.print("Game ended");
 		}
-		
 		
 	}
 	

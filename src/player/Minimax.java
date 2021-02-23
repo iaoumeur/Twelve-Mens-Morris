@@ -1,6 +1,7 @@
 package player;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Stack;
 
 import gui.Game;
@@ -11,7 +12,6 @@ public class Minimax {
 	Game game;
 	GameState state;
 	GameState copyState;
-	GameState tempState;
 	Stack<GameState> states = new Stack<GameState>();
 	
 	public Minimax(Game game, GameState state) {
@@ -26,11 +26,15 @@ public class Minimax {
 	
 	public MoveScore minimax(String player, int depth) {
 		
+		//System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
+		
+		//find the list of valid moves minimax can take.
 		ArrayList<Move> validMoves = findValidMoves(player); 
+		
+		//if there are no valid moves, this means in this state the game would end.
 		if(validMoves.isEmpty()) {
 			copyState.switchTurn();
 			String winner = copyState.hasGameEnded();
-			System.out.println("Winner: " + winner);
 			if(winner=="draw") {
 				return new MoveScore(-1, -1, 0);
 			}
@@ -41,15 +45,13 @@ public class Minimax {
 				return new MoveScore(-1, -1, -10000);
 			}
 			copyState.switchTurn();
-			
 		}
 		
-		System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
-		System.out.println("There are " + validMoves.size() + " valid moves");
 		
 		// an array to collect all the objects
-		ArrayList<MoveScore> moves = new ArrayList<MoveScore>();
 		int score = 0;
+		ArrayList<MoveScore> moves = new ArrayList<MoveScore>();
+		
 		
 		for (int i=0; i<validMoves.size(); i++){
 			
@@ -57,7 +59,29 @@ public class Minimax {
 			MoveScore result = new MoveScore(move.getPiecePosition(), move.getTo(), 0);
 			MoveScore moveToPush = new MoveScore(move.getPiecePosition(), move.getTo(), 0);
 			
-			// set the empty spot to the current player
+			simulateMove(move, player);
+			
+			score = copyState.evaluateState(player);
+			states.push(copyState.saveGameState());
+			
+			if(depth==0){
+				moveToPush.score = score;
+			}
+			else if(copyState.getTurn()=="black" && depth !=0){
+				result = minimax("black", depth-1);
+				moveToPush.score = result.score;
+			}
+			else if (copyState.getTurn()=="white" && depth !=0){
+				result = minimax("white", depth-1);
+				moveToPush.score = result.score;
+			}
+			moves.add(moveToPush);
+			
+			// restores the game state to be the previous state
+			states.pop();
+			copyState = states.lastElement().saveGameState();
+			
+			/*
 			if(move.getGameStage()==1) {
 				copyState.setBoardPiece(move.getPiecePosition(), player);
 				copyState.printBoardPieces();
@@ -155,54 +179,91 @@ public class Minimax {
 				copyState = states.lastElement().saveGameState();
 				moves.add(moveToPush);
 				System.out.println("Adding the result " + result.index + ", " + result.score + " to the moves array");
-			}
+			}*/
 			
 
 		}
 		
-		//copyState = state.saveGameState();
-		
-		System.out.println("Now going through moves, attempting to find best move...");
-		String pieces = "MOVES: [";
+		//System.out.println("Now going through moves, attempting to find best move...");
+		/*String pieces = "MOVES: [";
 		for(int i=0; i<moves.size(); i++) {
 			pieces += moves.get(i).index + ", ";
 		}
-		System.out.println(pieces + "]");
-		// if it is the computer's turn loop over the moves and choose the move with the highest score
+		System.out.println(pieces + "]");*/
+		
+		
 		int bestMoveIndex = 0;
 		int bestScore = 0;
+		boolean allSameScore = true;
+		int tempScore;
+		if(moves.isEmpty()) {
+			tempScore = 0;
+		}
+		else {
+			tempScore = moves.get(0).score;
+		}
+		
 		if(player == "black"){
 			bestScore = -100000;
 			for(int i=0; i<moves.size(); i++){
+				if(moves.get(i).score != tempScore) {
+					allSameScore = false;
+				}
+				else {
+					tempScore = moves.get(i).score;
+				}
 				if(moves.get(i).score > bestScore){
 					bestScore = moves.get(i).score;
 					bestMoveIndex = i;
 				}
 			}
 		}else{
-			// else loop over the moves and choose the move with the lowest score
 			bestScore = 100000;
 			for(int i=0; i<moves.size(); i++){
+				if(moves.get(i).score != tempScore) {
+					allSameScore = false;
+				}
+				else {
+					tempScore = moves.get(i).score;
+				}
 				if(moves.get(i).score < bestScore){
 					bestScore = moves.get(i).score;
 					bestMoveIndex = i;
 				}
 			}
 		}
-		System.out.println("Best move found for " + player + " is index " + bestMoveIndex + " with a score of " + bestScore);
 		
-		/*validMoves = findValidMoves(player); 
-		Move bestMove = validMoves.get(bestMoveIndex);
-		if(bestMove.getGameStage()==1) {
-			state.setBoardPiece(bestMove.getPiecePosition(), player);
-			return bestScore;
-		}*/
+		if(allSameScore) {
+			Random rand = new Random();
+			bestMoveIndex = rand.nextInt(moves.size());
+		}
+		//System.out.println("Best move found for " + player + " is index " + bestMoveIndex + " with a score of " + bestScore);
 		
-		// return the chosen move (object) from the moves array
 		return moves.get(bestMoveIndex);
 		
 	}
 	
+	private void simulateMove(Move move, String player) {
+		
+		if(move.getGameStage()==1) {
+			copyState.setBoardPiece(move.getPiecePosition(), player);
+			//copyState.printBoardPieces();
+			alterGame(1, player, copyState);
+		}
+		else if(move.getGameStage()==2) {
+			copyState.setBoardPiece(move.getPiecePosition(), null);
+			copyState.setBoardPiece(move.getTo(), player);
+			//copyState.printBoardPieces();
+			alterGame(2, player, copyState);
+		}
+		else if(move.getGameStage()==4) {
+			copyState.setBoardPiece(move.getPiecePosition(), null);
+			//copyState.printBoardPieces();
+			alterGame(4, player, copyState);
+		}
+		
+	}
+
 	public void alterGame(int gameStage, String player, GameState gameState) {
 		
 		if(gameStage==1) {
@@ -214,7 +275,7 @@ public class Minimax {
 			}
 			gameState.piecesPlaced++;
 			if(gameState.checkForMill()) {
-				System.out.println("***** THIS MOVE MADE A MILL *****");
+				//System.out.println("***** THIS MOVE MADE A MILL *****");
 			}
 			else {
 				copyState.switchTurn();
@@ -270,6 +331,19 @@ public class Minimax {
 			}
 			copyState.switchTurn();
 			gameState.resetMovablePositions();
+			String endgame = gameState.hasGameEnded();
+			if(endgame=="white") {
+				game.displayMessage(3);
+				game.getState().setGameStage(5);
+			}
+			else if(endgame=="black") {
+				game.displayMessage(4);
+				game.getState().setGameStage(5);
+			}
+			else if(endgame=="draw") {
+				game.displayMessage(5);
+				game.getState().setGameStage(5);
+			}
 		}
 		
 		
@@ -286,7 +360,7 @@ public class Minimax {
 				game.removeBlackPieceFromPanel();
 			}
 			if(state.getGameStage()==4) {
-				System.out.println("COMPUTER MADE A MILL");
+				//System.out.println("COMPUTER MADE A MILL");
 				return true;
 			}
 		}
@@ -320,7 +394,7 @@ public class Minimax {
 			
 			for(int i=0; i<copyState.getBoardPieces().length; i++) {
 				if(copyState.getBoardPieces()[i]==null) {
-					validMoves.add(new Move(1, i, -1, null));
+					validMoves.add(new Move(1, i, -1));
 				}
 			}
 		}
@@ -331,7 +405,7 @@ public class Minimax {
 					copyState.showAvailablePositionsToMove(i);
 					if(!copyState.getMovablePositions().isEmpty()) {
 						for(int j=0; j<copyState.getMovablePositions().size(); j++) {
-							validMoves.add(new Move(2, i, copyState.getMovablePositions().get(j), null));
+							validMoves.add(new Move(2, i, copyState.getMovablePositions().get(j)));
 						}
 						copyState.resetMovablePositions();
 					}
@@ -347,7 +421,7 @@ public class Minimax {
 	    			continue;
 	    		}
 				if((copyState.getTurn()==player && copyState.getBoardPieces()[i]==otherTurn))  {
-					validMoves.add(new Move(4, i, -1, null));
+					validMoves.add(new Move(4, i, -1));
 				}
 				
 				
