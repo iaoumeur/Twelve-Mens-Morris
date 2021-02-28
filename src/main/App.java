@@ -56,7 +56,8 @@ public class App {
 				game.getState().hasGameEnded();
 				game.getComputer().setCopyState(game.getState().saveGameState());
 				
-				MoveScore bestMove = game.getComputer().minimax("black", 2);
+				MoveScore bestMove = game.getComputer().minimax("black", 4, -1000000, 1000000);
+				System.out.println("Nodes evaluated: " + game.getComputer().getNodesEvaluated());
 				
 				game.setStopPaining(false);
 				//System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
@@ -79,7 +80,7 @@ public class App {
 				if(game.getState().getTurn()=="white") {
 					game.getState().hasGameEnded();
 					game.getComputer().setCopyState(game.getState().saveGameState());
-					MoveScore bestMove = game.getComputer().minimax("white", 4);
+					MoveScore bestMove = game.getComputer().minimax("white", 4, -1000000, 1000000);
 					//System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
 					if(!game.getComputer().makeMove(bestMove, "white")) {
 						game.switchTurn();					
@@ -96,7 +97,7 @@ public class App {
 				else if(game.getState().getTurn()=="black") {
 					game.getState().hasGameEnded();
 					game.getOtherComputer().setCopyState(game.getState().saveGameState());
-					MoveScore bestMove = game.getOtherComputer().minimax("black", 4);
+					MoveScore bestMove = game.getOtherComputer().minimax("black", 4, -1000000, 1000000);
 					//System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
 					if(!game.getOtherComputer().makeMove(bestMove, "black")) {
 						game.switchTurn();					
