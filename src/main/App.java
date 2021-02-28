@@ -56,7 +56,7 @@ public class App {
 				game.getState().hasGameEnded();
 				game.getComputer().setCopyState(game.getState().saveGameState());
 				
-				MoveScore bestMove = game.getComputer().minimax("black", 4);
+				MoveScore bestMove = game.getComputer().minimax("black", 2);
 				
 				game.setStopPaining(false);
 				//System.out.println("****** BEST MOVE FOUND IS: " + bestMove.index + " WITH A SCORE OF " + bestMove.score + " ******");
