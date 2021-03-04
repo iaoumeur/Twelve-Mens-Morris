@@ -57,8 +57,6 @@ public class Game {
 			otherComputer = new Minimax(this, state);
 		}
 		
-		
-		
 		frame = new JFrame("Twelve Men's Morris");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(0, 0, frameWidth, frameHeight);

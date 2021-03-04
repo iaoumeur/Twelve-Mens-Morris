@@ -18,6 +18,7 @@ public class App {
 		}
 		
 		Game game = new Game(menu.getP1Name(), menu.getP2Name(), menu.getGameType());
+		int depth = setDifficulty(menu.getDifficulty());
 		
 		if(Math.random() < 0.5) {
 			game.switchTurn();
@@ -26,14 +27,12 @@ public class App {
 		if(menu.getGameType()=="pvp") {
 			while(game.getState().getGameStage()!=5) {
 				while(game.getState().getTurn()=="white") {
-					game.getState().evaluateState("white");
 					try {
 					       Thread.sleep(1000);
 					    } catch(InterruptedException e) {
 					    }
 				}
 				while(game.getState().getTurn()=="black") {
-					game.getState().evaluateState("black");
 					//System.out.println("Black Evaluation: " + game.getState().evaluateState("black"));
 					//System.out.println("Game Stage: " + game.getState().getGameStage());
 					try {
@@ -53,10 +52,8 @@ public class App {
 					    }
 				}
 				game.setStopPaining(true);
-				game.getState().hasGameEnded();
 				game.getComputer().setCopyState(game.getState().saveGameState());
-				
-				MoveScore bestMove = game.getComputer().minimax("black", 4, -1000000, 1000000);
+				MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
 				System.out.println("Nodes evaluated: " + game.getComputer().getNodesEvaluated());
 				
 				game.setStopPaining(false);
@@ -72,6 +69,7 @@ public class App {
 					game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "smallred");	
 					game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, "red");	
 				}
+				
 			}
 			System.out.print("Game ended");
 		}
@@ -116,6 +114,17 @@ public class App {
 			}
 			System.out.print("Game ended");
 		}
+		
+	}
+
+	private static int setDifficulty(String difficulty) {
+
+		if(difficulty=="easy") 
+			return 4;
+		else if(difficulty=="hard")
+			return 8;
+		else 
+			return 6;
 		
 	}
 	

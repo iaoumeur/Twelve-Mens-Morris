@@ -375,10 +375,12 @@ public class GameState {
 		if(whitePieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingWhite = true;
 			phase = 3;
+			return null;
 		}
 		if(blackPieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingBlack = true;
 			phase = 3;
+			return null;
 		}
 		if(whitePieces==2 && piecesPlaced>=totalNumberOfPieces) 
 			return "black";
@@ -584,8 +586,11 @@ public class GameState {
 	-Winning configuration: 1 if the state is winning for the player, -1 if losing, 0 otherwise
 	
 */
-	public int evaluateState(String player) {
+	public int evaluateState(String player, boolean print) {
 		
+		ArrayList<String> prints = new ArrayList<String>();
+		
+		prints.add("Game is in phase: " + phase);
 		int[] evaluationWeights;
 		switch(phase) {
 		case 1:
@@ -615,26 +620,38 @@ public class GameState {
 		//evaluation 1
 		if(gameStage==4) {
 			if(player=="black")  {
+				prints.add("Black just placed a mill");
 				score+=(1*evaluationWeights[0]);
 			}
 			else 
+				prints.add("White just placed a mill");
 				score-=(1*evaluationWeights[0]);
 		}
 		
 		//evaluation 2
 		score += ((countMills("black") - countMills("white"))*evaluationWeights[1]);
+		prints.add("Black has " + countMills("black") + " mills");
+		prints.add("White has " + countMills("white") + " mills");
 		
 		//evaluation 3
 		score +=  ((countBlockedPieces("white") - countBlockedPieces("black"))*evaluationWeights[2]);
+		prints.add("Black has " + countBlockedPieces("black") + " blocked pieces");
+		prints.add("White has " + countBlockedPieces("white") + " blocked pieces");
 		
 		//evaluation 4
 		score += ((countPieces("black") - countPieces("white"))*evaluationWeights[3]);
+		prints.add("Black has " + countPieces("black") + " pieces");
+		prints.add("White has " + countPieces("white") + " pieces");
 		
 		//evaluation 5
 		score += ((countTwoPieceConfigurations("black") - countTwoPieceConfigurations("white"))*evaluationWeights[4]);
+		prints.add("Black has " + countTwoPieceConfigurations("black") + " two piece configs");
+		prints.add("White has " + countTwoPieceConfigurations("white") + " two piece configs");
 		
 		//evaluation 6
 		score += ((countThreePieceConfigurations("black") - countThreePieceConfigurations("white"))*evaluationWeights[5]);
+		prints.add("Black has " + countThreePieceConfigurations("black") + " three piece configs");
+		prints.add("White has " + countThreePieceConfigurations("white") + " three piece configs");
 		
 		//evaluation 7
 		String winner = hasGameEnded();
@@ -642,11 +659,21 @@ public class GameState {
 			score+=0;
 		}
 		else if(winner=="black") {
+			prints.add("Black wins with this move");
 			score+=(1*evaluationWeights[6]);
 		}
 		else if(winner=="white") {
+			prints.add("White wins with this move");
 			score-=(1*evaluationWeights[6]);
 		}
+		
+		if(print) {
+			for(int i=0; i<prints.size(); i++) {
+				System.out.println(prints.get(i));
+			}
+			
+		}
+		
 		
 		return score;
 	}
@@ -678,6 +705,10 @@ public class GameState {
 			pieces += boardPieces[i] + ", ";
 		}
 		System.out.println(pieces + "]");
+	}
+
+	public int getPhase() {
+		return phase;
 	}
 	
 

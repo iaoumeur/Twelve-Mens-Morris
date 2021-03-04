@@ -63,7 +63,7 @@ public class Minimax {
 			
 			simulateMove(move, player);
 			
-			score = copyState.evaluateState(player);
+			score = copyState.evaluateState(player, false);
 			states.push(copyState.saveGameState());
 			nodesEvaluated++;
 			
@@ -201,19 +201,6 @@ public class Minimax {
 				if(gameState.piecesPlaced>=gameState.totalNumberOfPieces){
 					gameState.setGameStage(2);
 					gameState.phase = 2;
-					String endgame = gameState.hasGameEnded();
-					if(endgame=="white") {
-						game.displayMessage(3);
-						game.getState().setGameStage(5);
-					}
-					else if(endgame=="black") {
-						game.displayMessage(4);
-						game.getState().setGameStage(5);
-					}
-					else if(endgame=="draw") {
-						game.displayMessage(5);
-						game.getState().setGameStage(5);
-					}
 				}	
 			}
 		}
@@ -223,19 +210,6 @@ public class Minimax {
 			else {
 				copyState.switchTurn();
 				gameState.setGameStage(2);
-				String endgame = gameState.hasGameEnded();
-				if(endgame=="white") {
-					game.displayMessage(3);
-					game.getState().setGameStage(5);
-				}
-				else if(endgame=="black") {
-					game.displayMessage(4);
-					game.getState().setGameStage(5);
-				}
-				else if(endgame=="draw") {
-					game.displayMessage(5);
-					game.getState().setGameStage(5);
-				}
 			}
 			
     		gameState.resetMovablePositions();
@@ -250,29 +224,20 @@ public class Minimax {
 			}
 			copyState.switchTurn();
 			gameState.resetMovablePositions();
-			String endgame = gameState.hasGameEnded();
-			if(endgame=="white") {
-				game.displayMessage(3);
-				game.getState().setGameStage(5);
-			}
-			else if(endgame=="black") {
-				game.displayMessage(4);
-				game.getState().setGameStage(5);
-			}
-			else if(endgame=="draw") {
-				game.displayMessage(5);
-				game.getState().setGameStage(5);
-			}
 		}
 		
 		
 	}
 
 	public boolean makeMove(MoveScore move, String player) {
+		System.out.println("BEFORE MAKING MOVE");
+		state.evaluateState(player, true);
 		nodesEvaluated = 0;
 		if(state.getGameStage()==1) {
 			state.setBoardPiece(move.index, player);
 			alterGame(1, player, state);
+			System.out.println("AFTER MAKING MOVE");
+			state.evaluateState(player, true);
 			if(player=="white") {
 				game.removeWhitePieceFromPanel();
 			}
@@ -288,6 +253,8 @@ public class Minimax {
 			state.setBoardPiece(move.index, null);
 			state.setBoardPiece(move.to, player);
 			alterGame(2, player, state);
+			System.out.println("AFTER MAKING MOVE");
+			state.evaluateState(player, true);
 			if(state.getGameStage()==4) {
 				return true;
 			}
@@ -295,7 +262,23 @@ public class Minimax {
 		else if(state.getGameStage()==4) {
 			state.setBoardPiece(move.index, null);
 			alterGame(4, player, state);
+			System.out.println("AFTER MAKING MOVE");
+			state.evaluateState(player, true);
 		}
+		
+		String endgame = state.hasGameEnded();
+		if(endgame=="white") {
+    		game.displayMessage(3);
+    		game.getState().setGameStage(5);
+    	}
+    	else if(endgame=="black") {
+    		game.displayMessage(4);
+    		game.getState().setGameStage(5);
+    	}
+    	else if(endgame=="draw") {
+    		game.displayMessage(5);
+    		game.getState().setGameStage(5);
+    	}
 		return false;
 	}
 	
@@ -344,7 +327,6 @@ public class Minimax {
 					validMoves.add(new Move(4, i, -1));
 				}
 				
-				
 			}
 		}
 		
@@ -354,5 +336,7 @@ public class Minimax {
 	public int getNodesEvaluated() {
 		return nodesEvaluated;
 	}
+	
+	
 
 }

@@ -30,6 +30,7 @@ public class MainMenu {
 	private String p1Name = "NoName";
 	private String p2Name = "NoName";
 	private String gameType = "pvp";
+	private String difficulty = "easy";
 
 	public MainMenu() {
 
@@ -152,6 +153,27 @@ public class MainMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				gameType = "pvAI";
+				difficulty = "easy";
+				enterNamesAndStart();
+			}
+
+		});
+		
+		mediumButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				gameType = "pvAI";
+				difficulty = "medium";
+				enterNamesAndStart();
+			}
+
+		});
+		
+		hardButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				gameType = "pvAI";
+				difficulty = "hard";
 				enterNamesAndStart();
 			}
 
@@ -197,6 +219,11 @@ public class MainMenu {
 	
 	public String getGameType() {
 		return gameType;
+	}
+
+
+	public String getDifficulty() {
+		return difficulty;
 	}
 	
 
