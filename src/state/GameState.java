@@ -372,6 +372,11 @@ public class GameState {
 			else if(boardPieces[i]=="black") 
 				blackPieces++;
 		}
+		if(whitePieces==2 && piecesPlaced>=totalNumberOfPieces) 
+			return "black";
+		else if(blackPieces==2 && piecesPlaced>=totalNumberOfPieces) 
+			return "white";
+		
 		if(whitePieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingWhite = true;
 			phase = 3;
@@ -382,10 +387,6 @@ public class GameState {
 			phase = 3;
 			return null;
 		}
-		if(whitePieces==2 && piecesPlaced>=totalNumberOfPieces) 
-			return "black";
-		else if(blackPieces==2 && piecesPlaced>=totalNumberOfPieces) 
-			return "white";
 		
 		String otherTurn;
 		if(turn=="white") {

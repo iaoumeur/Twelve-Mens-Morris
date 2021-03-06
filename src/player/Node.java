@@ -1,6 +1,7 @@
 package player;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import state.GameState;
 
@@ -34,6 +35,10 @@ public class Node {
 		this.children.add(node);
 	}
 	
+	public GameState getGameState() {
+		return state;
+	}
+	
 	public ArrayList<Node> getChildren() {
 		return children;
 	}
@@ -48,6 +53,12 @@ public class Node {
 
 	public int getVisits() {
 		return visits;
+	}
+
+	public Node getRandomChild() {
+		Random rand = new Random();
+		int randomIndex = rand.nextInt(children.size());
+		return children.get(randomIndex);
 	}
 	
 }

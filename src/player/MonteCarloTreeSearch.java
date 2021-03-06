@@ -12,6 +12,7 @@ public class MonteCarloTreeSearch {
 	Game game;
 	GameState state;
 	GameState copyState;
+	GameState tempState;
 	Stack<GameState> states = new Stack<GameState>();
 	
 	int nodesEvaluated = 0;
@@ -34,6 +35,15 @@ public class MonteCarloTreeSearch {
 		while((System.currentTimeMillis() - startTime) < timeForSearch) {
 			
 			Node bestNode = selection(root);
+			Node exploreNode;
+			
+			if(bestNode.getGameState().hasGameEnded()!=null) {
+				expansion(bestNode);
+			}
+			if(bestNode.getChildren().size()>0) {
+				exploreNode = bestNode.getRandomChild();
+			}
+			
 			
 		}
 		/*let startTime = Date.now();
@@ -59,6 +69,34 @@ public class MonteCarloTreeSearch {
 	}
 	
 	
+	private void expansion(Node bestNode) {
+		
+		ArrayList<Move> validMoves = findValidMoves(bestNode.getGameState().getTurn()); 
+		
+		for (int i=0; i<validMoves.size(); i++){
+			
+			tempState = copyState.saveGameState();
+			
+			Move move = validMoves.get(i);
+			simulateMove(move, bestNode.getGameState().getTurn());
+			
+			Node newNode = new Node(copyState.saveGameState(), bestNode);
+			bestNode.addChild(newNode);
+			
+			copyState = tempState.saveGameState();
+			
+			
+		}
+		
+		/*let possibleStates = node.state.getAllPossibleStates();
+		  possibleStates.forEach(state => {
+		    let newNode = new Node(state);
+		    newNode.parent = node;
+		    newNode.state.playNo = node.state.getOpponent();
+		    node.childArray.push(newNode);
+		  });*/
+	}
+
 	private Node selection(Node node) {
 		
 		Node n = node;
@@ -138,6 +176,73 @@ public class MonteCarloTreeSearch {
 		}
 		
 		return validMoves;
+	}
+	
+	private void simulateMove(Move move, String player) {
+		
+		if(move.getGameStage()==1) {
+			copyState.setBoardPiece(move.getPiecePosition(), player);
+			//copyState.printBoardPieces();
+			alterGame(1, player, copyState);
+		}
+		else if(move.getGameStage()==2) {
+			copyState.setBoardPiece(move.getPiecePosition(), null);
+			copyState.setBoardPiece(move.getTo(), player);
+			//copyState.printBoardPieces();
+			alterGame(2, player, copyState);
+		}
+		else if(move.getGameStage()==4) {
+			copyState.setBoardPiece(move.getPiecePosition(), null);
+			//copyState.printBoardPieces();
+			alterGame(4, player, copyState);
+		}
+		
+	}
+	
+	public void alterGame(int gameStage, String player, GameState gameState) {
+		
+		if(gameStage==1) {
+			if(player=="white") {
+				gameState.whitePiecesPlaced++;
+			}
+			else {
+				gameState.blackPiecesPlaced++;
+			}
+			gameState.piecesPlaced++;
+			if(gameState.checkForMill()) {
+				//System.out.println("***** THIS MOVE MADE A MILL *****");
+			}
+			else {
+				copyState.switchTurn();
+				if(gameState.piecesPlaced>=gameState.totalNumberOfPieces){
+					gameState.setGameStage(2);
+					gameState.phase = 2;
+				}	
+			}
+		}
+		else if(gameStage==2) {
+			if(gameState.checkForMill()) {
+			}
+			else {
+				copyState.switchTurn();
+				gameState.setGameStage(2);
+			}
+			
+    		gameState.resetMovablePositions();
+		}
+		else if(gameStage==4) {
+			gameState.checkForMill();
+			if(gameState.piecesPlaced<gameState.totalNumberOfPieces) {
+				gameState.setGameStage(1);
+			}
+			else {
+				gameState.setGameStage(2);
+			}
+			copyState.switchTurn();
+			gameState.resetMovablePositions();
+		}
+		
+		
 	}
 	
 }
