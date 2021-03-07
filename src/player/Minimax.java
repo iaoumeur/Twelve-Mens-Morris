@@ -15,6 +15,7 @@ public class Minimax {
 	Stack<GameState> states = new Stack<GameState>();
 	
 	int nodesEvaluated = 0;
+	boolean millCreated = false;
 	
 	public Minimax(Game game, GameState state) {
 		this.game = game;
@@ -229,7 +230,7 @@ public class Minimax {
 		
 	}
 
-	public boolean makeMove(MoveScore move, String player) {
+	public void makeMove(MoveScore move, String player) {
 		System.out.println("BEFORE MAKING MOVE");
 		state.evaluateState(player, true);
 		nodesEvaluated = 0;
@@ -246,7 +247,7 @@ public class Minimax {
 			}
 			if(state.getGameStage()==4) {
 				//System.out.println("COMPUTER MADE A MILL");
-				return true;
+				millCreated = true;
 			}
 		}
 		else if(state.getGameStage()==2) {
@@ -256,7 +257,7 @@ public class Minimax {
 			System.out.println("AFTER MAKING MOVE");
 			state.evaluateState(player, true);
 			if(state.getGameStage()==4) {
-				return true;
+				millCreated = true;
 			}
 		}
 		else if(state.getGameStage()==4) {
@@ -279,7 +280,7 @@ public class Minimax {
     		game.displayMessage(5);
     		game.getState().setGameStage(5);
     	}
-		return false;
+		millCreated = false;
 	}
 	
 	public ArrayList<Move> findValidMoves(String player) {
@@ -335,6 +336,14 @@ public class Minimax {
 
 	public int getNodesEvaluated() {
 		return nodesEvaluated;
+	}
+	
+	public boolean getMillCreated() {
+		return millCreated;
+	}
+	
+	public void resetMillCreated() {
+		millCreated = false;
 	}
 	
 	

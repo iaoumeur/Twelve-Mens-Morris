@@ -2,6 +2,7 @@ package player;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 import java.util.Stack;
 
 import gui.Game;
@@ -27,7 +28,7 @@ public class MonteCarloTreeSearch {
 		states.push(state);
 	}
 	
-	public MoveScore monteCarloTreeSearch(String player, long timeForSearch) {
+	public Move monteCarloTreeSearch(String player, long timeForSearch) {
 		
 		Node root = new Node(copyState, null);
 		long startTime = System.currentTimeMillis();
@@ -40,12 +41,18 @@ public class MonteCarloTreeSearch {
 			if(bestNode.getGameState().hasGameEnded()!=null) {
 				expansion(bestNode);
 			}
+			exploreNode = bestNode;
 			if(bestNode.getChildren().size()>0) {
 				exploreNode = bestNode.getRandomChild();
 			}
-			
+			int rolloutResult = rollout(exploreNode, player);
+			backpropogate(exploreNode, rolloutResult);
 			
 		}
+		
+		Node finalNode = root.getBestChild();
+		return finalNode.getAction();
+		
 		/*let startTime = Date.now();
 		  while ((Date.now() - startTime) < 1000) {
 		    let promisingNode = selectPromisingNode(rootNode);
@@ -62,40 +69,10 @@ public class MonteCarloTreeSearch {
 		  }
 		  let winnerNode = rootNode.getChildWithMaxScore();
 		  return winnerNode.state.board;*/
-		
-		
-		return null;
+	
 		
 	}
 	
-	
-	private void expansion(Node bestNode) {
-		
-		ArrayList<Move> validMoves = findValidMoves(bestNode.getGameState().getTurn()); 
-		
-		for (int i=0; i<validMoves.size(); i++){
-			
-			tempState = copyState.saveGameState();
-			
-			Move move = validMoves.get(i);
-			simulateMove(move, bestNode.getGameState().getTurn());
-			
-			Node newNode = new Node(copyState.saveGameState(), bestNode);
-			bestNode.addChild(newNode);
-			
-			copyState = tempState.saveGameState();
-			
-			
-		}
-		
-		/*let possibleStates = node.state.getAllPossibleStates();
-		  possibleStates.forEach(state => {
-		    let newNode = new Node(state);
-		    newNode.parent = node;
-		    newNode.state.playNo = node.state.getOpponent();
-		    node.childArray.push(newNode);
-		  });*/
-	}
 
 	private Node selection(Node node) {
 		
@@ -116,6 +93,90 @@ public class MonteCarloTreeSearch {
 		}
 		  
 		return n.getChildren().get(bestChildIndex);
+	}
+	
+	private void expansion(Node bestNode) {
+		
+		ArrayList<Move> validMoves = findValidMoves(bestNode.getGameState().getTurn()); 
+		
+		for (int i=0; i<validMoves.size(); i++){
+			
+			tempState = copyState.saveGameState();
+			
+			Move move = validMoves.get(i);
+			simulateMove(move, bestNode.getGameState().getTurn());
+			
+			Node newNode = new Node(copyState.saveGameState(), bestNode);
+			newNode.setAction(move);
+			bestNode.addChild(newNode);
+			
+			copyState = tempState.saveGameState();
+			
+			
+		}
+		
+		/*let possibleStates = node.state.getAllPossibleStates();
+		  possibleStates.forEach(state => {
+		    let newNode = new Node(state);
+		    newNode.parent = node;
+		    newNode.state.playNo = node.state.getOpponent();
+		    node.childArray.push(newNode);
+		  });*/
+	}
+	
+	private int rollout(Node exploreNode, String player) {
+		
+		String otherPlayer;
+		if(player=="white") {
+			otherPlayer="black";
+		}
+		else {
+			otherPlayer="white";
+		}
+		
+		copyState = exploreNode.getGameState().saveGameState();
+		tempState = copyState.saveGameState();
+		
+		while(copyState.hasGameEnded()==null) {
+			Random rand = new Random();
+			ArrayList<Move> validMoves = findValidMoves(copyState.getTurn());
+			Move move = validMoves.get(rand.nextInt(validMoves.size()));
+			simulateMove(move, copyState.getTurn());	
+		}
+		
+		String endgame = copyState.hasGameEnded();
+		copyState = tempState.saveGameState();
+		
+		if(endgame==otherPlayer) {
+			return -10;
+		}
+		else if(endgame==player) {
+			return 10;
+		}
+		
+		return 0;
+	}
+	
+	
+	private void backpropogate(Node exploreNode, int rolloutResult) {
+		
+		Node tempNode = exploreNode;
+		while(tempNode!=null) {
+			tempNode.incrementVisits();
+			tempNode.setTotalScore(tempNode.getTotalScore()+rolloutResult);
+			tempNode = tempNode.getParent();
+		}
+		
+		/*
+		let tempNode = nodeToExplore;
+		  while (tempNode !== undefined) {
+		    tempNode.state.visitCount++;
+		    if (tempNode.state.playNo === playoutResult) {
+		      tempNode.state.addScore(10);
+		    }
+		    tempNode = tempNode.parent;
+		  }*/
+		
 	}
 
 	private double calculateUCBScore(Node node) {

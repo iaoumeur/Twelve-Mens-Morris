@@ -10,6 +10,7 @@ public class Node {
 	GameState state;
 	int totalScore;
 	int visits;
+	Move action;
 	
 	Node parent;
 	ArrayList<Node> children;
@@ -54,11 +55,35 @@ public class Node {
 	public int getVisits() {
 		return visits;
 	}
+	
+	public void setAction(Move move) {
+		action = move;
+	}
+	
+	public Move getAction() {
+		return action;
+	}
 
 	public Node getRandomChild() {
 		Random rand = new Random();
 		int randomIndex = rand.nextInt(children.size());
 		return children.get(randomIndex);
 	}
+
+	public Node getBestChild() {
+		if(children.isEmpty()) {
+			return null;
+		}
+		int bestChildIndex = 0;
+		double bestScore = -10000;
+		for(int i=0; i<children.size(); i++) {
+			if(children.get(i).getTotalScore()>bestScore) {
+				bestChildIndex = i;
+				bestScore = children.get(i).getTotalScore();
+			}
+		}
+		return children.get(bestChildIndex);
+	}
+	
 	
 }

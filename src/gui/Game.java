@@ -33,6 +33,7 @@ public class Game {
 	private JPanel blackPiecePanel;
 	private JLabel turnLabel;
 	private JLabel msgLabel;
+	private JLabel thinkingLabel;
 	
 	ImageIcon whitePieceImage; 
 	ImageIcon blackPieceImage;
@@ -132,6 +133,15 @@ public class Game {
 		turnPanel.add(turnLabel, BorderLayout.CENTER);
 		turnPanel.setOpaque(false);
 		
+		JPanel thinkingPanel = new JPanel();
+		thinkingLabel = new JLabel("Computer Thinking...");
+		thinkingLabel.setForeground(Color.BLACK);
+		thinkingPanel.setBounds(330, 320, 300, 100);
+		thinkingPanel.add(thinkingLabel, BorderLayout.CENTER);
+		thinkingPanel.setOpaque(false);
+		thinkingPanel.setVisible(false);
+		
+		
 		/*JPanel exitPanel = new JPanel();
 		ImageIcon exitImage = new ImageIcon(this.getClass().getResource("/ExitButton.png"));
 		exitPanel.setBounds(frameWidth - exitImage.getIconWidth()-30, exitImage.getIconHeight()-40, exitImage.getIconWidth(), exitImage.getIconHeight()+10);
@@ -150,6 +160,7 @@ public class Game {
 		lpane.add(p2Panel, 1, 0);
 		lpane.add(msgPanel, 1, 0);
 		lpane.add(turnPanel,1, 0);
+		lpane.add(thinkingPanel, 1, 0);
 		//lpane.add(exitPanel, 1, 0);
 		
 	}
@@ -238,6 +249,14 @@ public class Game {
 	public void displayMessage(int messageNumber) {
 		msgLabel.setText("<html><span style=\"font-size:16px;color:white;"
 				+ "\">" + gameMessages[messageNumber] + "</span></html>");
+	}
+
+	public void showThinking() {
+		thinkingLabel.setVisible(true);
+	}
+	
+	public void hideThinking() {
+		thinkingLabel.setVisible(false);
 	}
 
 
