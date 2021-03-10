@@ -14,6 +14,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import player.Minimax;
+import player.MonteCarloTreeSearch;
 import state.GameState;
 
 public class Game {
@@ -25,8 +26,10 @@ public class Game {
 	
 	private GameState state;
 	private Board board;
-	private Minimax computer;
-	private Minimax otherComputer;
+	//private Minimax computer;
+	//private Minimax otherComputer;
+	private MonteCarloTreeSearch computer;
+	private MonteCarloTreeSearch otherComputer;
 	private ArrayList<JLabel> whitePieces;
 	private ArrayList<JLabel> blackPieces;
 	private JPanel whitePiecePanel;
@@ -51,11 +54,11 @@ public class Game {
 		
 		state = new GameState();
 		if(gameType=="pvAI") {
-			computer = new Minimax(this, state);
+			computer = new MonteCarloTreeSearch(this, state);
 		}
 		if(gameType=="AIvAI") {
-			computer = new Minimax(this, state);
-			otherComputer = new Minimax(this, state);
+			computer = new MonteCarloTreeSearch(this, state);
+			otherComputer = new MonteCarloTreeSearch(this, state);
 		}
 		
 		frame = new JFrame("Twelve Men's Morris");
@@ -169,11 +172,11 @@ public class Game {
 		return state;
 	}
 	
-	public Minimax getComputer() {
+	public MonteCarloTreeSearch getComputer() {
 		return computer;
 	}
 	
-	public Minimax getOtherComputer() {
+	public MonteCarloTreeSearch getOtherComputer() {
 		return otherComputer;
 	}
 	

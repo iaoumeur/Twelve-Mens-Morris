@@ -13,7 +13,7 @@ public class Node {
 	Move action;
 	
 	Node parent;
-	ArrayList<Node> children;
+	ArrayList<Node> children = new ArrayList<Node>();
 	
 	public Node(GameState state, Node parent) {
 		this.state = state;

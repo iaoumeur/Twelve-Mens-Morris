@@ -7,6 +7,8 @@ import java.util.Stack;
 import gui.Game;
 import state.GameState;
 
+//IN MINIMAX LOOP, LOOK AT TABOO SEARCH, maybe think about penalty cost for cycling.
+//after making a move, undo the last move so our don't copy the state
 public class Minimax {
 	
 	Game game;
@@ -248,6 +250,7 @@ public class Minimax {
 			if(state.getGameStage()==4) {
 				//System.out.println("COMPUTER MADE A MILL");
 				millCreated = true;
+				return;
 			}
 		}
 		else if(state.getGameStage()==2) {
@@ -258,6 +261,7 @@ public class Minimax {
 			state.evaluateState(player, true);
 			if(state.getGameStage()==4) {
 				millCreated = true;
+				return;
 			}
 		}
 		else if(state.getGameStage()==4) {

@@ -17,6 +17,7 @@ public class MonteCarloTreeSearch {
 	Stack<GameState> states = new Stack<GameState>();
 	
 	int nodesEvaluated = 0;
+	boolean millCreated = false;
 	
 	public MonteCarloTreeSearch(Game game, GameState state) {
 		this.game = game;
@@ -28,24 +29,40 @@ public class MonteCarloTreeSearch {
 		states.push(state);
 	}
 	
-	public Move monteCarloTreeSearch(String player, long timeForSearch) {
+	public Move monteCarloTreeSearch(String player, int iterations) {
 		
-		Node root = new Node(copyState, null);
+		Node root = new Node(copyState.saveGameState(), null);
 		long startTime = System.currentTimeMillis();
 		
-		while((System.currentTimeMillis() - startTime) < timeForSearch) {
+		//while((System.currentTimeMillis() - startTime) < timeForSearch) {
+		for(int j=0; j<iterations; j++) {
 			
+			System.out.println("*** PERFORMING SELECTION ***");
 			Node bestNode = selection(root);
-			Node exploreNode;
+			System.out.println("Best Node selected. Board state for this node is: ");
+			bestNode.getGameState().printBoardPieces();
+			System.out.println("*** SELECTION COMPLETE ***");
 			
-			if(bestNode.getGameState().hasGameEnded()!=null) {
+			Node exploreNode;
+			if(bestNode.getGameState().hasGameEnded()==null) {
+				System.out.println("*** PERFORMING EXPANSION ***");
 				expansion(bestNode);
+				System.out.println("Best node now has " + bestNode.getChildren().size() + " children.");
+				for(int i=0; i<bestNode.getChildren().size(); i++) {
+					System.out.println("Child " + i + ": ");
+					bestNode.getChildren().get(i).getGameState().printBoardPieces();
+				}
+				System.out.println("*** EXPANSION COMPLETE***");
 			}
 			exploreNode = bestNode;
 			if(bestNode.getChildren().size()>0) {
 				exploreNode = bestNode.getRandomChild();
+				System.out.println("Picking random child for explore node: ");
+				exploreNode.getGameState().printBoardPieces();
 			}
-			int rolloutResult = rollout(exploreNode, player);
+			//System.out.println("*** PERFORMING ROLLOUT ***");
+			int rolloutResult = rollout(exploreNode);
+			//System.out.println("*** PERFORMING BACKPROPAGATION ***");
 			backpropogate(exploreNode, rolloutResult);
 			
 		}
@@ -74,15 +91,27 @@ public class MonteCarloTreeSearch {
 	}
 	
 
-	private Node selection(Node node) {
+	private Node selection(Node root) {
 		
-		Node n = node;
-		if(n.getChildren().isEmpty()) {
+		Node node = root;
+		//int bestChildIndex = 0;
+		double bestScore = 0;
+		
+		while(!node.getChildren().isEmpty()) {
+			for(int i=0; i<node.getChildren().size(); i++) {
+				double UCBScore = calculateUCBScore(node.getChildren().get(i));
+				if(UCBScore> bestScore) {
+					node = node.getChildren().get(i);
+				}
+			} 
+		}
+		
+		return node;
+		/*if(n.getChildren().isEmpty()) {
 			return n;
 		}
 		
-		int bestChildIndex = 0;
-		double bestScore = 0;
+		
 
 		for(int i=0; i<n.getChildren().size(); i++) {
 			double UCBScore = calculateUCBScore(n.getChildren().get(i));
@@ -92,25 +121,44 @@ public class MonteCarloTreeSearch {
 			}
 		}
 		  
-		return n.getChildren().get(bestChildIndex);
+		return n.getChildren().get(bestChildIndex);*/
+		
+		/*selectPromisingNode(rootNode) {
+			  let node = rootNode;
+			  while (node.childArray.length !== 0) {
+			    node = UCB.findBestNodeWithUCB(node);
+			  }
+			  return node;
+			}*/
 	}
 	
 	private void expansion(Node bestNode) {
 		
-		ArrayList<Move> validMoves = findValidMoves(bestNode.getGameState().getTurn()); 
+		String otherTurn;
+		if(bestNode.getGameState().getTurn()=="black") {
+			otherTurn = "white";
+		}
+		else {
+			otherTurn = "black";
+		}
+		
+		
+		ArrayList<Move> validMoves = findValidMoves(copyState.getTurn()); 
 		
 		for (int i=0; i<validMoves.size(); i++){
 			
+			//System.out.println("BEFORE: " + copyState.getTurn());
 			tempState = copyState.saveGameState();
 			
 			Move move = validMoves.get(i);
-			simulateMove(move, bestNode.getGameState().getTurn());
+			simulateMove(move, copyState.getTurn());
 			
 			Node newNode = new Node(copyState.saveGameState(), bestNode);
 			newNode.setAction(move);
 			bestNode.addChild(newNode);
 			
 			copyState = tempState.saveGameState();
+			//System.out.println("AFTER: " + copyState.getTurn());
 			
 			
 		}
@@ -124,33 +172,47 @@ public class MonteCarloTreeSearch {
 		  });*/
 	}
 	
-	private int rollout(Node exploreNode, String player) {
+	private int rollout(Node exploreNode) {
 		
 		String otherPlayer;
-		if(player=="white") {
+		if(copyState.getTurn()=="white") {
 			otherPlayer="black";
 		}
 		else {
 			otherPlayer="white";
 		}
 		
-		copyState = exploreNode.getGameState().saveGameState();
+		//System.out.println("Saving copyState and creating tempState");
 		tempState = copyState.saveGameState();
+		copyState = exploreNode.getGameState().saveGameState();
 		
+		System.out.println("Turn: " + copyState.getTurn());
 		while(copyState.hasGameEnded()==null) {
+			//System.out.println("Game has not ended");
 			Random rand = new Random();
+			//System.out.println("player: " + player);
+			//System.out.println("copy state turn: " + copyState.getTurn());
 			ArrayList<Move> validMoves = findValidMoves(copyState.getTurn());
+			//System.out.println("Valid Moves: " + validMoves.size());
 			Move move = validMoves.get(rand.nextInt(validMoves.size()));
-			simulateMove(move, copyState.getTurn());	
+			//System.out.println("Simulating move for: " + copyState.getTurn());
+			simulateMove(move, copyState.getTurn());
+			System.out.println("Random move creates board state: ");
+			copyState.printBoardPieces();
+			//System.out.println("Move made, board state is now: ");
+			//copyState.printBoardPieces();
 		}
 		
+		//System.out.println("Game has ended");
 		String endgame = copyState.hasGameEnded();
 		copyState = tempState.saveGameState();
 		
 		if(endgame==otherPlayer) {
+			System.out.println("White won this simulation");
 			return -10;
 		}
-		else if(endgame==player) {
+		else if(endgame==copyState.getTurn()) {
+			System.out.println("Black won this simulation");
 			return 10;
 		}
 		
@@ -181,6 +243,9 @@ public class MonteCarloTreeSearch {
 
 	private double calculateUCBScore(Node node) {
 		
+		if(node.getVisits()==0) {
+			return Double.MAX_VALUE;
+		}
 		double V = node.getTotalScore() / node.getVisits();
 		int N = node.getParent().getVisits();
 		int n = node.getVisits();
@@ -188,6 +253,59 @@ public class MonteCarloTreeSearch {
 		return V + 2*(Math.sqrt(Math.log(N)/n));
 	}
 
+	public void makeMove(Move move, String player) {
+		System.out.println("BEFORE MAKING MOVE");
+		if(state.getGameStage()==1) {
+			state.setBoardPiece(move.piecePosition, player);
+			alterGame(1, player, state);
+			System.out.println("AFTER MAKING MOVE");
+			state.evaluateState(player, true);
+			if(player=="white") {
+				game.removeWhitePieceFromPanel();
+			}
+			else {
+				game.removeBlackPieceFromPanel();
+			}
+			if(state.getGameStage()==4) {
+				//System.out.println("COMPUTER MADE A MILL");
+				millCreated = true;
+				return;
+			}
+		}
+		else if(state.getGameStage()==2) {
+			state.setBoardPiece(move.piecePosition, null);
+			state.setBoardPiece(move.to, player);
+			alterGame(2, player, state);
+			System.out.println("AFTER MAKING MOVE");
+			state.evaluateState(player, true);
+			if(state.getGameStage()==4) {
+				millCreated = true;
+				return;
+			}
+		}
+		else if(state.getGameStage()==4) {
+			state.setBoardPiece(move.piecePosition, null);
+			alterGame(4, player, state);
+			System.out.println("AFTER MAKING MOVE");
+			state.evaluateState(player, true);
+		}
+		
+		String endgame = state.hasGameEnded();
+		if(endgame=="white") {
+    		game.displayMessage(3);
+    		game.getState().setGameStage(5);
+    	}
+    	else if(endgame=="black") {
+    		game.displayMessage(4);
+    		game.getState().setGameStage(5);
+    	}
+    	else if(endgame=="draw") {
+    		game.displayMessage(5);
+    		game.getState().setGameStage(5);
+    	}
+		millCreated = false;
+	}
+	
 	public ArrayList<Move> findValidMoves(String player) {
 		
 		String otherTurn;
@@ -305,5 +423,14 @@ public class MonteCarloTreeSearch {
 		
 		
 	}
+	
+	public boolean getMillCreated() {
+		return millCreated;
+	}
+	
+	public void resetMillCreated() {
+		millCreated = false;
+	}
+	
 	
 }

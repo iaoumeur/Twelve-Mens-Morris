@@ -668,12 +668,12 @@ public class GameState {
 			score-=(1*evaluationWeights[6]);
 		}
 		
-		if(print) {
+		/*if(print) {
 			for(int i=0; i<prints.size(); i++) {
 				System.out.println(prints.get(i));
 			}
 			
-		}
+		}*/
 		
 		
 		return score;

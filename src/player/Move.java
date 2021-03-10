@@ -6,7 +6,7 @@ public class Move {
 
 	int gameStage = 0;
 	int piecePosition = 0;
-	int to = 0;
+	public int to = 0;
 	
 	public Move(int gameStage, int boardPiece, int to) {
 		this.gameStage=gameStage;

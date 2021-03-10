@@ -2,6 +2,7 @@ package main;
 
 import gui.Game;
 import gui.MainMenu;
+import player.Move;
 import player.MoveScore;
 
 public class App {
@@ -58,7 +59,8 @@ public class App {
 				game.setStopPaining(true);
 				game.getComputer().setCopyState(game.getState().saveGameState());
 				game.showThinking();
-				MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
+				//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
+				Move bestMove = game.getComputer().monteCarloTreeSearch("black", 1);
 				game.hideThinking();
 				
 				game.getComputer().makeMove(bestMove, "black");
@@ -74,7 +76,7 @@ public class App {
 			System.out.print("Game ended");
 		}
 		
-		else if(menu.getGameType()=="AIvAI") {
+		/*else if(menu.getGameType()=="AIvAI") {
 			while(game.getState().getGameStage()!=5) {
 				if(game.getState().getTurn()=="white") {
 					game.setStopPaining(true);
@@ -95,7 +97,7 @@ public class App {
 				else if(game.getState().getTurn()=="black") {
 					game.setStopPaining(true);
 					game.getComputer().setCopyState(game.getState().saveGameState());
-					MoveScore bestMove = game.getComputer().minimax("black", 6, -1000000, 1000000);
+					MoveScore bestMove = game.getComputer().minimax("black", 4, -1000000, 1000000);
 					
 					game.getComputer().makeMove(bestMove, "black");
 					
@@ -110,17 +112,17 @@ public class App {
 				
 			}
 			System.out.print("Game ended");
-		}
+		}*/
 		
 	}
 
-	private static void showComputerMove(MoveScore bestMove, Game game) {
+	private static void showComputerMove(Move bestMove, Game game) {
 		game.getBoard().repaintPieces();
 		if(bestMove.to==-1 && game.getState().getGameStage()!=4) {
-			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "red");	
+			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.getPiecePosition(), "red");	
 		}
 		else if(game.getState().getGameStage()!=4){
-			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "smallred");	
+			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.getPiecePosition(), "smallred");	
 			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, "red");	
 		}
 		
