@@ -60,7 +60,7 @@ public class App {
 				game.getComputer().setCopyState(game.getState().saveGameState());
 				game.showThinking();
 				//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
-				Move bestMove = game.getComputer().monteCarloTreeSearch("black", 1);
+				Move bestMove = game.getComputer().monteCarloTreeSearch("black", 10);
 				game.hideThinking();
 				
 				game.getComputer().makeMove(bestMove, "black");

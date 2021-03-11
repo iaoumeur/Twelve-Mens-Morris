@@ -388,14 +388,14 @@ public class GameState {
 			return null;
 		}
 		
-		String otherTurn;
+		String otherTurn = null;
 		if(turn=="white") {
 			otherTurn="black";
 			if(flyingBlack) {
 				return null;
 			}
 		}
-		else {
+		else if(turn=="black"){
 			otherTurn = "white";
 			if(flyingWhite) {
 				return null;

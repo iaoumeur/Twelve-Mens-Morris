@@ -18,6 +18,8 @@ public class Node {
 	public Node(GameState state, Node parent) {
 		this.state = state;
 		this.parent = parent;
+		totalScore = 0;
+		visits = 0;
 	}
 	
 	public void setGameState(GameState state) {

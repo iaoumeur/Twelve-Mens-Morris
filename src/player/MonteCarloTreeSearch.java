@@ -39,30 +39,30 @@ public class MonteCarloTreeSearch {
 			
 			System.out.println("*** PERFORMING SELECTION ***");
 			Node bestNode = selection(root);
-			System.out.println("Best Node selected. Board state for this node is: ");
-			bestNode.getGameState().printBoardPieces();
-			System.out.println("*** SELECTION COMPLETE ***");
+			//System.out.println("Best Node selected. Board state for this node is: ");
+			//bestNode.getGameState().printBoardPieces();
+			//System.out.println("*** SELECTION COMPLETE ***");
 			
 			Node exploreNode;
 			if(bestNode.getGameState().hasGameEnded()==null) {
 				System.out.println("*** PERFORMING EXPANSION ***");
 				expansion(bestNode);
-				System.out.println("Best node now has " + bestNode.getChildren().size() + " children.");
+				//System.out.println("Best node now has " + bestNode.getChildren().size() + " children.");
 				for(int i=0; i<bestNode.getChildren().size(); i++) {
-					System.out.println("Child " + i + ": ");
-					bestNode.getChildren().get(i).getGameState().printBoardPieces();
+					//System.out.println("Child " + i + ": ");
+					//bestNode.getChildren().get(i).getGameState().printBoardPieces();
 				}
-				System.out.println("*** EXPANSION COMPLETE***");
+				//System.out.println("*** EXPANSION COMPLETE***");
 			}
 			exploreNode = bestNode;
 			if(bestNode.getChildren().size()>0) {
 				exploreNode = bestNode.getRandomChild();
-				System.out.println("Picking random child for explore node: ");
-				exploreNode.getGameState().printBoardPieces();
+				//System.out.println("Picking random child for explore node: ");
+				//exploreNode.getGameState().printBoardPieces();
 			}
-			//System.out.println("*** PERFORMING ROLLOUT ***");
+			System.out.println("*** PERFORMING ROLLOUT ***");
 			int rolloutResult = rollout(exploreNode);
-			//System.out.println("*** PERFORMING BACKPROPAGATION ***");
+			System.out.println("*** PERFORMING BACKPROPAGATION ***");
 			backpropogate(exploreNode, rolloutResult);
 			
 		}
@@ -94,18 +94,26 @@ public class MonteCarloTreeSearch {
 	private Node selection(Node root) {
 		
 		Node node = root;
-		//int bestChildIndex = 0;
-		double bestScore = 0;
+		int bestChildIndex = 0;
+		int depth = 0;
 		
 		while(!node.getChildren().isEmpty()) {
+			double bestScore = Integer.MIN_VALUE;
 			for(int i=0; i<node.getChildren().size(); i++) {
+				//System.out.println("There are " + node.getChildren().size() + " children");
 				double UCBScore = calculateUCBScore(node.getChildren().get(i));
+				System.out.println("Child " + i + " UCBScore: " + UCBScore);
 				if(UCBScore> bestScore) {
-					node = node.getChildren().get(i);
+					bestScore = UCBScore;
+					bestChildIndex = i;
 				}
 			} 
+			node = node.getChildren().get(bestChildIndex);
+			depth++;
+			
 		}
 		
+		System.out.println("Best child is " + bestChildIndex + " selected at depth " + depth + ", score: " + node.getTotalScore() + " visits: " + node.getVisits());
 		return node;
 		/*if(n.getChildren().isEmpty()) {
 			return n;
@@ -142,7 +150,7 @@ public class MonteCarloTreeSearch {
 			otherTurn = "black";
 		}
 		
-		
+		copyState = bestNode.getGameState().saveGameState();
 		ArrayList<Move> validMoves = findValidMoves(copyState.getTurn()); 
 		
 		for (int i=0; i<validMoves.size(); i++){
@@ -152,6 +160,11 @@ public class MonteCarloTreeSearch {
 			
 			Move move = validMoves.get(i);
 			simulateMove(move, copyState.getTurn());
+			
+			/*if(copyState.hasGameEnded()!=null) {
+				copyState = tempState.saveGameState();
+				continue;
+			}*/
 			
 			Node newNode = new Node(copyState.saveGameState(), bestNode);
 			newNode.setAction(move);
@@ -186,21 +199,34 @@ public class MonteCarloTreeSearch {
 		tempState = copyState.saveGameState();
 		copyState = exploreNode.getGameState().saveGameState();
 		
-		System.out.println("Turn: " + copyState.getTurn());
-		while(copyState.hasGameEnded()==null) {
+		int moves = 0;
+		//System.out.println("Turn: " + copyState.getTurn());
+		while(copyState.hasGameEnded()==null && moves < 100) {
 			//System.out.println("Game has not ended");
 			Random rand = new Random();
 			//System.out.println("player: " + player);
 			//System.out.println("copy state turn: " + copyState.getTurn());
 			ArrayList<Move> validMoves = findValidMoves(copyState.getTurn());
+			if(validMoves.isEmpty()) {
+				if(copyState.getTurn()==otherPlayer) {
+					//System.out.println("White won this simulation");
+					return -10;
+				}
+				else {
+					//System.out.println("Black won this simulation");
+					return 10;
+				}
+			}
+			//System.out.println("Turn: " + copyState.getTurn());
 			//System.out.println("Valid Moves: " + validMoves.size());
 			Move move = validMoves.get(rand.nextInt(validMoves.size()));
 			//System.out.println("Simulating move for: " + copyState.getTurn());
 			simulateMove(move, copyState.getTurn());
-			System.out.println("Random move creates board state: ");
-			copyState.printBoardPieces();
+			//System.out.println("Random move creates board state: ");
+			//copyState.printBoardPieces();
 			//System.out.println("Move made, board state is now: ");
 			//copyState.printBoardPieces();
+			moves++;
 		}
 		
 		//System.out.println("Game has ended");
@@ -208,11 +234,11 @@ public class MonteCarloTreeSearch {
 		copyState = tempState.saveGameState();
 		
 		if(endgame==otherPlayer) {
-			System.out.println("White won this simulation");
+			//System.out.println("White won this simulation");
 			return -10;
 		}
 		else if(endgame==copyState.getTurn()) {
-			System.out.println("Black won this simulation");
+			//System.out.println("Black won this simulation");
 			return 10;
 		}
 		
@@ -226,6 +252,8 @@ public class MonteCarloTreeSearch {
 		while(tempNode!=null) {
 			tempNode.incrementVisits();
 			tempNode.setTotalScore(tempNode.getTotalScore()+rolloutResult);
+			//System.out.println("Node score: " + tempNode.getTotalScore());
+			//System.out.println("Node visits: " + tempNode.getVisits());
 			tempNode = tempNode.getParent();
 		}
 		
@@ -244,21 +272,22 @@ public class MonteCarloTreeSearch {
 	private double calculateUCBScore(Node node) {
 		
 		if(node.getVisits()==0) {
-			return Double.MAX_VALUE;
+			System.out.println("Returning max value");
+			return Integer.MAX_VALUE;
 		}
 		double V = node.getTotalScore() / node.getVisits();
 		int N = node.getParent().getVisits();
 		int n = node.getVisits();
 		
-		return V + 2*(Math.sqrt(Math.log(N)/n));
+		return V + 2*(Math.sqrt((Math.log(N))/n));
 	}
 
 	public void makeMove(Move move, String player) {
-		System.out.println("BEFORE MAKING MOVE");
+		//System.out.println("BEFORE MAKING MOVE");
 		if(state.getGameStage()==1) {
 			state.setBoardPiece(move.piecePosition, player);
 			alterGame(1, player, state);
-			System.out.println("AFTER MAKING MOVE");
+			//System.out.println("AFTER MAKING MOVE");
 			state.evaluateState(player, true);
 			if(player=="white") {
 				game.removeWhitePieceFromPanel();
