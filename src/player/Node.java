@@ -10,7 +10,7 @@ public class Node {
 	GameState state;
 	int totalScore;
 	int visits;
-	Move action;
+	MoveScore action;
 	
 	Node parent;
 	ArrayList<Node> children = new ArrayList<Node>();
@@ -58,11 +58,11 @@ public class Node {
 		return visits;
 	}
 	
-	public void setAction(Move move) {
+	public void setAction(MoveScore move) {
 		action = move;
 	}
 	
-	public Move getAction() {
+	public MoveScore getAction() {
 		return action;
 	}
 

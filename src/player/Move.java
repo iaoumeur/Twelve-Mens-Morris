@@ -26,4 +26,8 @@ public class Move {
 		return to;
 	}
 	
+	public MoveScore toMoveScore() {
+		return new MoveScore(piecePosition, to, -1);
+	}
+	
 }

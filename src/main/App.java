@@ -60,7 +60,7 @@ public class App {
 				game.getComputer().setCopyState(game.getState().saveGameState());
 				game.showThinking();
 				//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
-				Move bestMove = game.getComputer().monteCarloTreeSearch("black", 10);
+				MoveScore bestMove = game.getComputer().monteCarloTreeSearch("black", 10000);
 				game.hideThinking();
 				
 				game.getComputer().makeMove(bestMove, "black");
@@ -116,13 +116,13 @@ public class App {
 		
 	}
 
-	private static void showComputerMove(Move bestMove, Game game) {
+	private static void showComputerMove(MoveScore bestMove, Game game) {
 		game.getBoard().repaintPieces();
 		if(bestMove.to==-1 && game.getState().getGameStage()!=4) {
-			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.getPiecePosition(), "red");	
+			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "red");	
 		}
 		else if(game.getState().getGameStage()!=4){
-			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.getPiecePosition(), "smallred");	
+			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "smallred");	
 			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, "red");	
 		}
 		

@@ -29,7 +29,7 @@ public class MonteCarloTreeSearch {
 		states.push(state);
 	}
 	
-	public Move monteCarloTreeSearch(String player, int iterations) {
+	public MoveScore monteCarloTreeSearch(String player, int iterations) {
 		
 		Node root = new Node(copyState.saveGameState(), null);
 		long startTime = System.currentTimeMillis();
@@ -37,7 +37,7 @@ public class MonteCarloTreeSearch {
 		//while((System.currentTimeMillis() - startTime) < timeForSearch) {
 		for(int j=0; j<iterations; j++) {
 			
-			System.out.println("*** PERFORMING SELECTION ***");
+			//System.out.println("*** PERFORMING SELECTION ***");
 			Node bestNode = selection(root);
 			//System.out.println("Best Node selected. Board state for this node is: ");
 			//bestNode.getGameState().printBoardPieces();
@@ -45,7 +45,7 @@ public class MonteCarloTreeSearch {
 			
 			Node exploreNode;
 			if(bestNode.getGameState().hasGameEnded()==null) {
-				System.out.println("*** PERFORMING EXPANSION ***");
+				//System.out.println("*** PERFORMING EXPANSION ***");
 				expansion(bestNode);
 				//System.out.println("Best node now has " + bestNode.getChildren().size() + " children.");
 				for(int i=0; i<bestNode.getChildren().size(); i++) {
@@ -60,13 +60,16 @@ public class MonteCarloTreeSearch {
 				//System.out.println("Picking random child for explore node: ");
 				//exploreNode.getGameState().printBoardPieces();
 			}
-			System.out.println("*** PERFORMING ROLLOUT ***");
+			//System.out.println("*** PERFORMING ROLLOUT ***");
 			int rolloutResult = rollout(exploreNode);
-			System.out.println("*** PERFORMING BACKPROPAGATION ***");
+			//System.out.println("*** PERFORMING BACKPROPAGATION ***");
 			backpropogate(exploreNode, rolloutResult);
+			
+			//System.out.println("End of iteration tree:");
 			
 		}
 		
+		//printTree(root, 0);
 		Node finalNode = root.getBestChild();
 		return finalNode.getAction();
 		
@@ -88,8 +91,22 @@ public class MonteCarloTreeSearch {
 		  return winnerNode.state.board;*/
 	
 		
+		
 	}
 	
+
+	private void printTree(Node node, int depth) {
+		if(depth==0) {
+			System.out.println("ROOT: Number of visits: " + node.getVisits() + ". Total score: " + node.getTotalScore());
+		}
+		else {
+			System.out.println("Child at depth " + depth + ". Number of visits: " + node.getVisits() + ". Total score: " + node.getTotalScore() + ". UCB: " + calculateUCBScore(node));
+		}
+		for(int i=0; i<node.getChildren().size(); i++) {
+	        printTree(node.getChildren().get(i), depth+1);
+	    }
+		
+	}
 
 	private Node selection(Node root) {
 		
@@ -98,11 +115,11 @@ public class MonteCarloTreeSearch {
 		int depth = 0;
 		
 		while(!node.getChildren().isEmpty()) {
-			double bestScore = Integer.MIN_VALUE;
+			double bestScore = -10000000;
 			for(int i=0; i<node.getChildren().size(); i++) {
 				//System.out.println("There are " + node.getChildren().size() + " children");
 				double UCBScore = calculateUCBScore(node.getChildren().get(i));
-				System.out.println("Child " + i + " UCBScore: " + UCBScore);
+				//System.out.println("Child " + i + " at depth " + depth + " UCBScore: " + UCBScore);
 				if(UCBScore> bestScore) {
 					bestScore = UCBScore;
 					bestChildIndex = i;
@@ -113,7 +130,7 @@ public class MonteCarloTreeSearch {
 			
 		}
 		
-		System.out.println("Best child is " + bestChildIndex + " selected at depth " + depth + ", score: " + node.getTotalScore() + " visits: " + node.getVisits());
+		//System.out.println("Best child is " + bestChildIndex + " selected at depth " + depth + ", score: " + node.getTotalScore() + " visits: " + node.getVisits());
 		return node;
 		/*if(n.getChildren().isEmpty()) {
 			return n;
@@ -167,7 +184,7 @@ public class MonteCarloTreeSearch {
 			}*/
 			
 			Node newNode = new Node(copyState.saveGameState(), bestNode);
-			newNode.setAction(move);
+			newNode.setAction(move.toMoveScore());
 			bestNode.addChild(newNode);
 			
 			copyState = tempState.saveGameState();
@@ -199,9 +216,8 @@ public class MonteCarloTreeSearch {
 		tempState = copyState.saveGameState();
 		copyState = exploreNode.getGameState().saveGameState();
 		
-		int moves = 0;
 		//System.out.println("Turn: " + copyState.getTurn());
-		while(copyState.hasGameEnded()==null && moves < 100) {
+		while(copyState.hasGameEnded()==null) {
 			//System.out.println("Game has not ended");
 			Random rand = new Random();
 			//System.out.println("player: " + player);
@@ -210,11 +226,11 @@ public class MonteCarloTreeSearch {
 			if(validMoves.isEmpty()) {
 				if(copyState.getTurn()==otherPlayer) {
 					//System.out.println("White won this simulation");
-					return -10;
+					return -20;
 				}
 				else {
 					//System.out.println("Black won this simulation");
-					return 10;
+					return 20;
 				}
 			}
 			//System.out.println("Turn: " + copyState.getTurn());
@@ -226,7 +242,6 @@ public class MonteCarloTreeSearch {
 			//copyState.printBoardPieces();
 			//System.out.println("Move made, board state is now: ");
 			//copyState.printBoardPieces();
-			moves++;
 		}
 		
 		//System.out.println("Game has ended");
@@ -272,20 +287,20 @@ public class MonteCarloTreeSearch {
 	private double calculateUCBScore(Node node) {
 		
 		if(node.getVisits()==0) {
-			System.out.println("Returning max value");
-			return Integer.MAX_VALUE;
+			//System.out.println("Returning max value");
+			return 1000000000;
 		}
 		double V = node.getTotalScore() / node.getVisits();
 		int N = node.getParent().getVisits();
 		int n = node.getVisits();
 		
-		return V + 2*(Math.sqrt((Math.log(N))/n));
+		return (V + 2*(Math.sqrt((Math.log(N))/n)));
 	}
 
-	public void makeMove(Move move, String player) {
+	public void makeMove(MoveScore move, String player) {
 		//System.out.println("BEFORE MAKING MOVE");
 		if(state.getGameStage()==1) {
-			state.setBoardPiece(move.piecePosition, player);
+			state.setBoardPiece(move.index, player);
 			alterGame(1, player, state);
 			//System.out.println("AFTER MAKING MOVE");
 			state.evaluateState(player, true);
@@ -302,7 +317,7 @@ public class MonteCarloTreeSearch {
 			}
 		}
 		else if(state.getGameStage()==2) {
-			state.setBoardPiece(move.piecePosition, null);
+			state.setBoardPiece(move.index, null);
 			state.setBoardPiece(move.to, player);
 			alterGame(2, player, state);
 			System.out.println("AFTER MAKING MOVE");
@@ -313,7 +328,7 @@ public class MonteCarloTreeSearch {
 			}
 		}
 		else if(state.getGameStage()==4) {
-			state.setBoardPiece(move.piecePosition, null);
+			state.setBoardPiece(move.index, null);
 			alterGame(4, player, state);
 			System.out.println("AFTER MAKING MOVE");
 			state.evaluateState(player, true);
