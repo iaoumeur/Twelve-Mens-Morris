@@ -2,6 +2,8 @@ package player;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
@@ -15,13 +17,13 @@ public class MonteCarloTreeSearch extends Computer{
 		// TODO Auto-generated constructor stub
 	}
 	
-	public MoveScore monteCarloTreeSearch(String player, long timeForSearch) {
+	public MoveScore monteCarloTreeSearch(String player, int iterations) {
 		
 		Node root = new Node(copyState.saveGameState(), null);
 		long startTime = System.currentTimeMillis();
 		
-		while((System.currentTimeMillis() - startTime) < timeForSearch) {
-		//for(int j=0; j<iterations; j++) {
+		//while((System.currentTimeMillis() - startTime) < timeForSearch) {
+		for(int j=0; j<iterations; j++) {
 			
 			//System.out.println("*** PERFORMING SELECTION ***");
 			Node bestNode = selection(root);
@@ -55,7 +57,7 @@ public class MonteCarloTreeSearch extends Computer{
 			
 		}
 		
-		//printTree(root, 0);
+		printTree(root, 0);
 		Node finalNode = root.getBestChild();
 		return finalNode.getAction();
 		
@@ -82,7 +84,22 @@ public class MonteCarloTreeSearch extends Computer{
 	
 
 	private void printTree(Node node, int depth) {
-		if(depth==0) {
+		
+		System.out.println("ROOT: Number of visits: " + node.getVisits() + ". Total score: " + node.getTotalScore());
+		Queue<Node> queue = new LinkedList<Node>();
+		for(int i=0; i<node.getChildren().size(); i++) {
+			queue.add(node.getChildren().get(i));
+		}
+		int total = 0;
+		while(!queue.isEmpty()) {
+			Node n = queue.remove();
+			System.out.println("Child " + total + ". Number of visits: " + n.getVisits() + ". Total score: " + n.getTotalScore() + ". UCB: " + calculateUCBScore(n));
+			for(int i=0; i<n.getChildren().size(); i++) {
+				queue.add(n.getChildren().get(i));
+			}
+			total++;
+		}
+		/*if(depth==0) {
 			System.out.println("ROOT: Number of visits: " + node.getVisits() + ". Total score: " + node.getTotalScore());
 		}
 		else {
@@ -90,7 +107,7 @@ public class MonteCarloTreeSearch extends Computer{
 		}
 		for(int i=0; i<node.getChildren().size(); i++) {
 	        printTree(node.getChildren().get(i), depth+1);
-	    }
+	    }*/
 		
 	}
 
@@ -212,11 +229,11 @@ public class MonteCarloTreeSearch extends Computer{
 			if(validMoves.isEmpty()) {
 				if(copyState.getTurn()==otherPlayer) {
 					//System.out.println("White won this simulation");
-					return -20;
+					return -1;
 				}
 				else {
 					//System.out.println("Black won this simulation");
-					return 20;
+					return 1;
 				}
 			}
 			//System.out.println("Turn: " + copyState.getTurn());
@@ -236,11 +253,11 @@ public class MonteCarloTreeSearch extends Computer{
 		
 		if(endgame==otherPlayer) {
 			//System.out.println("White won this simulation");
-			return -10;
+			return -1;
 		}
 		else if(endgame==copyState.getTurn()) {
 			//System.out.println("Black won this simulation");
-			return 10;
+			return 1;
 		}
 		
 		return 0;

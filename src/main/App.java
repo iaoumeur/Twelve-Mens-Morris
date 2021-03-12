@@ -64,7 +64,7 @@ public class App {
 				//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
 				MoveScore bestMove = new MoveScore(0, 0, 0);
 				if(game.getComputer() instanceof MonteCarloTreeSearch) {
-					bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", 5000);
+					bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", 10000);
 				}
 				else if (game.getComputer() instanceof Minimax){
 					bestMove = ((Minimax)game.getComputer()).minimax("black", depth, -1000000, 1000000);

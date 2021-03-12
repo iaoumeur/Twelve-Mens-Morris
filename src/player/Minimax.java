@@ -19,7 +19,7 @@ public class Minimax extends Computer{
 		
 		//System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
 	
-		//find the list of valid moves minimax can take.
+		//find the list of valid moves Minimax can take.
 		ArrayList<Move> validMoves = findValidMoves(player); 
 		
 		//if there are no valid moves, this means in this state the game would end.
