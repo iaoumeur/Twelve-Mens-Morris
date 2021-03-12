@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.border.LineBorder;
 
 public class MainMenu {
@@ -31,6 +33,8 @@ public class MainMenu {
 	private String p2Name = "NoName";
 	private String gameType = "pvp";
 	private String difficulty = "easy";
+	private String computerType = "Minimax";
+	
 
 	public MainMenu() {
 
@@ -74,7 +78,7 @@ public class MainMenu {
 		buttonPanel2.setOpaque(false);
 		
 		JPanel buttonPanel3 = new JPanel();
-		buttonPanel3.setBounds(70, 400, 300, 150);
+		buttonPanel3.setBounds(70, 420, 300, 150);
 		buttonPanel3.setOpaque(false);
 		buttonPanel3.setVisible(false);
 		
@@ -82,11 +86,31 @@ public class MainMenu {
 		buttonPanel4.setBounds(120, 400, 200, 150);
 		buttonPanel4.setOpaque(false);
 		
+		JPanel buttonPanel5 = new JPanel();
+		buttonPanel5.setBounds(70, 380, 300, 150);
+		buttonPanel5.setOpaque(false);
+		buttonPanel5.setVisible(false);
+		
+		
 		
 		JButton pvpButton = new JButton("Player vs. Player");
 		pvpButton = setupButton(pvpButton);
 		JButton pvAIButton = new JButton("Player vs. AI");
 		pvAIButton = setupButton(pvAIButton);
+		ButtonGroup group = new ButtonGroup();
+		JRadioButton minimaxButton = new JRadioButton("Minimax");
+		minimaxButton.setForeground(Color.WHITE);
+		minimaxButton.setOpaque(false);
+		minimaxButton.setBorder(new LineBorder(Color.BLACK, 3));
+		minimaxButton.setActionCommand("Minimax");
+		minimaxButton.setSelected(true);
+		JRadioButton mctsButton = new JRadioButton("MCTS");
+		mctsButton.setForeground(Color.WHITE);
+		mctsButton.setOpaque(false);
+		mctsButton.setBorder(new LineBorder(Color.BLACK, 3));
+		mctsButton.setActionCommand("MCTS");
+		group.add(minimaxButton);
+		group.add(mctsButton);
 		JButton easyButton = new JButton("Easy");
 		easyButton.setBackground(Color.GREEN);
 		easyButton.setPreferredSize(new Dimension(90, 30));
@@ -105,6 +129,9 @@ public class MainMenu {
 		buttonPanel3.add(mediumButton, BorderLayout.WEST);
 		buttonPanel3.add(hardButton, BorderLayout.WEST);
 		buttonPanel4.add(aivaiButton, BorderLayout.NORTH);
+		buttonPanel5.add(minimaxButton, BorderLayout.WEST);
+		buttonPanel5.add(mctsButton, BorderLayout.WEST);
+		
 		
 		lpane.add(backgroundPanel, 0, 0);
 		lpane.add(boardPanel, 1, 0);
@@ -112,6 +139,7 @@ public class MainMenu {
 		lpane.add(buttonPanel, 1, 0);
 		lpane.add(buttonPanel2, 1, 0);
 		lpane.add(buttonPanel3, 1, 0);
+		lpane.add(buttonPanel5, 1, 0);
 		lpane.add(buttonPanel4, 1, 0);
 		
 		
@@ -129,10 +157,12 @@ public class MainMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				difficultiesVisible = !difficultiesVisible;
 				if(difficultiesVisible) {
-					buttonPanel4.setBounds(120, 450, 200, 150);
+					buttonPanel4.setBounds(120, 470, 200, 150);
+					buttonPanel5.setVisible(true);
 					buttonPanel3.setVisible(true);
 				}
 				else {
+					buttonPanel5.setVisible(false);
 					buttonPanel3.setVisible(false);
 					buttonPanel4.setBounds(120, 400, 200, 150);
 				}
@@ -152,6 +182,7 @@ public class MainMenu {
 		easyButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				computerType = group.getSelection().getActionCommand();
 				gameType = "pvAI";
 				difficulty = "easy";
 				enterNamesAndStart();
@@ -162,6 +193,7 @@ public class MainMenu {
 		mediumButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				computerType = group.getSelection().getActionCommand();
 				gameType = "pvAI";
 				difficulty = "medium";
 				enterNamesAndStart();
@@ -172,6 +204,7 @@ public class MainMenu {
 		hardButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				computerType = group.getSelection().getActionCommand();
 				gameType = "pvAI";
 				difficulty = "hard";
 				enterNamesAndStart();
@@ -199,7 +232,11 @@ public class MainMenu {
 			 p2Name = ("AI");
 		 }*/
 		 p1Name = "Ishaq";
-		 p2Name = "Rival";
+		 p2Name = computerType;
+		 if(gameType=="AIvAI") {
+			 p1Name = "Minimax";
+			 p2Name = "MCTS";
+		 }
 		 ready = true;
 		 frame.dispose();
 		
@@ -224,6 +261,10 @@ public class MainMenu {
 
 	public String getDifficulty() {
 		return difficulty;
+	}
+	
+	public String getComputerType() {
+		return computerType;
 	}
 	
 

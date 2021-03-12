@@ -27,7 +27,7 @@ public abstract class Computer {
 		states.push(state);
 	}
 	
-	private void simulateMove(Move move, String player) {
+	public void simulateMove(Move move, String player) {
 		
 		if(move.getGameStage()==1) {
 			copyState.setBoardPiece(move.getPiecePosition(), player);
@@ -198,5 +198,17 @@ public abstract class Computer {
 		}
 		
 		return validMoves;
+	}
+	
+	public boolean getMillCreated() {
+		return millCreated;
+	}
+	
+	public void resetMillCreated() {
+		millCreated = false;
+	}
+	
+	public int getNodesEvaluated() {
+		return nodesEvaluated;
 	}
 }

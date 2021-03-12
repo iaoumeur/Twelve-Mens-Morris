@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import player.Computer;
 import player.Minimax;
 import player.MonteCarloTreeSearch;
 import state.GameState;
@@ -28,8 +29,8 @@ public class Game {
 	private Board board;
 	//private Minimax computer;
 	//private Minimax otherComputer;
-	private MonteCarloTreeSearch computer;
-	private MonteCarloTreeSearch otherComputer;
+	private Computer computer;
+	private Computer otherComputer;
 	private ArrayList<JLabel> whitePieces;
 	private ArrayList<JLabel> blackPieces;
 	private JPanel whitePiecePanel;
@@ -50,14 +51,19 @@ public class Game {
 			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 					+ "\">Turn:   </span><span style=\"color:black;font-size:23px;\">Black</span></html>"};
 	
-	public Game(String p1Name, String p2Name, String gameType) {
+	public Game(String p1Name, String p2Name, String gameType, String computerType) {
 		
 		state = new GameState();
 		if(gameType=="pvAI") {
-			computer = new MonteCarloTreeSearch(this, state);
+			if(computerType=="MCTS") {
+				computer = new MonteCarloTreeSearch(this, state);
+			}
+			else {
+				computer = new Minimax(this, state);
+			}
 		}
 		if(gameType=="AIvAI") {
-			computer = new MonteCarloTreeSearch(this, state);
+			computer = new Minimax(this, state);
 			otherComputer = new MonteCarloTreeSearch(this, state);
 		}
 		
@@ -172,11 +178,11 @@ public class Game {
 		return state;
 	}
 	
-	public MonteCarloTreeSearch getComputer() {
+	public Computer getComputer() {
 		return computer;
 	}
 	
-	public MonteCarloTreeSearch getOtherComputer() {
+	public Computer getOtherComputer() {
 		return otherComputer;
 	}
 	
