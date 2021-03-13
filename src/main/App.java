@@ -25,6 +25,7 @@ public class App {
 		//create a new game instance and set difficulty if applicable
 		Game game = new Game(menu.getP1Name(), menu.getP2Name(), menu.getGameType(), menu.getComputerType());
 		int depth = setDifficulty(menu.getDifficulty());
+		int movesWithoutMill = 0;
 		
 		//randomly start with black for white 
 		if(Math.random() < 0.5) {
@@ -40,12 +41,14 @@ public class App {
 					    } catch(InterruptedException e) {
 					    }
 				}
+				checkForDrawRule(game);
 				while(game.getState().getTurn()=="black") {
 					try {
 					       Thread.sleep(1000);
 					    } catch(InterruptedException e) {
 					    }
 				}
+				checkForDrawRule(game);
 			}
 			System.out.print("Game ended");
 		}
@@ -58,28 +61,32 @@ public class App {
 					    } catch(InterruptedException e) {
 					    }
 				}
-				game.setStopPaining(true);
-				game.getComputer().setCopyState(game.getState().saveGameState());
-				game.showThinking();
-				//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
-				MoveScore bestMove = new MoveScore(0, 0, 0);
-				if(game.getComputer() instanceof MonteCarloTreeSearch) {
-					bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", 10000);
+				checkForDrawRule(game);
+				if(game.getState().getTurn()=="black") {
+					game.setStopPaining(true);
+					game.getComputer().setCopyState(game.getState().saveGameState());
+					game.showThinking();
+					//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
+					MoveScore bestMove = new MoveScore(0, 0, 0);
+					if(game.getComputer() instanceof MonteCarloTreeSearch) {
+						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", 10000);
+					}
+					else if (game.getComputer() instanceof Minimax){
+						bestMove = ((Minimax)game.getComputer()).minimax("black", depth, -1000000, 1000000);
+					}
+					game.hideThinking();
+					
+					game.getComputer().makeMove(bestMove, "black");
+					
+					if(!game.getComputer().getMillCreated()) {
+						game.switchTurn();
+						game.getComputer().resetMillCreated();
+					}
+					game.setStopPaining(false);
+					
+					showComputerMove(bestMove, game);
+					checkForDrawRule(game);
 				}
-				else if (game.getComputer() instanceof Minimax){
-					bestMove = ((Minimax)game.getComputer()).minimax("black", depth, -1000000, 1000000);
-				}
-				game.hideThinking();
-				
-				game.getComputer().makeMove(bestMove, "black");
-				
-				if(!game.getComputer().getMillCreated()) {
-					game.switchTurn();
-					game.getComputer().resetMillCreated();
-				}
-				game.setStopPaining(false);
-				
-				showComputerMove(bestMove, game);
 			}
 			System.out.print("Game ended");
 		}
@@ -91,7 +98,7 @@ public class App {
 					game.showThinking();
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getComputer() instanceof MonteCarloTreeSearch) {
-						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("white", 5000);
+						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("white", 10000);
 					}
 					else if (game.getComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getComputer()).minimax("white", depth, -1000000, 1000000);
@@ -107,6 +114,7 @@ public class App {
 					game.setStopPaining(false);
 					
 					showComputerMove(bestMove, game);
+					checkForDrawRule(game);
 				}
 				else if(game.getState().getTurn()=="black") {
 					game.setStopPaining(true);
@@ -115,7 +123,7 @@ public class App {
 					//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getOtherComputer() instanceof MonteCarloTreeSearch) {
-						bestMove = ((MonteCarloTreeSearch)game.getOtherComputer()).monteCarloTreeSearch("black", 5000);
+						bestMove = ((MonteCarloTreeSearch)game.getOtherComputer()).monteCarloTreeSearch("black", 10000);
 					}
 					else if (game.getOtherComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getOtherComputer()).minimax("black", depth, -1000000, 1000000);
@@ -131,6 +139,7 @@ public class App {
 					game.setStopPaining(false);
 					
 					showComputerMove(bestMove, game);
+					checkForDrawRule(game);
 				}
 				
 				
@@ -161,6 +170,15 @@ public class App {
 		else 
 			return 6;
 		
+	}
+	
+	private static void checkForDrawRule(Game game) {
+		System.out.println("Moves without mill: " + game.getState().getMovesWithoutMill());
+		if(game.getState().getMovesWithoutMill()>=50) {
+			game.getState().setTurn(null);
+			game.getState().setGameStage(5);
+			game.displayMessage(6);
+		}
 	}
 	
 

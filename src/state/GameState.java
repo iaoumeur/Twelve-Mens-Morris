@@ -13,6 +13,7 @@ public class GameState {
 	int[] phaseThreeEvaluationWeights = new int[] { 15, 0, 0, 0, 10, 1, 1000 };
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
+	int movesWithoutMill = 0;
 	
 	private String[] boardPieces;
 	private int[][] millLocations = {{0,1,2}, {3,4,5}, {6,7,8}, {9,10,11}, {12,13,14}, {15,16,17}, {18,19,20}, {21,22, 23},
@@ -173,12 +174,14 @@ public class GameState {
 				if(millsFound[i]==null) {
 					millsFound[i] = "white";
 					gameStage = 4;   
+					movesWithoutMill=0;
 					newMillFound=true;
 				}
 			}
 			else if(boardPieces[millLocations[i][0]]=="black" && boardPieces[millLocations[i][1]]=="black" && boardPieces[millLocations[i][2]]=="black") {
 				if(millsFound[i]==null) {
 					millsFound[i] = "black";
+					movesWithoutMill=0;
 					gameStage = 4;   
 					newMillFound=true;
 				}
@@ -276,6 +279,9 @@ public class GameState {
 			       		return "millNoRemoval";
 			       	}    	 
 			        return turn + "PlacedMill";
+				}
+				else {
+					movesWithoutMill++;
 				}
 				endgame = hasGameEnded();
 				if(endgame!=null) {
@@ -710,6 +716,14 @@ public class GameState {
 
 	public int getPhase() {
 		return phase;
+	}
+	
+	public void incrementMovesWihtoutMill() {
+		movesWithoutMill++;
+	}
+	
+	public int getMovesWithoutMill() {
+		return movesWithoutMill;
 	}
 	
 

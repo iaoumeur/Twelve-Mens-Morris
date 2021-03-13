@@ -45,7 +45,8 @@ public class Game {
 	private boolean stopPainting = false;
 
 	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove", "Invalid Piece Removal", 
-			"A mill was formed, you may select a piece inside a mill to remove", "The winner is White", "The winner is Black", "The game is a draw"};
+			"A mill was formed, you may select a piece inside a mill to remove", "The winner is White", "The winner is Black", "The game is a draw", 
+			"There have been 50 moves without a mill being made, the game is a draw."};
 	private String[] turnMessages = {"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 			+ "\">Turn:   </span><span style=\"color:white;font-size:23px;\">White</span></html>", 
 			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"

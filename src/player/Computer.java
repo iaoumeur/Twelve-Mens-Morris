@@ -73,6 +73,7 @@ public abstract class Computer {
 			if(gameState.checkForMill()) {
 			}
 			else {
+				gameState.incrementMovesWihtoutMill();
 				copyState.switchTurn();
 				gameState.setGameStage(2);
 			}
@@ -95,13 +96,11 @@ public abstract class Computer {
 	}
 	
 	public void makeMove(MoveScore move, String player) {
-		System.out.println("BEFORE MAKING MOVE");
 		state.evaluateState(player, true);
 		nodesEvaluated = 0;
 		if(state.getGameStage()==1) {
 			state.setBoardPiece(move.index, player);
 			alterGame(1, player, state);
-			System.out.println("AFTER MAKING MOVE");
 			state.evaluateState(player, true);
 			if(player=="white") {
 				game.removeWhitePieceFromPanel();
@@ -119,7 +118,6 @@ public abstract class Computer {
 			state.setBoardPiece(move.index, null);
 			state.setBoardPiece(move.to, player);
 			alterGame(2, player, state);
-			System.out.println("AFTER MAKING MOVE");
 			state.evaluateState(player, true);
 			if(state.getGameStage()==4) {
 				millCreated = true;
@@ -129,7 +127,6 @@ public abstract class Computer {
 		else if(state.getGameStage()==4) {
 			state.setBoardPiece(move.index, null);
 			alterGame(4, player, state);
-			System.out.println("AFTER MAKING MOVE");
 			state.evaluateState(player, true);
 		}
 		
