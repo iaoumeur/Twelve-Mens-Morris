@@ -188,7 +188,7 @@ public abstract class Computer {
 	    			continue;
 	    		}
 				if((copyState.getTurn()==player && copyState.getBoardPieces()[i]==otherTurn))  {
-					validMoves.add(new Move(4, i, -1));
+					validMoves.add(new Move(4, i, -2));
 				}
 				
 			}

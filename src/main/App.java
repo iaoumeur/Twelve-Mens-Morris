@@ -23,8 +23,9 @@ public class App {
 		}
 		
 		//create a new game instance and set difficulty if applicable
-		Game game = new Game(menu.getP1Name(), menu.getP2Name(), menu.getGameType(), menu.getComputerType());
-		int depth = setDifficulty(menu.getDifficulty());
+		Game game = new Game(menu.getP1Name(), menu.getP2Name(), menu.getGameType(), menu.getComputerType(), menu.getOtherComputerType());
+		int difficulty1 = setDifficulty(menu.getDifficulty(), menu.getComputerType());
+		int difficulty2 = setDifficulty(menu.getOtherDifficulty(), menu.getOtherComputerType());
 		int movesWithoutMill = 0;
 		
 		//randomly start with black for white 
@@ -63,18 +64,18 @@ public class App {
 				}
 				checkForDrawRule(game);
 				if(game.getState().getTurn()=="black") {
+					game.showThinking();
 					game.setStopPaining(true);
 					game.getComputer().setCopyState(game.getState().saveGameState());
-					game.showThinking();
 					//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getComputer() instanceof MonteCarloTreeSearch) {
-						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", 10000);
+						System.out.println("Difficulty: " + difficulty1);
+						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", difficulty1);
 					}
 					else if (game.getComputer() instanceof Minimax){
-						bestMove = ((Minimax)game.getComputer()).minimax("black", depth, -1000000, 1000000);
+						bestMove = ((Minimax)game.getComputer()).minimax("black", difficulty1, -1000000, 1000000);
 					}
-					game.hideThinking();
 					
 					game.getComputer().makeMove(bestMove, "black");
 					
@@ -83,8 +84,9 @@ public class App {
 						game.getComputer().resetMillCreated();
 					}
 					game.setStopPaining(false);
+					game.hideThinking();
 					
-					showComputerMove(bestMove, game);
+					showComputerMove(bestMove, game, "red");
 					checkForDrawRule(game);
 				}
 			}
@@ -98,10 +100,10 @@ public class App {
 					game.showThinking();
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getComputer() instanceof MonteCarloTreeSearch) {
-						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("white", 10000);
+						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("white", difficulty1);
 					}
 					else if (game.getComputer() instanceof Minimax){
-						bestMove = ((Minimax)game.getComputer()).minimax("white", depth, -1000000, 1000000);
+						bestMove = ((Minimax)game.getComputer()).minimax("white", difficulty1, -1000000, 1000000);
 					}
 					game.hideThinking();
 					
@@ -112,8 +114,7 @@ public class App {
 						game.getComputer().resetMillCreated();
 					}
 					game.setStopPaining(false);
-					
-					showComputerMove(bestMove, game);
+					game.getBoard().repaintPieces();
 					checkForDrawRule(game);
 				}
 				else if(game.getState().getTurn()=="black") {
@@ -123,10 +124,10 @@ public class App {
 					//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getOtherComputer() instanceof MonteCarloTreeSearch) {
-						bestMove = ((MonteCarloTreeSearch)game.getOtherComputer()).monteCarloTreeSearch("black", 10000);
+						bestMove = ((MonteCarloTreeSearch)game.getOtherComputer()).monteCarloTreeSearch("black", difficulty2);
 					}
 					else if (game.getOtherComputer() instanceof Minimax){
-						bestMove = ((Minimax)game.getOtherComputer()).minimax("black", depth, -1000000, 1000000);
+						bestMove = ((Minimax)game.getOtherComputer()).minimax("black", difficulty2, -1000000, 1000000);
 					}
 					game.hideThinking();
 					
@@ -137,8 +138,7 @@ public class App {
 						game.getOtherComputer().resetMillCreated();
 					}
 					game.setStopPaining(false);
-					
-					showComputerMove(bestMove, game);
+					game.getBoard().repaintPieces();
 					checkForDrawRule(game);
 				}
 				
@@ -149,31 +149,47 @@ public class App {
 		
 	}
 
-	private static void showComputerMove(MoveScore bestMove, Game game) {
+	private static void showComputerMove(MoveScore bestMove, Game game, String color) {
 		game.getBoard().repaintPieces();
 		if(bestMove.to==-1 && game.getState().getGameStage()!=4) {
-			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "red");	
+			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, color);	
+			return;
+		}
+		else if(bestMove.to==-2) {
+			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "yellow");
+			game.getBoard().repaintPieces();
+			return;
 		}
 		else if(game.getState().getGameStage()!=4){
-			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "smallred");	
-			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, "red");	
+			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.index, "small" + color);	
+			game.getBoard().paintComponent(game.getBoard().getGraphics(), bestMove.to, color);	
 		}
 		
 	}
 
-	private static int setDifficulty(String difficulty) {
+	private static int setDifficulty(String difficulty, String computerType) {
 
-		if(difficulty=="easy") 
-			return 4;
-		else if(difficulty=="hard")
-			return 8;
-		else 
-			return 6;
+		if(computerType=="Minimax") {
+			if(difficulty=="easy") 
+				return 4;
+			else if(difficulty=="hard")
+				return 8;
+			else 
+				return 6;
+		}
+		else {
+			if(difficulty=="easy") 
+				return 7500;
+			else if(difficulty=="hard")
+				return 25000;
+			else 
+				return 15000;
+		}
+		
 		
 	}
 	
 	private static void checkForDrawRule(Game game) {
-		System.out.println("Moves without mill: " + game.getState().getMovesWithoutMill());
 		if(game.getState().getMovesWithoutMill()>=50) {
 			game.getState().setTurn(null);
 			game.getState().setGameStage(5);

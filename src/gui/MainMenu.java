@@ -32,8 +32,10 @@ public class MainMenu {
 	private String p1Name = "NoName";
 	private String p2Name = "NoName";
 	private String gameType = "pvp";
-	private String difficulty = "easy";
+	private String difficulty = "medium";
+	private String otherDifficulty = null;
 	private String computerType = "Minimax";
+	private String otherComputerType = null;
 	
 
 	public MainMenu() {
@@ -174,6 +176,51 @@ public class MainMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				gameType = "AIvAI";
+				Object[] aiOptions = {"Minimax", "MCTS"};
+				Object[] difficultyOptions = {"Easy", "Medium", "Hard"};
+				
+				int ai1 = JOptionPane.showOptionDialog(null,
+						"First AI: ", "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, aiOptions, aiOptions[0]); 
+				int difficulty1 = JOptionPane.showOptionDialog(null,
+						"Difficulty: ", "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, difficultyOptions, difficultyOptions[1]); 
+				int ai2 = JOptionPane.showOptionDialog(null,
+						"Second AI: ", "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, aiOptions, aiOptions[0]); 
+				int difficulty2 = JOptionPane.showOptionDialog(null,
+						"Difficulty: ", "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, difficultyOptions, difficultyOptions[1]); 
+
+				if(ai1==0) {
+					computerType = "Minimax";
+				}
+				else {
+					computerType = "MCTS";
+				}
+				
+				if(difficulty1==0) {
+					difficulty = "easy";
+				}
+				else if(difficulty1==1) {
+					difficulty = "medium";
+				}
+				else {
+					difficulty = "hard";
+				}
+				
+				if(ai2==0) {
+					otherComputerType = "Minimax";
+				}
+				else {
+					otherComputerType = "MCTS";
+				}
+				
+				if(difficulty2==0) {
+					otherDifficulty = "easy";
+				}
+				else if(difficulty2==1) {
+					otherDifficulty = "medium";
+				}
+				else {
+					otherDifficulty = "hard";
+				}
 				enterNamesAndStart();
 			}
 
@@ -234,8 +281,8 @@ public class MainMenu {
 		 p1Name = "Ishaq";
 		 p2Name = computerType;
 		 if(gameType=="AIvAI") {
-			 p1Name = "Minimax";
-			 p2Name = "MCTS";
+			 p1Name = computerType;
+			 p2Name = otherComputerType;
 		 }
 		 ready = true;
 		 frame.dispose();
@@ -265,6 +312,16 @@ public class MainMenu {
 	
 	public String getComputerType() {
 		return computerType;
+	}
+
+
+	public String getOtherComputerType() {
+		return otherComputerType;
+	}
+
+
+	public String getOtherDifficulty() {
+		return otherDifficulty;
 	}
 	
 

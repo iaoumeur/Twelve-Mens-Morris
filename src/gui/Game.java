@@ -38,6 +38,7 @@ public class Game {
 	private JLabel turnLabel;
 	private JLabel msgLabel;
 	private JLabel thinkingLabel;
+	private JPanel thinkingPanel;
 	
 	ImageIcon whitePieceImage; 
 	ImageIcon blackPieceImage;
@@ -46,13 +47,13 @@ public class Game {
 
 	private String[] gameMessages = {"A Mill is formed! Select a piece not in a mill to remove", "Invalid Piece Removal", 
 			"A mill was formed, you may select a piece inside a mill to remove", "The winner is White", "The winner is Black", "The game is a draw", 
-			"There have been 50 moves without a mill being made, the game is a draw."};
+			"The game is a draw (50 moves played without a mill)"};
 	private String[] turnMessages = {"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 			+ "\">Turn:   </span><span style=\"color:white;font-size:23px;\">White</span></html>", 
 			"<html><span style=\"font-size:23px;color:rgb(211,211,211);font-weight: bold;"
 					+ "\">Turn:   </span><span style=\"color:black;font-size:23px;\">Black</span></html>"};
 	
-	public Game(String p1Name, String p2Name, String gameType, String computerType) {
+	public Game(String p1Name, String p2Name, String gameType, String computerType, String otherComputerType) {
 		
 		state = new GameState();
 		if(gameType=="pvAI") {
@@ -64,8 +65,19 @@ public class Game {
 			}
 		}
 		if(gameType=="AIvAI") {
-			computer = new Minimax(this, state);
-			otherComputer = new MonteCarloTreeSearch(this, state);
+			if(computerType=="MCTS") {
+				computer = new MonteCarloTreeSearch(this, state);
+			}
+			else {
+				computer = new Minimax(this, state);
+			}
+			if(otherComputerType=="MCTS") {
+				otherComputer = new MonteCarloTreeSearch(this, state);
+			}
+			else {
+				otherComputer = new Minimax(this, state);
+			}
+
 		}
 		
 		frame = new JFrame("Twelve Men's Morris");
@@ -143,8 +155,10 @@ public class Game {
 		turnPanel.add(turnLabel, BorderLayout.CENTER);
 		turnPanel.setOpaque(false);
 		
-		JPanel thinkingPanel = new JPanel();
-		thinkingLabel = new JLabel("Computer Thinking...");
+		thinkingPanel = new JPanel();
+		String thinkingText = "<html><span style=\"color:black;font-size:13px;font-style:italic\">" + "Computer thinking..." +
+				"</span></html>";
+		thinkingLabel = new JLabel(thinkingText);
 		thinkingLabel.setForeground(Color.BLACK);
 		thinkingPanel.setBounds(330, 320, 300, 100);
 		thinkingPanel.add(thinkingLabel, BorderLayout.CENTER);
@@ -262,11 +276,11 @@ public class Game {
 	}
 
 	public void showThinking() {
-		thinkingLabel.setVisible(true);
+		thinkingPanel.setVisible(true);
 	}
 	
 	public void hideThinking() {
-		thinkingLabel.setVisible(false);
+		thinkingPanel.setVisible(false);
 	}
 
 

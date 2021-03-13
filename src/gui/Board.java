@@ -108,6 +108,10 @@ public class Board extends JLabel {
 			gbuffer.setColor(Color.RED); 
 			gbuffer.fillOval(positionsOnBoard[point][0]+4, positionsOnBoard[point][1]+4, 10, 10);
 		}
+		else if(color=="yellow") {
+			gbuffer.setColor(Color.YELLOW); 
+			gbuffer.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);
+		}
 		
 		
 		gbuffer.dispose();
