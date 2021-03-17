@@ -9,7 +9,7 @@ public class GameState {
 	//14 * (1) + 43 * (2) + 10 * (3) + 11 * (4) + 8 * (7) + 1086 * (8)
 	//16 * (1) + 10 * (5) + 1 * (6) + 1190 * (8)
 	int[] phaseOneEvaluationWeights = new int[] { 20, 15, 1, 10, 10, 5, 0 };
-	int[] phaseTwoEvaluationWeights = new int[] { 10, 45, 15, 10, 10, 10, 1000 };
+	int[] phaseTwoEvaluationWeights = new int[] { 10, 45, 30, 10, 10, 10, 1000 };
 	int[] phaseThreeEvaluationWeights = new int[] { 15, 0, 0, 0, 10, 1, 1000 };
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
@@ -34,7 +34,8 @@ public class GameState {
 	//4 = mill created - remove opponent's piece
 	//5 = game end - draw, or player wins
 	private int gameStage = 1; 
-	public int phase = 1;
+	public int whitePhase = 1;
+	public int blackPhase = 1;
 	public int piecesPlaced = 0;
 	public int whitePiecesPlaced = 0;
 	public int blackPiecesPlaced = 0;
@@ -247,7 +248,12 @@ public class GameState {
 						return endgame;
 					}
 					gameStage=2;
-					phase = 2;
+					if(turn=="white") {
+						whitePhase = 2;						
+					}
+					else {
+						blackPhase = 2;						
+					}
 				}
 				return turn + "Placed";
 			}
@@ -385,13 +391,11 @@ public class GameState {
 		
 		if(whitePieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingWhite = true;
-			phase = 3;
-			return null;
+			whitePhase = 3;
 		}
 		if(blackPieces==3 && piecesPlaced>=totalNumberOfPieces) {
 			flyingBlack = true;
-			phase = 3;
-			return null;
+			blackPhase = 3;
 		}
 		
 		String otherTurn = null;
@@ -597,30 +601,45 @@ public class GameState {
 		
 		ArrayList<String> prints = new ArrayList<String>();
 		
-		prints.add("Game is in phase: " + phase);
+		prints.add("White is in phase: " + whitePhase);
+		int[] whiteEvaluationWeights;
+		int[] blackEvaluationWeights;
 		int[] evaluationWeights;
-		switch(phase) {
-		case 1:
-			evaluationWeights = phaseOneEvaluationWeights;
-			break;
-		case 2:
-			evaluationWeights = phaseTwoEvaluationWeights;
-			break;
-		case 3:
-			evaluationWeights = phaseThreeEvaluationWeights;
-			break;
-		default:
-			evaluationWeights = phaseOneEvaluationWeights;
-		}
 		
 		int score = 0;
 		
 		String otherPlayer;
 		if(player=="white") {
 			otherPlayer="black";
+			switch(whitePhase) {
+			case 1:
+				evaluationWeights = phaseOneEvaluationWeights;
+				break;
+			case 2:
+				evaluationWeights = phaseTwoEvaluationWeights;
+				break;
+			case 3:
+				evaluationWeights = phaseThreeEvaluationWeights;
+				break;
+			default:
+				evaluationWeights = phaseOneEvaluationWeights;
+			}
 		}
 		else {
 			otherPlayer="white";
+			switch(blackPhase) {
+			case 1:
+				evaluationWeights = phaseOneEvaluationWeights;
+				break;
+			case 2:
+				evaluationWeights = phaseTwoEvaluationWeights;
+				break;
+			case 3:
+				evaluationWeights = phaseThreeEvaluationWeights;
+				break;
+			default:
+				evaluationWeights = phaseOneEvaluationWeights;
+			}
 		}
 		
 		
@@ -714,8 +733,12 @@ public class GameState {
 		System.out.println(pieces + "]");
 	}
 
-	public int getPhase() {
-		return phase;
+	public int getWhitePhase() {
+		return whitePhase;
+	}
+	
+	public int getBlackPhase() {
+		return blackPhase;
 	}
 	
 	public void incrementMovesWihtoutMill() {

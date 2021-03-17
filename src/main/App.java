@@ -181,7 +181,7 @@ public class App {
 			if(difficulty=="easy") 
 				return 7500;
 			else if(difficulty=="hard")
-				return 25000;
+				return 30000;
 			else 
 				return 15000;
 		}

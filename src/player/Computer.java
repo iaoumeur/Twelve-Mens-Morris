@@ -65,7 +65,12 @@ public abstract class Computer {
 				copyState.switchTurn();
 				if(gameState.piecesPlaced>=gameState.totalNumberOfPieces){
 					gameState.setGameStage(2);
-					gameState.phase = 2;
+					if(player=="white") {
+						gameState.whitePhase = 2;
+					}
+					else {
+						gameState.blackPhase = 2;
+					}
 				}	
 			}
 		}
