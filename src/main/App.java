@@ -12,14 +12,17 @@ public class App {
 	public static void main(String[] args) {
 		//create Main Menu
 		MainMenu menu = new MainMenu();
-
+		
 		//wait for user to select a game type
-		while(menu.isReady() == false){
-		    try {
-		       Thread.sleep(200);
-		       System.out.println("waiting");
-		    } catch(InterruptedException e) {
-		    }
+		//menu object is locked until it is notified 
+		while(menu.isReady()==false) {
+			try {
+				synchronized(menu) {
+					menu.wait();
+				}
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 		//create a new game instance and set difficulty if applicable
@@ -37,6 +40,7 @@ public class App {
 		if(menu.getGameType()=="pvp") {
 			while(game.getState().getGameStage()!=5) {
 				while(game.getState().getTurn()=="white") {
+					game.getState().evaluateState("white", false);
 					try {
 					       Thread.sleep(1000);
 					    } catch(InterruptedException e) {
@@ -44,6 +48,7 @@ public class App {
 				}
 				checkForDrawRule(game);
 				while(game.getState().getTurn()=="black") {
+					game.getState().evaluateState("black", false);
 					try {
 					       Thread.sleep(1000);
 					    } catch(InterruptedException e) {

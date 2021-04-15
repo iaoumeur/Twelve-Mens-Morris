@@ -58,7 +58,7 @@ public abstract class Computer {
 				gameState.blackPiecesPlaced++;
 			}
 			gameState.piecesPlaced++;
-			if(gameState.checkForMill()) {
+			if(gameState.checkForMill(true)) {
 				//System.out.println("***** THIS MOVE MADE A MILL *****");
 			}
 			else {
@@ -75,7 +75,7 @@ public abstract class Computer {
 			}
 		}
 		else if(gameStage==2) {
-			if(gameState.checkForMill()) {
+			if(gameState.checkForMill(true)) {
 			}
 			else {
 				gameState.incrementMovesWihtoutMill();
@@ -86,7 +86,7 @@ public abstract class Computer {
     		gameState.resetMovablePositions();
 		}
 		else if(gameStage==4) {
-			gameState.checkForMill();
+			gameState.checkForMill(true);
 			if(gameState.piecesPlaced<gameState.totalNumberOfPieces) {
 				gameState.setGameStage(1);
 			}
@@ -160,8 +160,8 @@ public abstract class Computer {
 		else {
 			otherTurn = "black";
 		}
-		ArrayList<Move> validMoves = new ArrayList<Move>();
 		
+		ArrayList<Move> validMoves = new ArrayList<Move>();
 		if(copyState.getGameStage()==1) {
 			
 			for(int i=0; i<copyState.getBoardPieces().length; i++) {
@@ -185,6 +185,7 @@ public abstract class Computer {
 			}	
 			
 		}
+		
 		else if(copyState.getGameStage()==4) {
 			
 			for(int i=0; i<copyState.getBoardPieces().length; i++) {

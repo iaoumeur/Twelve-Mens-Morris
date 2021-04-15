@@ -269,7 +269,7 @@ public class MainMenu {
 		return btn;
 	}
 	
-	protected void enterNamesAndStart() {
+	protected synchronized void enterNamesAndStart() {
 		
 		 /*p1Name = JOptionPane.showInputDialog("Enter Player 1's Name:");
 		 if(gameType=="pvp") {
@@ -286,6 +286,7 @@ public class MainMenu {
 		 }
 		 ready = true;
 		 frame.dispose();
+		 this.notify();
 		
 	}
 	

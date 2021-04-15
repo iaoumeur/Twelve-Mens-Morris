@@ -8,9 +8,9 @@ public class GameState {
 	//18 * (1) + 26 * (2) + 1 * (3) + 9 * (4) + 10 * (5) + 7 * (6)
 	//14 * (1) + 43 * (2) + 10 * (3) + 11 * (4) + 8 * (7) + 1086 * (8)
 	//16 * (1) + 10 * (5) + 1 * (6) + 1190 * (8)
-	int[] phaseOneEvaluationWeights = new int[] { 20, 15, 1, 10, 10, 5, 0 };
-	int[] phaseTwoEvaluationWeights = new int[] { 10, 45, 30, 10, 10, 10, 1000 };
-	int[] phaseThreeEvaluationWeights = new int[] { 15, 0, 0, 0, 10, 1, 1000 };
+	int[] phaseOneEvaluationWeights = new int[] { 18, 26, 10, 6, 12, 7, 0 };
+	int[] phaseTwoEvaluationWeights = new int[] { 14, 43, 40, 8, 0, 0, 1000 };
+	int[] phaseThreeEvaluationWeights = new int[] { 10, 0, 0, 0, 1, 16, 1000 };
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
 	int movesWithoutMill = 0;
@@ -168,11 +168,14 @@ public class GameState {
 	}
 	
 	
-	public boolean checkForMill() {
+	public boolean checkForMill(boolean alterGame) {
 		boolean newMillFound = false;
 		for(int i=0; i<millLocations.length; i++) {
 			if(boardPieces[millLocations[i][0]]=="white" && boardPieces[millLocations[i][1]]=="white" && boardPieces[millLocations[i][2]]=="white") {
 				if(millsFound[i]==null) {
+					if(!alterGame) {
+						return true;
+					}
 					millsFound[i] = "white";
 					gameStage = 4;   
 					movesWithoutMill=0;
@@ -181,6 +184,9 @@ public class GameState {
 			}
 			else if(boardPieces[millLocations[i][0]]=="black" && boardPieces[millLocations[i][1]]=="black" && boardPieces[millLocations[i][2]]=="black") {
 				if(millsFound[i]==null) {
+					if(!alterGame) {
+						return true;
+					}
 					millsFound[i] = "black";
 					movesWithoutMill=0;
 					gameStage = 4;   
@@ -235,7 +241,7 @@ public class GameState {
 				else 
 					blackPiecesPlaced++;
 	    		piecesPlaced++;
-				if(checkForMill()) {
+				if(checkForMill(true)) {
 					if(!canPieceBeRemoved()) {
 			       		return "millNoRemoval";
 			       	}    	 
@@ -280,7 +286,7 @@ public class GameState {
 			if(movablePositions.contains(piecePosition)) {
 				boardPieces[selectedPiece] = null;
 				boardPieces[piecePosition] = turn;
-				if(checkForMill()) {
+				if(checkForMill(true)) {
 					if(!canPieceBeRemoved()) {
 			       		return "millNoRemoval";
 			       	}    	 
@@ -306,7 +312,7 @@ public class GameState {
     		}
     		if((turn=="white" && boardPieces[piecePosition]=="black") || (turn=="black" && boardPieces[piecePosition]=="white"))  {
     			boardPieces[piecePosition] = null;
-    			checkForMill();
+    			checkForMill(true);
     			endgame = hasGameEnded();
     			if(endgame!=null) {
     				return endgame;
@@ -576,6 +582,34 @@ public class GameState {
 		
 		return mills;
 	}
+	
+	public int countDoubleMills(String player) {
+		int doubleMills = 0;
+		for(int i=0; i<millsFound.length; i++) {
+			if(millsFound[i]==player) {
+				System.out.println("Mill " + i + "for " + player + " has been found");
+				int[] millPieces = millLocations[i];
+				for(int j=0; j<millPieces.length; j++) {
+					int piece = millPieces[j];
+					System.out.println("Testing piece " + piece);
+					for(int k=0; k<adjacentPositions[piece].length; k++) {
+						if(boardPieces[adjacentPositions[piece][k]]==null) {
+							System.out.println("Found null adjacent positions at " + adjacentPositions[piece][k]);
+							boardPieces[adjacentPositions[piece][k]]=player;
+							if(checkForMill(false)) {
+								System.out.println("Adding a piece here made a mill");
+								doubleMills++;
+							}
+							boardPieces[adjacentPositions[piece][k]]=null;
+						}
+					}
+				}
+			}
+		}
+		
+		System.out.println("Double Mills for " + player + ": " + doubleMills);
+		return doubleMills;
+	}
 	/*want to look at the following evaluation features:
 	
 	-Closed Morris: 1 if a morris was closed in the last move by the player (and an opponent’s piece should be grabbed in this move), -1 if a 
@@ -679,6 +713,8 @@ public class GameState {
 		prints.add("Black has " + countThreePieceConfigurations("black") + " three piece configs");
 		prints.add("White has " + countThreePieceConfigurations("white") + " three piece configs");
 		
+		countDoubleMills("white");
+		countDoubleMills("black");
 		//evaluation 7
 		String winner = hasGameEnded();
 		if(winner=="draw") {
