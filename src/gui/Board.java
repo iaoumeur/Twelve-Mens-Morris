@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-//CENTRE CIRCLES
 public class Board extends JLabel {
 
 	
