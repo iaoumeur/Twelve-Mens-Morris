@@ -101,12 +101,12 @@ public abstract class Computer {
 	}
 	
 	public void makeMove(MoveScore move, String player) {
-		state.evaluateState(player, true);
+		//state.evaluateState(player, true);
 		nodesEvaluated = 0;
 		if(state.getGameStage()==1) {
 			state.setBoardPiece(move.index, player);
 			alterGame(1, player, state);
-			state.evaluateState(player, true);
+			//state.evaluateState(player, true);
 			if(player=="white") {
 				game.removeWhitePieceFromPanel();
 			}
@@ -123,7 +123,7 @@ public abstract class Computer {
 			state.setBoardPiece(move.index, null);
 			state.setBoardPiece(move.to, player);
 			alterGame(2, player, state);
-			state.evaluateState(player, true);
+			//state.evaluateState(player, true);
 			if(state.getGameStage()==4) {
 				millCreated = true;
 				return;
@@ -132,7 +132,7 @@ public abstract class Computer {
 		else if(state.getGameStage()==4) {
 			state.setBoardPiece(move.index, null);
 			alterGame(4, player, state);
-			state.evaluateState(player, true);
+			//state.evaluateState(player, true);
 		}
 		
 		String endgame = state.hasGameEnded();
