@@ -119,12 +119,58 @@ public class GameStateTest {
 
 	@Test
 	public void testCountTwoPieceConfigurations() {
-		fail("Not yet implemented");
+		
+		state = new GameState();
+		assertEquals(0, state.countTwoPieceConfigurations("black"));
+		int randomMill = rand.nextInt(state.getMillLocations().length);
+		int randomPiece = rand.nextInt(2);
+		int firstPiece = state.getMillLocations()[randomMill][randomPiece];
+		int secondPiece = state.getMillLocations()[randomMill][rand.nextInt(2)];
+		while(secondPiece==firstPiece) {
+			secondPiece = state.getMillLocations()[randomMill][rand.nextInt(2)];
+		}
+		state.setBoardPiece(firstPiece, "black");
+		state.setBoardPiece(secondPiece, "black");
+		assertEquals(1, state.countTwoPieceConfigurations("black"));
+		
+		
 	}
 
 	@Test
 	public void testCountThreePieceConfigurations() {
-		fail("Not yet implemented");
+		state = new GameState();
+		assertEquals(0, state.countThreePieceConfigurations("black"));
+		int randomMill = rand.nextInt(state.getMillLocations().length);
+		int randomPiece = rand.nextInt(2);
+		int firstPiece = state.getMillLocations()[randomMill][randomPiece];
+		int secondPiece = state.getMillLocations()[randomMill][rand.nextInt(2)];
+		while(secondPiece==firstPiece) {
+			secondPiece = state.getMillLocations()[randomMill][rand.nextInt(2)];
+		}
+		state.setBoardPiece(firstPiece, "black");
+		state.setBoardPiece(secondPiece, "black");
+		boolean pieceFound = false;
+		for(int i=0; i<state.getMillLocations().length; i++) {
+			if(i==randomMill) {
+				continue;
+			}
+			for(int j=0; j<state.getMillLocations()[i].length; j++) {
+				if(state.getMillLocations()[i][j]==firstPiece || state.getMillLocations()[i][j]==secondPiece) {
+					int newMillPiece = state.getMillLocations()[i][rand.nextInt(2)];
+					while(newMillPiece==state.getMillLocations()[i][j]) {
+						newMillPiece = state.getMillLocations()[i][rand.nextInt(2)];
+					}
+					state.setBoardPiece(newMillPiece, "black");
+					pieceFound = true;
+					break;
+				}
+			}
+			if(pieceFound) {
+				break;
+			}
+		}
+		assertEquals(1, state.countThreePieceConfigurations("black"));
+		
 	}
 
 	@Test
@@ -134,7 +180,23 @@ public class GameStateTest {
 
 	@Test
 	public void testSaveGameState() {
-		fail("Not yet implemented");
+		state = new GameState();
+		state.setBoardPiece(rand.nextInt(24), "black");
+		state.setBlackPiecesPlaced(1);
+		state.setWhitePiecesPlaced(0);
+		state.setGameStage(2);
+		state.setTurn("white");
+		GameState testState = state.saveGameState();
+		assertEquals(state.getBoardPieces(), testState.getBoardPieces());
+		assertEquals(state.getWhitePiecesPlaced(), testState.getWhitePiecesPlaced());
+		assertEquals(state.getBlackPiecesPlaced(), testState.getBlackPiecesPlaced());
+		assertEquals(state.getGameStage(), testState.getGameStage());
+		assertEquals(state.getMillsFound(), testState.getMillsFound());
+		assertEquals(state.getTurn(), testState.getTurn());
+		assertEquals(state.getSelectedPiece(), testState.getSelectedPiece());
+		assertEquals(state.getFlyingBlack(), testState.getFlyingBlack());
+		assertEquals(state.getFlyingWhite(), testState.getFlyingWhite());
+		
 	}
 
 }
