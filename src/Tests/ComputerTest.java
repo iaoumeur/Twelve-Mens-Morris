@@ -1,4 +1,4 @@
-package player;
+package Tests;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,10 @@ import java.util.Random;
 import org.junit.*;
 
 import gui.Game;
+import player.Computer;
+import player.Minimax;
+import player.Move;
+import player.MoveScore;
 
 public class ComputerTest {
 	
@@ -19,8 +23,8 @@ public class ComputerTest {
 	
 	@Test
 	public void testConstructor() {
-		assertNotEquals(null, computer.game);
-		assertNotEquals(null, computer.state);
+		assertNotNull(computer.game);
+		assertNotNull(computer.state);
 	}
 
 	@Test

@@ -8,9 +8,9 @@ import state.GameState;
 
 public abstract class Computer {
 
-	Game game;
-	GameState state;
-	GameState copyState;
+	public Game game;
+	public GameState state;
+	public GameState copyState;
 	GameState tempState;
 	Stack<GameState> states = new Stack<GameState>();
 	

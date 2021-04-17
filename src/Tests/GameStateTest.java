@@ -1,10 +1,12 @@
-package state;
+package Tests;
 
 import static org.junit.Assert.*;
 
 import java.util.Random;
 
 import org.junit.Test;
+
+import state.GameState;
 
 public class GameStateTest {
 
@@ -175,7 +177,20 @@ public class GameStateTest {
 
 	@Test
 	public void testCountDoubleMills() {
-		fail("Not yet implemented");
+		state = new GameState();
+		assertEquals(0, state.countDoubleMills("black"));
+		state.setBoardPiece(0, "black");
+		state.setBoardPiece(1, "black");
+		state.setBoardPiece(2, "black");
+		state.setBoardPiece(3, "black");
+		state.setBoardPiece(5, "black");
+		state.checkForMill(true);
+		assertEquals(1, state.countDoubleMills("black"));
+		state.setBoardPiece(14, "black");
+		state.setBoardPiece(20, "black");
+		state.setBoardPiece(23, "black");
+		state.checkForMill(true);
+		assertEquals(2, state.countDoubleMills("black"));
 	}
 
 	@Test
@@ -195,8 +210,7 @@ public class GameStateTest {
 		assertEquals(state.getTurn(), testState.getTurn());
 		assertEquals(state.getSelectedPiece(), testState.getSelectedPiece());
 		assertEquals(state.getFlyingBlack(), testState.getFlyingBlack());
-		assertEquals(state.getFlyingWhite(), testState.getFlyingWhite());
-		
+		assertEquals(state.getFlyingWhite(), testState.getFlyingWhite());	
 	}
 
 }
