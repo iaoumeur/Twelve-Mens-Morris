@@ -15,8 +15,98 @@ public class GameStateTest {
 	
 	
 	@Test
-	public void testBoardMouseClick() {
+	public void testPlacementPhase() {
+		state = new GameState();
+		state.setTurn("black");
+		state.setGameStage(1);
+		int randomPiece = rand.nextInt(24);
+		state.boardMouseClick(randomPiece);
+		assertEquals("black", state.getBoardPiece(randomPiece));
+		state.switchTurn();
+		randomPiece = rand.nextInt(24);
+		while(state.getBoardPiece(randomPiece)!=null) {
+			randomPiece = rand.nextInt(24);
+		}
+		state.boardMouseClick(randomPiece);
+		assertEquals("white", state.getBoardPiece(randomPiece));
+		for(int i=0; i<6; i++) {
+			state.switchTurn();
+			randomPiece = rand.nextInt(24);
+			while(state.getBoardPiece(randomPiece)!=null) {
+				randomPiece = rand.nextInt(24);
+			}
+			state.setBoardPiece(randomPiece, state.getTurn());
+		}
+		state.setPiecesPlaced(23);
+		state.switchTurn();
+		state.setGameStage(1);
+		randomPiece = rand.nextInt(24);
+		while(state.getBoardPiece(randomPiece)!=null) {
+			randomPiece = rand.nextInt(24);
+		}
+		String returnValue = state.boardMouseClick(randomPiece);
+		if(returnValue=="blackPlaced") {
+			assertEquals(2, state.getGameStage());
+		}
 		
+	}
+	
+	@Test
+	public void testMovementPhase() {
+		state = new GameState();
+		state.setTurn("white");
+		int randomPiece;
+		for(int i=0; i<2; i++) {
+			state.switchTurn();
+			randomPiece = rand.nextInt(24);
+			while(state.getBoardPiece(randomPiece)!=null) {
+				randomPiece = rand.nextInt(24);
+			}
+			state.boardMouseClick(randomPiece);
+		}
+		state.setGameStage(2);
+		state.switchTurn();
+		int selectedPiece = 0;
+		for(int i=0; i<state.getBoardPieces().length; i++) {
+			if(state.getBoardPiece(i)=="black") {
+				selectedPiece = i;
+				state.boardMouseClick(i);
+				break;
+			}
+		}
+		assertEquals(3, state.getGameStage());
+		for(int i=0; i<state.getAdjacentPositions()[selectedPiece].length; i++) {
+			if(state.getBoardPiece(state.getAdjacentPositions()[selectedPiece][i])==null) {
+				state.boardMouseClick(state.getAdjacentPositions()[selectedPiece][i]);
+			}
+		}
+		assertEquals(2, state.getGameStage());
+		
+	}
+	
+	@Test
+	public void testFlyingPhase() {
+		state = new GameState();
+		state.setTurn("white");
+		int randomPiece;
+		for(int i=0; i<9; i++) {
+			state.switchTurn();
+			randomPiece = rand.nextInt(24);
+			while(state.getBoardPiece(randomPiece)!=null) {
+				randomPiece = rand.nextInt(24);
+			}
+			state.setBoardPiece(randomPiece, state.getTurn());
+		}
+		state.setTurn("black");
+		state.setPiecesPlaced(24);
+		state.setGameStage(4);
+		for(int i=0; i<state.getBoardPieces().length; i++) {
+			if(state.getBoardPiece(i)=="white") {
+				state.boardMouseClick(i);
+				break;
+			}
+		}
+		assertTrue(state.getFlyingWhite());	
 	}
 	
 	
@@ -84,6 +174,19 @@ public class GameStateTest {
 		assertEquals("black", state.checkForWin());
 		
 	}
+	
+	@Test
+	public void testForDraw() {
+		state = new GameState();
+		state.setTurn("black");
+		assertFalse(state.checkForDraw());
+		for(int i=0; i<state.getBoardPieces().length; i++) {
+			state.setBoardPiece(i, state.getTurn());
+			state.switchTurn();
+		}
+		assertTrue(state.checkForDraw());
+		
+	}
 
 	@Test
 	public void testPieceBlocked() {
@@ -144,7 +247,7 @@ public class GameStateTest {
 		assertEquals(0, state.countThreePieceConfigurations("black"));
 		int randomMill = rand.nextInt(state.getMillLocations().length);
 		int randomPiece = rand.nextInt(2);
-		int firstPiece = state.getMillLocations()[randomMill][randomPiece];
+		int firstPiece = state.getMillLocations()[randomMill][rand.nextInt(2)];
 		int secondPiece = state.getMillLocations()[randomMill][rand.nextInt(2)];
 		while(secondPiece==firstPiece) {
 			secondPiece = state.getMillLocations()[randomMill][rand.nextInt(2)];
@@ -152,25 +255,27 @@ public class GameStateTest {
 		state.setBoardPiece(firstPiece, "black");
 		state.setBoardPiece(secondPiece, "black");
 		boolean pieceFound = false;
+		int newMillPiece = 0;;
 		for(int i=0; i<state.getMillLocations().length; i++) {
 			if(i==randomMill) {
 				continue;
 			}
 			for(int j=0; j<state.getMillLocations()[i].length; j++) {
 				if(state.getMillLocations()[i][j]==firstPiece || state.getMillLocations()[i][j]==secondPiece) {
-					int newMillPiece = state.getMillLocations()[i][rand.nextInt(2)];
+					newMillPiece = state.getMillLocations()[i][rand.nextInt(2)];
 					while(newMillPiece==state.getMillLocations()[i][j]) {
 						newMillPiece = state.getMillLocations()[i][rand.nextInt(2)];
 					}
 					state.setBoardPiece(newMillPiece, "black");
 					pieceFound = true;
-					break;
 				}
 			}
 			if(pieceFound) {
 				break;
 			}
 		}
+		//System.out.println("" + firstPiece + " " + secondPiece + " " + newMillPiece);
+		//System.out.println(state.countThreePieceConfigurations("black"));
 		assertEquals(1, state.countThreePieceConfigurations("black"));
 		
 	}

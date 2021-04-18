@@ -18,14 +18,13 @@ public class MonteCarloTreeSearchTest {
 	MonteCarloTreeSearch computer = new MonteCarloTreeSearch(game, game.getState());
 	
 	@Test
-	public void testConstructor() {
+	public void testMCTSConstructor() {
 		assertNotNull(computer.game);
 		assertNotNull(computer.state);
 	}
 
 	@Test
 	public void testMonteCarloTreeSearch() {
-		
 		int iterations = rand.nextInt(10000 - 5000) + 5000;
 		computer.setCopyState(game.getState().saveGameState());
 		MoveScore bestMove = computer.monteCarloTreeSearch("black", iterations);
