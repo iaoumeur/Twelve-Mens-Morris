@@ -15,9 +15,8 @@ public class Minimax extends Computer{
 		super(game, state);
 	}
 	
-	public MoveScore minimax(String player, int depth, int alpha, int beta) {
-		
-		//System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
+	public MoveScore minimax(String player, int depth, int alpha, int beta, long timeForSearch) {
+		long startTime = System.currentTimeMillis();
 	
 		//find the list of valid moves Minimax can take.
 		ArrayList<Move> validMoves = findValidMoves(player); 
@@ -53,14 +52,29 @@ public class Minimax extends Computer{
 			simulateMove(move, player);
 			
 			score = copyState.evaluateState(player, false);
+			//System.out.println(score);
 			states.push(copyState.saveGameState());
 			nodesEvaluated++;
 			
-			if(depth==0){
+			if(depth==0 || (System.currentTimeMillis() - startTime) > timeForSearch){
 				moveToPush.score = score;
 			}
 			else if(copyState.getTurn()=="black" && depth !=0){
-				result = minimax("black", depth-1, alpha, beta);
+				result = minimax("black", depth-1, alpha, beta, timeForSearch);
+				moveToPush.score = result.score;
+				
+				//alpha-beta pruning
+				
+				if(beta>result.score) {
+					beta = result.score;
+				}
+				if(beta<= alpha) {
+					i = validMoves.size();
+				}
+				
+			}
+			else if (copyState.getTurn()=="white" && depth !=0){
+				result = minimax("white", depth-1, alpha, beta, timeForSearch);
 				moveToPush.score = result.score;
 				
 				//alpha-beta pruning
@@ -70,18 +84,7 @@ public class Minimax extends Computer{
 				if(beta<= alpha) {
 					i = validMoves.size();
 				}
-			}
-			else if (copyState.getTurn()=="white" && depth !=0){
-				result = minimax("white", depth-1, alpha, beta);
-				moveToPush.score = result.score;
 				
-				//alpha-beta pruning
-				if(beta>result.score) {
-					beta = result.score;
-				}
-				if(beta<= alpha) {
-					i = validMoves.size();
-				}
 			}
 			moves.add(moveToPush);
 			
@@ -114,6 +117,7 @@ public class Minimax extends Computer{
 		if(player == "black"){
 			bestScore = -100000;
 			for(int i=0; i<moves.size(); i++){
+				//System.out.println("Move " + i + " with a score of " + moves.get(i).score);
 				if(moves.get(i).score != tempScore) {
 					allSameScore = false;
 				}

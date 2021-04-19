@@ -27,7 +27,7 @@ public class MonteCarloTreeSearchTest {
 	public void testMonteCarloTreeSearch() {
 		int iterations = rand.nextInt(10000 - 5000) + 5000;
 		computer.setCopyState(game.getState().saveGameState());
-		MoveScore bestMove = computer.monteCarloTreeSearch("black", iterations);
+		MoveScore bestMove = computer.monteCarloTreeSearch("black", iterations, 10000);
 		computer.makeMove(bestMove, "black");
 		assertTrue(Arrays.asList(game.getState().getBoardPieces()).contains("black"));
 		game.getBoard().repaintPieces();
@@ -68,7 +68,7 @@ public class MonteCarloTreeSearchTest {
 		game.getState().setGameStage(2);
 		game.getState().setTurn("black");
 		computer.setCopyState(game.getState().saveGameState());
-		bestMove = computer.monteCarloTreeSearch("black", iterations);
+		bestMove = computer.monteCarloTreeSearch("black", iterations, 10000);
 		computer.makeMove(bestMove, "black");
 		assertEquals(null, game.getState().getBoardPiece(bestMove.index));
 		assertEquals("black", game.getState().getBoardPiece(bestMove.to));
@@ -81,7 +81,7 @@ public class MonteCarloTreeSearchTest {
 		game.getState().setGameStage(4);
 		game.getState().setTurn("black");
 		computer.setCopyState(game.getState().saveGameState());
-		bestMove = computer.monteCarloTreeSearch("black", iterations);
+		bestMove = computer.monteCarloTreeSearch("black", iterations, 10000);
 		computer.makeMove(bestMove, "black");
 		assertEquals(null, game.getState().getBoardPiece(bestMove.index));
 		game.getBoard().repaintPieces();

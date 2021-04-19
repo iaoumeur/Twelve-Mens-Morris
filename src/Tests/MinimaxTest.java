@@ -27,7 +27,7 @@ public class MinimaxTest {
 	public void testMinimax() {
 		int depth = rand.nextInt(6);
 		computer.setCopyState(game.getState().saveGameState());
-		MoveScore bestMove = computer.minimax("black", depth, -1000000, 1000000);
+		MoveScore bestMove = computer.minimax("black", depth, -1000000, 1000000, 10000);
 		computer.makeMove(bestMove, "black");
 		assertTrue(Arrays.asList(game.getState().getBoardPieces()).contains("black"));
 		game.getBoard().repaintPieces();
@@ -50,7 +50,7 @@ public class MinimaxTest {
 		game.getState().setGameStage(2);
 		game.getState().setTurn("black");
 		computer.setCopyState(game.getState().saveGameState());
-		bestMove = computer.minimax("black", depth, -1000000, 1000000);
+		bestMove = computer.minimax("black", depth, -1000000, 1000000, 10000);
 		computer.makeMove(bestMove, "black");
 		assertEquals(null, game.getState().getBoardPiece(bestMove.index));
 		assertEquals("black", game.getState().getBoardPiece(bestMove.to));
@@ -73,7 +73,7 @@ public class MinimaxTest {
 		game.getState().setGameStage(4);
 		game.getState().setTurn("black");
 		computer.setCopyState(game.getState().saveGameState());
-		bestMove = computer.minimax("black", depth, -1000000, 1000000);
+		bestMove = computer.minimax("black", depth, -1000000, 1000000, 10000);
 		computer.makeMove(bestMove, "black");
 		assertEquals(null, game.getState().getBoardPiece(bestMove.index));
 		game.getBoard().repaintPieces();

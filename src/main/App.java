@@ -76,13 +76,14 @@ public class App {
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getComputer() instanceof MonteCarloTreeSearch) {
 						System.out.println("Difficulty: " + difficulty1);
-						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", difficulty1);
+						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", difficulty1, getTimeForSearch());
 					}
 					else if (game.getComputer() instanceof Minimax){
-						bestMove = ((Minimax)game.getComputer()).minimax("black", difficulty1, -1000000, 1000000);
+						bestMove = ((Minimax)game.getComputer()).minimax("black", difficulty1, Integer.MIN_VALUE, Integer.MAX_VALUE, getTimeForSearch());
 					}
 					
 					game.getComputer().makeMove(bestMove, "black");
+					//game.getState().evaluateState("black", false);
 					
 					if(!game.getComputer().getMillCreated()) {
 						game.switchTurn();
@@ -105,10 +106,10 @@ public class App {
 					game.showThinking();
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getComputer() instanceof MonteCarloTreeSearch) {
-						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("white", difficulty1);
+						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("white", difficulty1, getTimeForSearch());
 					}
 					else if (game.getComputer() instanceof Minimax){
-						bestMove = ((Minimax)game.getComputer()).minimax("white", difficulty1, -1000000, 1000000);
+						bestMove = ((Minimax)game.getComputer()).minimax("white", difficulty1, -1000000, 1000000, getTimeForSearch());
 					}
 					game.hideThinking();
 					
@@ -129,10 +130,10 @@ public class App {
 					//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getOtherComputer() instanceof MonteCarloTreeSearch) {
-						bestMove = ((MonteCarloTreeSearch)game.getOtherComputer()).monteCarloTreeSearch("black", difficulty2);
+						bestMove = ((MonteCarloTreeSearch)game.getOtherComputer()).monteCarloTreeSearch("black", difficulty2, getTimeForSearch());
 					}
 					else if (game.getOtherComputer() instanceof Minimax){
-						bestMove = ((Minimax)game.getOtherComputer()).minimax("black", difficulty2, -1000000, 1000000);
+						bestMove = ((Minimax)game.getOtherComputer()).minimax("black", difficulty2, -1000000, 1000000, getTimeForSearch());
 					}
 					game.hideThinking();
 					
@@ -192,6 +193,10 @@ public class App {
 		}
 		
 		
+	}
+	
+	private static long getTimeForSearch() {
+		return 10000;
 	}
 	
 	private static void checkForDrawRule(Game game) {

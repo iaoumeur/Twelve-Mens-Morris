@@ -17,7 +17,7 @@ public class MonteCarloTreeSearch extends Computer{
 		super(game, state);
 	}
 	
-	public MoveScore monteCarloTreeSearch(String player, int iterations) {
+	public MoveScore monteCarloTreeSearch(String player, int iterations, long timeForSearch) {
 		
 		Node root = new Node(copyState.saveGameState(), null);
 		long startTime = System.currentTimeMillis();
@@ -41,6 +41,10 @@ public class MonteCarloTreeSearch extends Computer{
 			
 			int rolloutResult = rollout(exploreNode, player);
 			backpropogate(exploreNode, rolloutResult);
+			
+			if((System.currentTimeMillis() - startTime) > timeForSearch) {
+				break;
+			}
 			
 		}
 		

@@ -8,8 +8,9 @@ public class GameState {
 	//18 * (1) + 26 * (2) + 1 * (3) + 9 * (4) + 10 * (5) + 7 * (6)
 	//14 * (1) + 43 * (2) + 10 * (3) + 11 * (4) + 8 * (7) + 1086 * (8)
 	//16 * (1) + 10 * (5) + 1 * (6) + 1190 * (8)
-	int[] phaseOneEvaluationWeights = new int[] { 18, 26, 10, 6, 12, 7, 0, 0 };
-	int[] phaseTwoEvaluationWeights = new int[] { 14, 43, 20, 8, 0, 0, 42, 1000 };
+	int[] phaseOneEvaluationWeights = new int[] { 18, 26, 2, 6, 12, 7, 0, 0 };
+	//int[] phaseOneEvaluationWeights = new int[] { 0, 10, 0, 0, 0, 0, 0, 0 };
+	int[] phaseTwoEvaluationWeights = new int[] { 14, 43, 10, 8, 0, 0, 42, 1000 };
 	int[] phaseThreeEvaluationWeights = new int[] { 10, 0, 0, 0, 1, 16, 0, 1000 };
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
@@ -684,7 +685,7 @@ public class GameState {
 		
 		//evaluation 1
 		if(gameStage==4) {
-			if(turn==player)  {
+			if(turn=="black")  {
 				prints.add("Black just placed a mill");
 				score+=(1*evaluationWeights[0]);
 			}
@@ -695,55 +696,55 @@ public class GameState {
 		}
 		
 		//evaluation 2
-		score += ((countMills(player) - countMills(otherPlayer))*evaluationWeights[1]);
-		prints.add("Black has " + countMills(player) + " mills");
-		prints.add("White has " + countMills(otherPlayer) + " mills");
+		score += ((countMills("black") - countMills("white"))*evaluationWeights[1]);
+		prints.add("Black has " + countMills("black") + " mills");
+		prints.add("White has " + countMills("white") + " mills");
 		
 		//evaluation 3
-		score +=  ((countBlockedPieces(otherPlayer) - countBlockedPieces(player))*evaluationWeights[2]);
-		prints.add("Black has " + countBlockedPieces(player) + " blocked pieces");
-		prints.add("White has " + countBlockedPieces(otherPlayer) + " blocked pieces");
+		score +=  ((countBlockedPieces("white") - countBlockedPieces("black"))*evaluationWeights[2]);
+		prints.add("Black has " + countBlockedPieces("black") + " blocked pieces");
+		prints.add("White has " + countBlockedPieces("white") + " blocked pieces");
 		
 		//evaluation 4
-		score += ((countPieces(player) - countPieces(otherPlayer))*evaluationWeights[3]);
-		prints.add("Black has " + countPieces(player) + " pieces");
-		prints.add("White has " + countPieces(otherPlayer) + " pieces");
+		score += ((countPieces("black") - countPieces("white"))*evaluationWeights[3]);
+		prints.add("Black has " + countPieces("black") + " pieces");
+		prints.add("White has " + countPieces("white") + " pieces");
 		
 		//evaluation 5
-		score += ((countTwoPieceConfigurations(player) - countTwoPieceConfigurations(otherPlayer))*evaluationWeights[4]);
-		prints.add("Black has " + countTwoPieceConfigurations(player) + " two piece configs");
-		prints.add("White has " + countTwoPieceConfigurations(otherPlayer) + " two piece configs");
+		score += ((countTwoPieceConfigurations("black") - countTwoPieceConfigurations("white"))*evaluationWeights[4]);
+		prints.add("Black has " + countTwoPieceConfigurations("black") + " two piece configs");
+		prints.add("White has " + countTwoPieceConfigurations("white") + " two piece configs");
 		
 		//evaluation 6
-		score += ((countThreePieceConfigurations(player) - countThreePieceConfigurations(otherPlayer))*evaluationWeights[5]);
-		prints.add("Black has " + countThreePieceConfigurations(player) + " three piece configs");
-		prints.add("White has " + countThreePieceConfigurations(otherPlayer) + " three piece configs");
+		score += ((countThreePieceConfigurations("black") - countThreePieceConfigurations("white"))*evaluationWeights[5]);
+		prints.add("Black has " + countThreePieceConfigurations("black") + " three piece configs");
+		prints.add("White has " + countThreePieceConfigurations("white") + " three piece configs");
 		
 		//evaluation 7
-		score += ((countDoubleMills(player) - countDoubleMills(otherPlayer))*evaluationWeights[6]);
-		prints.add("Black has " + countDoubleMills(player) + " double mills");
-		prints.add("White has " + countDoubleMills(otherPlayer) + " double mills");
+		score += ((countDoubleMills("black") - countDoubleMills("white"))*evaluationWeights[6]);
+		prints.add("Black has " + countDoubleMills("black") + " double mills");
+		prints.add("White has " + countDoubleMills("white") + " double mills");
 
 		//evaluation 8
 		String winner = hasGameEnded();
 		if(winner=="draw") {
 			score+=0;
 		}
-		else if(winner==player) {
+		else if(winner=="black") {
 			prints.add("Black wins with this move");
 			score+=(1*evaluationWeights[7]);
 		}
-		else if(winner==otherPlayer) {
+		else if(winner=="white") {
 			prints.add("White wins with this move");
 			score-=(1*evaluationWeights[7]);
 		}
 		
-		/*if(print) {
+		if(print) {
 			for(int i=0; i<prints.size(); i++) {
 				System.out.println(prints.get(i));
 			}
 			
-		}*/
+		}
 		
 		
 		return score;
