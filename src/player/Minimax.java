@@ -16,6 +16,7 @@ public class Minimax extends Computer{
 	}
 	
 	public MoveScore minimax(String player, int depth, int alpha, int beta, long timeForSearch) {
+		//System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
 		long startTime = System.currentTimeMillis();
 	
 		//find the list of valid moves Minimax can take.
@@ -52,11 +53,12 @@ public class Minimax extends Computer{
 			simulateMove(move, player);
 			
 			score = copyState.evaluateState(player, false);
+			//System.out.println("Score for move " + i + " = " + score);
 			//System.out.println(score);
 			states.push(copyState.saveGameState());
 			nodesEvaluated++;
 			
-			if(depth==0 || (System.currentTimeMillis() - startTime) > timeForSearch){
+			if(depth==0) {
 				moveToPush.score = score;
 			}
 			else if(copyState.getTurn()=="black" && depth !=0){
@@ -69,8 +71,10 @@ public class Minimax extends Computer{
 					beta = result.score;
 				}
 				if(beta<= alpha) {
+					//System.out.println("Min move has been found");
 					i = validMoves.size();
 				}
+				//System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
 				
 			}
 			else if (copyState.getTurn()=="white" && depth !=0){
@@ -82,8 +86,10 @@ public class Minimax extends Computer{
 					alpha = result.score;
 				}
 				if(beta<= alpha) {
+					//System.out.println("Max move has been found");
 					i = validMoves.size();
 				}
+				//System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
 				
 			}
 			moves.add(moveToPush);

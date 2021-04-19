@@ -80,6 +80,7 @@ public class App {
 					}
 					else if (game.getComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getComputer()).minimax("black", difficulty1, Integer.MIN_VALUE, Integer.MAX_VALUE, getTimeForSearch());
+						System.out.println("Nodes evaluated: " + game.getComputer().getNodesEvaluated());
 					}
 					
 					game.getComputer().makeMove(bestMove, "black");
@@ -177,11 +178,11 @@ public class App {
 
 		if(computerType=="Minimax") {
 			if(difficulty=="easy") 
-				return 4;
+				return 2;
 			else if(difficulty=="hard")
-				return 8;
+				return 5;
 			else 
-				return 6;
+				return 4;
 		}
 		else {
 			if(difficulty=="easy") 

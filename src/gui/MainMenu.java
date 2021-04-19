@@ -271,14 +271,15 @@ public class MainMenu {
 	
 	protected synchronized void enterNamesAndStart() {
 		
-		 p1Name = JOptionPane.showInputDialog("Enter Player 1's Name:");
 		 if(gameType=="pvp") {
+			 p1Name = JOptionPane.showInputDialog("Enter Player 1's Name:");
 			 p2Name = JOptionPane.showInputDialog("Enter Player 2's Name:");
 		 }
-		 else {
+		 else if(gameType=="pvAI") {
+			 p1Name = JOptionPane.showInputDialog("Enter Player 1's Name:");
 			 p2Name = (computerType);
 		 }
-		 if(gameType=="AIvAI") {
+		 else {
 			 p1Name = computerType;
 			 p2Name = otherComputerType;
 		 }
