@@ -75,7 +75,6 @@ public class App {
 					//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
 					MoveScore bestMove = new MoveScore(0, 0, 0);
 					if(game.getComputer() instanceof MonteCarloTreeSearch) {
-						System.out.println("Difficulty: " + difficulty1);
 						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", difficulty1, getTimeForSearch());
 					}
 					else if (game.getComputer() instanceof Minimax){
@@ -180,24 +179,24 @@ public class App {
 			if(difficulty=="easy") 
 				return 2;
 			else if(difficulty=="hard")
-				return 5;
+				return 6;
 			else 
 				return 4;
 		}
 		else {
 			if(difficulty=="easy") 
-				return 7500;
+				return 20000;
 			else if(difficulty=="hard")
-				return 30000;
+				return 60000;
 			else 
-				return 15000;
+				return 40000;
 		}
 		
 		
 	}
 	
 	private static long getTimeForSearch() {
-		return 10000;
+		return 15000;
 	}
 	
 	private static void checkForDrawRule(Game game) {

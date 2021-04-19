@@ -64,6 +64,10 @@ public abstract class Computer {
 			else {
 				copyState.switchTurn();
 				if(gameState.piecesPlaced>=gameState.totalNumberOfPieces){
+					String endgame = gameState.hasGameEnded();
+					if(endgame!=null) {
+						return;
+					}
 					gameState.setGameStage(2);
 					if(player=="white") {
 						gameState.whitePhase = 2;
@@ -84,6 +88,10 @@ public abstract class Computer {
 			}
 			
     		gameState.resetMovablePositions();
+    		String endgame = gameState.hasGameEnded();
+    		if(endgame!=null) {
+    			return;
+    		}
 		}
 		else if(gameStage==4) {
 			gameState.checkForMill(true);
@@ -92,6 +100,10 @@ public abstract class Computer {
 			}
 			else {
 				gameState.setGameStage(2);
+			}
+			String endgame = gameState.hasGameEnded();
+			if(endgame!=null) {
+				return;
 			}
 			copyState.switchTurn();
 			gameState.resetMovablePositions();
