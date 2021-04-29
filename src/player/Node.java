@@ -8,7 +8,7 @@ import state.GameState;
 public class Node {
 
 	GameState state;
-	int totalScore;
+	double totalScore;
 	int visits;
 	MoveScore action;
 	
@@ -26,7 +26,7 @@ public class Node {
 		this.state = state;
 	}
 	
-	public void setTotalScore(int value) {
+	public void setTotalScore(double value) {
 		this.totalScore = value;
 	}
 	
@@ -50,7 +50,7 @@ public class Node {
 		return parent;
 	}
 
-	public int getTotalScore() {
+	public double getTotalScore() {
 		return totalScore;
 	}
 

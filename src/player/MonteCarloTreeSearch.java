@@ -39,12 +39,12 @@ public class MonteCarloTreeSearch extends Computer{
 				exploreNode = bestNode.getRandomChild();
 			}
 			
-			int rolloutResult = rollout(exploreNode, player);
+			double rolloutResult = rollout(exploreNode, player);
 			backpropogate(exploreNode, rolloutResult);
 			
-			if((System.currentTimeMillis() - startTime) > timeForSearch) {
+			/*if((System.currentTimeMillis() - startTime) > timeForSearch) {
 				break;
-			}
+			}*/
 			
 		}
 		
@@ -98,7 +98,7 @@ public class MonteCarloTreeSearch extends Computer{
 		
 	}
 	
-	private int rollout(Node exploreNode, String player) {
+	private double rollout(Node exploreNode, String player) {
 		
 		String otherPlayer;
 		if(player=="white") {
@@ -118,7 +118,7 @@ public class MonteCarloTreeSearch extends Computer{
 			if(validMoves.isEmpty()) {
 				if(copyState.getTurn()==otherPlayer) {
 					//System.out.println("No valid moves - White won this simulation");
-					return -1;
+					return 0;
 				}
 				else {
 					//System.out.println("No valid moves - Black won this simulation");
@@ -136,7 +136,7 @@ public class MonteCarloTreeSearch extends Computer{
 		
 		if(endgame==otherPlayer) {
 			//System.out.println("White won this simulation");
-			return -1;
+			return 0;
 		}
 		else if(endgame==copyState.getTurn()) {
 			//System.out.println("Black won this simulation");
@@ -144,11 +144,11 @@ public class MonteCarloTreeSearch extends Computer{
 		}
 		
 		//System.out.println("Draw");
-		return 0;
+		return 0.5;
 	}
 	
 	
-	private void backpropogate(Node exploreNode, int rolloutResult) {
+	private void backpropogate(Node exploreNode, double rolloutResult) {
 		
 		Node tempNode = exploreNode;
 		while(tempNode!=null) {

@@ -8,10 +8,11 @@ public class GameState {
 	//18 * (1) + 26 * (2) + 1 * (3) + 9 * (4) + 10 * (5) + 7 * (6)
 	//14 * (1) + 43 * (2) + 10 * (3) + 11 * (4) + 8 * (7) + 1086 * (8)
 	//16 * (1) + 10 * (5) + 1 * (6) + 1190 * (8)
-	int[] phaseOneEvaluationWeights = new int[] { 18, 26, 2, 6, 12, 7, 0, 0 };
-	//int[] phaseOneEvaluationWeights = new int[] { 0, 10, 0, 0, 0, 0, 0, 0 };
-	int[] phaseTwoEvaluationWeights = new int[] { 14, 43, 10, 8, 0, 0, 42, 1000 };
-	int[] phaseThreeEvaluationWeights = new int[] { 10, 0, 0, 0, 1, 16, 0, 1000 };
+	
+	final int[] phaseOneEvaluationWeights = new int[] { 18, 26, 5, 6, 12, 7, 0, 0 };
+	final int[] phaseTwoEvaluationWeights = new int[] { 14, 43, 22, 8, 0, 0, 42, 1000 };
+	final int[] phaseThreeEvaluationWeights = new int[] { 10, 0, 0, 0, 1, 16, 0, 1000 };
+	
 	public final int numberOfPieces = 12;
 	public final int totalNumberOfPieces = 24;
 	int movesWithoutMill = 0;

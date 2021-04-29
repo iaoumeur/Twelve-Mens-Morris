@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import main.App;
 import player.Computer;
 import player.Minimax;
 import player.MonteCarloTreeSearch;
@@ -39,6 +40,7 @@ public class Game {
 	private JLabel msgLabel;
 	private JLabel thinkingLabel;
 	private JPanel thinkingPanel;
+	private JPanel exitPanel;
 	
 	ImageIcon whitePieceImage; 
 	ImageIcon blackPieceImage;
@@ -166,13 +168,15 @@ public class Game {
 		thinkingPanel.setVisible(false);
 		
 		
-		/*JPanel exitPanel = new JPanel();
+		exitPanel = new JPanel();
 		ImageIcon exitImage = new ImageIcon(this.getClass().getResource("/ExitButton.png"));
 		exitPanel.setBounds(frameWidth - exitImage.getIconWidth()-30, exitImage.getIconHeight()-40, exitImage.getIconWidth(), exitImage.getIconHeight()+10);
 		JButton exitButton = new JButton(exitImage);
 		exitPanel.add(exitButton);
 		exitPanel.setOpaque(false);
-		exitButton.setBorderPainted( false );*/
+		exitButton.setBorderPainted(false);
+		exitButton.setOpaque(false);
+		exitButton.setBackground(new Color(185, 122, 87));
 		
 		
 		
@@ -185,7 +189,16 @@ public class Game {
 		lpane.add(msgPanel, 1, 0);
 		lpane.add(turnPanel,1, 0);
 		lpane.add(thinkingPanel, 1, 0);
-		//lpane.add(exitPanel, 1, 0);
+		lpane.add(exitPanel, 1, 0);
+		
+		exitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//frame.dispose();
+				//App.main(null);
+			}
+
+		});
 		
 	}
 	
@@ -283,6 +296,7 @@ public class Game {
 		thinkingPanel.setVisible(false);
 	}
 
+	
 
 
 

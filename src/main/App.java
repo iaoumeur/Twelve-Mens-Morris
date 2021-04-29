@@ -58,7 +58,6 @@ public class App {
 			}
 			System.out.print("Game ended");
 		}
-		
 		else if(menu.getGameType()=="pvAI") {
 			while(game.getState().getGameStage()!=5) {
 				while(game.getState().getTurn()=="white") {
@@ -79,6 +78,7 @@ public class App {
 					}
 					else if (game.getComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getComputer()).minimax("black", difficulty1, Integer.MIN_VALUE, Integer.MAX_VALUE, getTimeForSearch());
+						((Minimax)game.getComputer()).reset();
 						System.out.println("Nodes evaluated: " + game.getComputer().getNodesEvaluated());
 					}
 					
@@ -110,6 +110,7 @@ public class App {
 					}
 					else if (game.getComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getComputer()).minimax("white", difficulty1, -1000000, 1000000, getTimeForSearch());
+						((Minimax)game.getComputer()).reset();
 					}
 					game.hideThinking();
 					
@@ -134,6 +135,7 @@ public class App {
 					}
 					else if (game.getOtherComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getOtherComputer()).minimax("black", difficulty2, -1000000, 1000000, getTimeForSearch());
+						((Minimax)game.getComputer()).reset();
 					}
 					game.hideThinking();
 					
@@ -177,26 +179,26 @@ public class App {
 
 		if(computerType=="Minimax") {
 			if(difficulty=="easy") 
-				return 2;
+				return 3;
 			else if(difficulty=="hard")
-				return 6;
+				return 5;
 			else 
 				return 4;
 		}
 		else {
 			if(difficulty=="easy") 
-				return 20000;
+				return 10000;
 			else if(difficulty=="hard")
-				return 60000;
+				return 50000;
 			else 
-				return 40000;
+				return 20000;
 		}
 		
 		
 	}
 	
 	private static long getTimeForSearch() {
-		return 15000;
+		return 7500;
 	}
 	
 	private static void checkForDrawRule(Game game) {

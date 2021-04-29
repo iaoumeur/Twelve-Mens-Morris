@@ -11,13 +11,32 @@ import state.GameState;
 //after making a move, undo the last move so our don't copy the state
 public class Minimax extends Computer{
 	
+	int initialDepth = -1;
+	long startTime;
+	String initialPlayer = "black";
+	MoveScore maxMove = new MoveScore(-1, -1, Integer.MAX_VALUE);
+	MoveScore minMove = new MoveScore(-1, -1, Integer.MIN_VALUE);
+	
 	public Minimax(Game game, GameState state) {
 		super(game, state);
 	}
 	
 	public MoveScore minimax(String player, int depth, int alpha, int beta, long timeForSearch) {
 		//System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
-		long startTime = System.currentTimeMillis();
+		if(initialDepth==-1) {
+			startTime = System.currentTimeMillis();
+			initialDepth = depth;
+			initialPlayer=player;
+		}
+		
+		if((System.currentTimeMillis() - startTime) > timeForSearch) {
+			if(initialPlayer=="black") {
+				return maxMove;
+			}
+			else {
+				return minMove;
+			}
+		}
 	
 		//find the list of valid moves Minimax can take.
 		ArrayList<Move> validMoves = findValidMoves(player); 
@@ -65,6 +84,9 @@ public class Minimax extends Computer{
 				result = minimax("black", depth-1, alpha, beta, timeForSearch);
 				moveToPush.score = result.score;
 				
+				if(moveToPush.score < minMove.score) {
+					minMove = moveToPush;
+				}
 				//alpha-beta pruning
 				
 				if(beta>result.score) {
@@ -80,6 +102,10 @@ public class Minimax extends Computer{
 			else if (copyState.getTurn()=="white" && depth !=0){
 				result = minimax("white", depth-1, alpha, beta, timeForSearch);
 				moveToPush.score = result.score;
+				
+				if(moveToPush.score > maxMove.score) {
+					maxMove = moveToPush;
+				}
 				
 				//alpha-beta pruning
 				if(alpha<result.score) {
@@ -161,6 +187,11 @@ public class Minimax extends Computer{
 		
 	}
 	
+	public void reset() {
+		initialDepth = -1;
+		maxMove = new MoveScore(-1, -1, Integer.MAX_VALUE);
+		minMove = new MoveScore(-1, -1, Integer.MIN_VALUE);
+	}
 	
 	
 	
