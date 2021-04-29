@@ -11,15 +11,18 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+//displayed on the Game interface
+// -> stores coordinates for piece positions
+// -> repaints pieces when they are drawn
+// -> contains a mouse adapter to handle mouse clicks from the user
+
 public class Board extends JLabel {
 
-	
 	private Game game;
 	private BufferedImage img;
 	private TMMMouseAdapter tmmMouseAdapter;
 	
 	//constant x and y values for 2d array
-	
 	private int[][] piecePositionsX = {{10,30}, {57,85}, {110,140}, {215, 245}, {327,355}, {380, 410}, {435,460}}; 
 	private int[][] piecePositionsY = {{10,30}, {55,85}, {110,140}, {215, 245}, {325,355}, {380, 410}, {435,460}};  
 	private int[][] positionsOnBoard = {{11,8}, {224,8}, {446,8}, {63,63}, {224, 63}, {390,63}, {116,117}, {224, 115}, {330, 115},
@@ -53,10 +56,12 @@ public class Board extends JLabel {
 	public void paintComponent (Graphics g, int point)
     { 
 		super.paintComponent(g);
+		//"ghost piece" painting
 		if(game.getState().getBoardPieces()[point]==null && game.getState().getGameStage()==1) {
 			g.setColor(Color.LIGHT_GRAY);  
 			g.fillOval(positionsOnBoard[point][0]-6, positionsOnBoard[point][1]-6, 30, 30);			
 		}
+		//normal painting
 		else if(game.getState().getBoardPieces()[point]!=null && game.getState().getGameStage()==2) {
 			if(game.getState().getBoardPieces()[point]=="white") {
 				g.setColor(Color.WHITE);  
@@ -128,7 +133,6 @@ public class Board extends JLabel {
     			return;
     		}
              checkMouseBoundaries(e.getX(), e.getY());	
-
         }
         
         @Override
@@ -186,19 +190,6 @@ public class Board extends JLabel {
         		game.displayMessage(5);
         		game.getState().setGameStage(5);
         	}
-        	/*System.out.println();
-        	String output = " Board Pieces: [";
-    		for(int i=0; i<game.getState().getBoardPieces().length; i++) {
-    			output += game.getState().getBoardPieces()[i]+", ";	
-    		}
-    		output += "]";
-    		System.out.println(output);
-    		output = " Mills: [";
-    		for(int i=0; i<game.getState().getMillsFound().length; i++) {
-    			output += game.getState().getMillsFound()[i]+", ";	
-    		}
-    		output += "]";
-    		System.out.println(output);*/
         	repaintPieces();
 
         }
@@ -206,125 +197,100 @@ public class Board extends JLabel {
 
 	
 		private int checkMouseBoundaries(int x, int y) {
-			//System.out.println("" + x + ", " + y);
 			
 			if(inPosition(x, piecePositionsX[0], y, piecePositionsY[0])) {
-				//System.out.println("outer top left");
 				Board.this.paintComponent(getGraphics(), 0);
 				return 0;
 			}
 			else if(inPosition(x, piecePositionsX[3], y, piecePositionsY[0])) {
-				//System.out.println("outer top middle");
 				Board.this.paintComponent(getGraphics(), 1);
 				return 1;
 			}
 			else if(inPosition(x, piecePositionsX[6], y, piecePositionsY[0])) {
-				//System.out.println("outer top right");
 				Board.this.paintComponent(getGraphics(), 2);
 				return 2;
 			}
 			else if(inPosition(x, piecePositionsX[1], y, piecePositionsY[1])) {
-				//System.out.println("middle top left");
 				Board.this.paintComponent(getGraphics(), 3);
 				return 3;
 			}
 			else if(inPosition(x, piecePositionsX[3], y, piecePositionsY[1])) {
-				//System.out.println("middle top middle");
 				Board.this.paintComponent(getGraphics(), 4);
 				return 4; 
 			}
 			else if(inPosition(x, piecePositionsX[5], y, piecePositionsY[1])) {
-				//System.out.println("middle top right");
 				Board.this.paintComponent(getGraphics(), 5);
 				return 5;
 			}
 			else if(inPosition(x, piecePositionsX[2], y, piecePositionsY[2])) {
-				//System.out.println("inner top left");
 				Board.this.paintComponent(getGraphics(), 6);
 				return 6;
 			}
 			else if(inPosition(x, piecePositionsX[3], y, piecePositionsY[2])) {
-				//System.out.println("inner top middle");
 				Board.this.paintComponent(getGraphics(), 7);
 				return 7;
 			}
 			else if(inPosition(x, piecePositionsX[4], y, piecePositionsY[2])) {
-				//System.out.println("inner top right");
 				Board.this.paintComponent(getGraphics(), 8);
 				return 8;
 			}
 			else if(inPosition(x, piecePositionsX[0], y, piecePositionsY[3])) {
-				//System.out.println("outer centre left");
 				Board.this.paintComponent(getGraphics(), 9);
 				return 9;
 			}
 			else if(inPosition(x, piecePositionsX[1], y, piecePositionsY[3])) {
-				//System.out.println("middle centre left");
 				Board.this.paintComponent(getGraphics(), 10);
 				return 10;
 			}
 			else if(inPosition(x, piecePositionsX[2], y, piecePositionsY[3])) {
-				//System.out.println("inner centre left");
 				Board.this.paintComponent(getGraphics(), 11);
 				return 11;
 			}
 			else if(inPosition(x, piecePositionsX[4], y, piecePositionsY[3])) {
-				//System.out.println("inner centre right");
 				Board.this.paintComponent(getGraphics(), 12);
 				return 12;
 			}
 			else if(inPosition(x, piecePositionsX[5], y, piecePositionsY[3])) {
-				//System.out.println("middle centre right");
 				Board.this.paintComponent(getGraphics(), 13);
 				return 13;
 			}
 			else if(inPosition(x, piecePositionsX[6], y, piecePositionsY[3])) {
-				//System.out.println("outer centre right");
 				Board.this.paintComponent(getGraphics(), 14);
 				return 14;
 			}
 			else if(inPosition(x, piecePositionsX[2], y, piecePositionsY[4])) {
-				//System.out.println("inner bottom left");
 				Board.this.paintComponent(getGraphics(), 15);
 				return 15;
 			}
 			else if(inPosition(x, piecePositionsX[3], y, piecePositionsY[4])) {
-				//System.out.println("inner bottom middle");
 				Board.this.paintComponent(getGraphics(), 16);
 				return 16;
 			}
 			else if(inPosition(x, piecePositionsX[4], y, piecePositionsY[4])) {
-				//System.out.println("inner bottom right");
 				Board.this.paintComponent(getGraphics(), 17);
 				return 17;
 			}
 			else if(inPosition(x, piecePositionsX[1], y, piecePositionsY[5])) {
-				//System.out.println("middle bottom left");
 				Board.this.paintComponent(getGraphics(), 18);
 				return 18;
 			}
 			else if(inPosition(x, piecePositionsX[3], y, piecePositionsY[5])) {
-				//System.out.println("middle bottom middle");
 				Board.this.paintComponent(getGraphics(), 19);
 				return 19;
 			}
 			else if(inPosition(x, piecePositionsX[5], y, piecePositionsY[5])) {
-				//System.out.println("middle bottom right");
 				Board.this.paintComponent(getGraphics(), 20);
 				return 20;
 			}
 			else if(inPosition(x, piecePositionsX[0], y, piecePositionsY[6])) {
-				//System.out.println("outer bottom left");
 				Board.this.paintComponent(getGraphics(), 21);
 				return 21;
 			}
 			else if(inPosition(x, piecePositionsX[3], y, piecePositionsY[6])) {
-				//System.out.println("outer bottom middle");
 				Board.this.paintComponent(getGraphics(), 22);
 				return 22;
 			}
 			else if(inPosition(x, piecePositionsX[6], y, piecePositionsY[6])) {
-				//System.out.println("outer bottom right");
 				Board.this.paintComponent(getGraphics(), 23);
 				return 23;
 			}

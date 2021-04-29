@@ -7,36 +7,16 @@ import java.util.Stack;
 import gui.Game;
 import state.GameState;
 
-//IN MINIMAX LOOP, LOOK AT TABOO SEARCH, maybe think about penalty cost for cycling.
-//after making a move, undo the last move so our don't copy the state
+//Minimax implementation - extends Computer to use its methods.
+// -> has only a constructor and the minimax() method.
+
 public class Minimax extends Computer{
-	
-	int initialDepth = -1;
-	long startTime;
-	String initialPlayer = "black";
-	MoveScore maxMove = new MoveScore(-1, -1, Integer.MAX_VALUE);
-	MoveScore minMove = new MoveScore(-1, -1, Integer.MIN_VALUE);
 	
 	public Minimax(Game game, GameState state) {
 		super(game, state);
 	}
 	
 	public MoveScore minimax(String player, int depth, int alpha, int beta, long timeForSearch) {
-		//System.out.println("--------MINIMAX FOR " + player + " AT DEPTH: " + depth+ "-------");
-		if(initialDepth==-1) {
-			startTime = System.currentTimeMillis();
-			initialDepth = depth;
-			initialPlayer=player;
-		}
-		
-		if((System.currentTimeMillis() - startTime) > timeForSearch) {
-			if(initialPlayer=="black") {
-				return maxMove;
-			}
-			else {
-				return minMove;
-			}
-		}
 	
 		//find the list of valid moves Minimax can take.
 		ArrayList<Move> validMoves = findValidMoves(player); 
@@ -49,10 +29,10 @@ public class Minimax extends Computer{
 				return new MoveScore(-1, -1, 0);
 			}
 			else if(winner=="black") {
-				return new MoveScore(-1, -1, 10000);
+				return new MoveScore(-1, -1, Integer.MAX_VALUE);
 			}
 			else if(winner=="white") {
-				return new MoveScore(-1, -1, -10000);
+				return new MoveScore(-1, -1, Integer.MIN_VALUE);
 			}
 			copyState.switchTurn();
 		}
@@ -61,8 +41,7 @@ public class Minimax extends Computer{
 		// an array to collect all the objects
 		int score = 0;
 		ArrayList<MoveScore> moves = new ArrayList<MoveScore>();
-		
-		
+			
 		for (int i=0; i<validMoves.size(); i++){
 			
 			Move move = validMoves.get(i);
@@ -72,50 +51,38 @@ public class Minimax extends Computer{
 			simulateMove(move, player);
 			
 			score = copyState.evaluateState(player, false);
-			//System.out.println("Score for move " + i + " = " + score);
-			//System.out.println(score);
 			states.push(copyState.saveGameState());
 			nodesEvaluated++;
 			
 			if(depth==0) {
 				moveToPush.score = score;
 			}
+			//if the turn is now black (max) after making a move, then it was previously white's (min) turn, so the next recursive call is for max
 			else if(copyState.getTurn()=="black" && depth !=0){
 				result = minimax("black", depth-1, alpha, beta, timeForSearch);
 				moveToPush.score = result.score;
 				
-				if(moveToPush.score < minMove.score) {
-					minMove = moveToPush;
-				}
 				//alpha-beta pruning
-				
 				if(beta>result.score) {
 					beta = result.score;
 				}
 				if(beta<= alpha) {
-					//System.out.println("Min move has been found");
 					i = validMoves.size();
 				}
-				//System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
 				
 			}
+			//if the turn is now white (min) after making a move, then it was previously black's (max) turn, so the next recursive call is for min
 			else if (copyState.getTurn()=="white" && depth !=0){
 				result = minimax("white", depth-1, alpha, beta, timeForSearch);
 				moveToPush.score = result.score;
-				
-				if(moveToPush.score > maxMove.score) {
-					maxMove = moveToPush;
-				}
-				
+
 				//alpha-beta pruning
 				if(alpha<result.score) {
 					alpha = result.score;
 				}
 				if(beta<= alpha) {
-					//System.out.println("Max move has been found");
 					i = validMoves.size();
 				}
-				//System.out.println("RECURSIVE RESULT: " + result.index + ", " + result.score);
 				
 			}
 			moves.add(moveToPush);
@@ -127,14 +94,7 @@ public class Minimax extends Computer{
 			
 		}
 		
-		//System.out.println("Now going through moves, attempting to find best move...");
-		/*String pieces = "MOVES: [";
-		for(int i=0; i<moves.size(); i++) {
-			pieces += moves.get(i).index + ", ";
-		}
-		System.out.println(pieces + "]");*/
-		
-		
+		//find the best move out of the considered states.
 		int bestMoveIndex = 0;
 		int bestScore = 0;
 		boolean allSameScore = true;
@@ -148,8 +108,7 @@ public class Minimax extends Computer{
 		
 		if(player == "black"){
 			bestScore = -100000;
-			for(int i=0; i<moves.size(); i++){
-				//System.out.println("Move " + i + " with a score of " + moves.get(i).score);
+			for(int i=0; i<moves.size(); i++) {
 				if(moves.get(i).score != tempScore) {
 					allSameScore = false;
 				}
@@ -181,17 +140,11 @@ public class Minimax extends Computer{
 			Random rand = new Random();
 			bestMoveIndex = rand.nextInt(moves.size());
 		}
-		//System.out.println("Best move found for " + player + " is index " + bestMoveIndex + " with a score of " + bestScore);
 		
 		return moves.get(bestMoveIndex);
 		
 	}
 	
-	public void reset() {
-		initialDepth = -1;
-		maxMove = new MoveScore(-1, -1, Integer.MAX_VALUE);
-		minMove = new MoveScore(-1, -1, Integer.MIN_VALUE);
-	}
 	
 	
 	

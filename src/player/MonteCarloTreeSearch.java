@@ -10,9 +10,15 @@ import java.util.Stack;
 import gui.Game;
 import state.GameState;
 
+//MCTS implementation - extends Computer to use its methods.
+// -> has a constructor, alongside general MCTS method and methods for selection, expansion, simulation and back-propagation.
+// -> UCT calculation
+
 public class MonteCarloTreeSearch extends Computer{
 
-	final double explorationParameter = Math.sqrt(2);
+	//altered through trial and error - started at root 2.
+	final double explorationParameter = 4;
+	
 	public MonteCarloTreeSearch(Game game, GameState state) {
 		super(game, state);
 	}
@@ -22,8 +28,6 @@ public class MonteCarloTreeSearch extends Computer{
 		Node root = new Node(copyState.saveGameState(), null);
 		long startTime = System.currentTimeMillis();
 		
-		//MAIN MONTE CARLO SEARCH LOOP
-		//while((System.currentTimeMillis() - startTime) < timeForSearch) {
 		for(int j=0; j<iterations; j++) {
 			
 			Node bestNode = selection(root);
@@ -42,18 +46,18 @@ public class MonteCarloTreeSearch extends Computer{
 			double rolloutResult = rollout(exploreNode, player);
 			backpropogate(exploreNode, rolloutResult);
 			
-			/*if((System.currentTimeMillis() - startTime) > timeForSearch) {
+			if((System.currentTimeMillis() - startTime) > timeForSearch) {
 				break;
-			}*/
+			}
 			
 		}
 		
-		//printTree(root, 0);
 		Node finalNode = root.getBestChild();
 		return finalNode.getAction();	
 		
 	}
 
+	//find the next node to explore
 	private Node selection(Node root) {
 		
 		Node node = root;
@@ -62,7 +66,7 @@ public class MonteCarloTreeSearch extends Computer{
 		while(!node.getChildren().isEmpty()) {
 			double bestScore = Integer.MIN_VALUE;
 			for(int i=0; i<node.getChildren().size(); i++) {
-				double UCBScore = calculateUCBScore(node.getChildren().get(i));
+				double UCBScore = calculateUCTScore(node.getChildren().get(i));
 				if(UCBScore> bestScore) {
 					bestScore = UCBScore;
 					bestChildIndex = i;
@@ -76,6 +80,7 @@ public class MonteCarloTreeSearch extends Computer{
 	
 	}
 	
+	//add valid moves to the tree
 	private void expansion(Node bestNode) {
 		
 		copyState = bestNode.getGameState().saveGameState();
@@ -98,6 +103,7 @@ public class MonteCarloTreeSearch extends Computer{
 		
 	}
 	
+	//simulate the game outcome
 	private double rollout(Node exploreNode, String player) {
 		
 		String otherPlayer;
@@ -116,38 +122,38 @@ public class MonteCarloTreeSearch extends Computer{
 			ArrayList<Move> validMoves = findValidMoves(copyState.getTurn());
 			
 			if(validMoves.isEmpty()) {
+				//loss
 				if(copyState.getTurn()==otherPlayer) {
-					//System.out.println("No valid moves - White won this simulation");
 					return 0;
 				}
+				//win
 				else {
-					//System.out.println("No valid moves - Black won this simulation");
 					return 1;
 				}
 			}
 			
 			Move move = validMoves.get(rand.nextInt(validMoves.size()));
 			simulateMove(move, copyState.getTurn());
+			
 		}
 		
-		//int evaluationScorePlayer = copyState.evaluateState(copyState, false);
 		String endgame = copyState.hasGameEnded();
 		copyState = tempState.saveGameState();
 		
+		//loss
 		if(endgame==otherPlayer) {
-			//System.out.println("White won this simulation");
 			return 0;
 		}
+		//win
 		else if(endgame==copyState.getTurn()) {
-			//System.out.println("Black won this simulation");
 			return 1;
 		}
 		
-		//System.out.println("Draw");
+		//draw
 		return 0.5;
 	}
 	
-	
+	//update previous nodes with new average score
 	private void backpropogate(Node exploreNode, double rolloutResult) {
 		
 		Node tempNode = exploreNode;
@@ -159,7 +165,7 @@ public class MonteCarloTreeSearch extends Computer{
 		
 	}
 
-	private double calculateUCBScore(Node node) {
+	private double calculateUCTScore(Node node) {
 		
 		if(node.getVisits()==0) {
 			return Integer.MAX_VALUE;
@@ -181,7 +187,7 @@ public class MonteCarloTreeSearch extends Computer{
 		int total = 0;
 		while(!queue.isEmpty()) {
 			Node n = queue.remove();
-			System.out.println("Child " + total + ". Number of visits: " + n.getVisits() + ". Total score: " + n.getTotalScore() + ". UCB: " + calculateUCBScore(n));
+			System.out.println("Child " + total + ". Number of visits: " + n.getVisits() + ". Total score: " + n.getTotalScore() + ". UCB: " + calculateUCTScore(n));
 			for(int i=0; i<n.getChildren().size(); i++) {
 				queue.add(n.getChildren().get(i));
 			}

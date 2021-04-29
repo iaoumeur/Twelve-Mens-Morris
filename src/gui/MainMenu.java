@@ -19,6 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.border.LineBorder;
 
+//shows the starting menu
+// -> creates buttons to access various game modes
+// -> stores the names, difficulties, and computer types to return to App.
+
 public class MainMenu {
 
 	static final int frameWidth = 1000;
@@ -28,18 +32,20 @@ public class MainMenu {
 	private Color boardColor = new Color(185, 122, 87);
 	private boolean difficultiesVisible = false;
 	
+	//setting default values
 	private boolean ready = false;
 	private String p1Name = "NoName";
 	private String p2Name = "NoName";
 	private String gameType = "pvp";
 	private String difficulty = "medium";
-	private String otherDifficulty = null;
+	private String otherDifficulty = "medium";
 	private String computerType = "Minimax";
-	private String otherComputerType = null;
+	private String otherComputerType = "MCTS";
 	
 
 	public MainMenu() {
 
+		//UI code, creates frames, panels and buttons
 		frame = new JFrame("Main Menu");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(0, 0, frameWidth, frameHeight);
@@ -48,7 +54,6 @@ public class MainMenu {
 		frame.add(lpane, BorderLayout.CENTER);
 		frame.setResizable(false);
 		frame.setVisible(true);
-
 		lpane.setBounds(0, 0, frameWidth, frameHeight);
 
 		JPanel backgroundPanel = new JPanel();
@@ -92,8 +97,6 @@ public class MainMenu {
 		buttonPanel5.setBounds(70, 380, 300, 150);
 		buttonPanel5.setOpaque(false);
 		buttonPanel5.setVisible(false);
-		
-		
 		
 		JButton pvpButton = new JButton("Player vs. Player");
 		pvpButton = setupButton(pvpButton);
@@ -261,7 +264,6 @@ public class MainMenu {
 
 	}
 	
-
 	public JButton setupButton(JButton btn) {
 		btn.setBackground(boardColor);
 		btn.setPreferredSize(new Dimension(175, 75));
@@ -269,6 +271,7 @@ public class MainMenu {
 		return btn;
 	}
 	
+	//synchronized ensures game cannot start until menu is ready
 	protected synchronized void enterNamesAndStart() {
 		
 		 if(gameType=="pvp") {

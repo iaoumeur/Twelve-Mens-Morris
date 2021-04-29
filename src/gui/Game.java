@@ -19,6 +19,11 @@ import player.Minimax;
 import player.MonteCarloTreeSearch;
 import state.GameState;
 
+//displays the game screen
+// -> creates a new GameState and a new Board
+// -> sets up display messages for updates on the game, and displays them appropriately
+// -> updates panels containing pieces
+
 public class Game {
 	
 	static final int frameWidth = 1000;
@@ -28,8 +33,6 @@ public class Game {
 	
 	private GameState state;
 	private Board board;
-	//private Minimax computer;
-	//private Minimax otherComputer;
 	private Computer computer;
 	private Computer otherComputer;
 	private ArrayList<JLabel> whitePieces;
@@ -56,8 +59,8 @@ public class Game {
 					+ "\">Turn:   </span><span style=\"color:black;font-size:23px;\">Black</span></html>"};
 	
 	public Game(String p1Name, String p2Name, String gameType, String computerType, String otherComputerType) {
-		
 		state = new GameState();
+		
 		if(gameType=="pvAI") {
 			if(computerType=="MCTS") {
 				computer = new MonteCarloTreeSearch(this, state);
@@ -66,6 +69,7 @@ public class Game {
 				computer = new Minimax(this, state);
 			}
 		}
+		
 		if(gameType=="AIvAI") {
 			if(computerType=="MCTS") {
 				computer = new MonteCarloTreeSearch(this, state);
@@ -189,16 +193,7 @@ public class Game {
 		lpane.add(msgPanel, 1, 0);
 		lpane.add(turnPanel,1, 0);
 		lpane.add(thinkingPanel, 1, 0);
-		lpane.add(exitPanel, 1, 0);
 		
-		exitButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				//frame.dispose();
-				//App.main(null);
-			}
-
-		});
 		
 	}
 	

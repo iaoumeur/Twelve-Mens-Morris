@@ -6,6 +6,9 @@ import java.util.Stack;
 import gui.Game;
 import state.GameState;
 
+//contains methods for Minimax and MCTS to use
+// -> allow for simulating and making moves using the AI.
+
 public abstract class Computer {
 
 	public Game game;
@@ -27,27 +30,26 @@ public abstract class Computer {
 		states.push(state);
 	}
 	
+	//makes a move on the copyState, so that the actual game is not affected.
 	public void simulateMove(Move move, String player) {
 		
 		if(move.getGameStage()==1) {
 			copyState.setBoardPiece(move.getPiecePosition(), player);
-			//copyState.printBoardPieces();
 			alterGame(1, player, copyState);
 		}
 		else if(move.getGameStage()==2) {
 			copyState.setBoardPiece(move.getPiecePosition(), null);
 			copyState.setBoardPiece(move.getTo(), player);
-			//copyState.printBoardPieces();
 			alterGame(2, player, copyState);
 		}
 		else if(move.getGameStage()==4) {
 			copyState.setBoardPiece(move.getPiecePosition(), null);
-			//copyState.printBoardPieces();
 			alterGame(4, player, copyState);
 		}
 		
 	}
 
+	//any logic that occurs after a move is created at this point
 	public void alterGame(int gameStage, String player, GameState gameState) {
 		
 		if(gameStage==1) {
@@ -59,7 +61,6 @@ public abstract class Computer {
 			}
 			gameState.piecesPlaced++;
 			if(gameState.checkForMill(true)) {
-				//System.out.println("***** THIS MOVE MADE A MILL *****");
 			}
 			else {
 				copyState.switchTurn();
@@ -112,13 +113,12 @@ public abstract class Computer {
 		
 	}
 	
+	//makes a move on the actual state of the game, and updating any game logic.
 	public void makeMove(MoveScore move, String player) {
-		//state.evaluateState(player, true);
 		nodesEvaluated = 0;
 		if(state.getGameStage()==1) {
 			state.setBoardPiece(move.index, player);
 			alterGame(1, player, state);
-			//state.evaluateState(player, true);
 			if(player=="white") {
 				game.removeWhitePieceFromPanel();
 			}
@@ -126,7 +126,6 @@ public abstract class Computer {
 				game.removeBlackPieceFromPanel();
 			}
 			if(state.getGameStage()==4) {
-				//System.out.println("COMPUTER MADE A MILL");
 				millCreated = true;
 				return;
 			}
@@ -135,7 +134,6 @@ public abstract class Computer {
 			state.setBoardPiece(move.index, null);
 			state.setBoardPiece(move.to, player);
 			alterGame(2, player, state);
-			//state.evaluateState(player, true);
 			if(state.getGameStage()==4) {
 				millCreated = true;
 				return;
@@ -144,7 +142,6 @@ public abstract class Computer {
 		else if(state.getGameStage()==4) {
 			state.setBoardPiece(move.index, null);
 			alterGame(4, player, state);
-			//state.evaluateState(player, true);
 		}
 		
 		String endgame = state.hasGameEnded();
@@ -163,6 +160,7 @@ public abstract class Computer {
 		millCreated = false;
 	}
 	
+	//returns an ArrayList of all the possible moves the AI player can make
 	public ArrayList<Move> findValidMoves(String player) {
 		
 		String otherTurn;

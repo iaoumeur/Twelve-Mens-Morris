@@ -3,11 +3,14 @@ package state;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class GameState {
+//responsible for the majority of game logic, 
+//contains many helper methods for evaluation purposes and to alternate through game phases
 
-	//18 * (1) + 26 * (2) + 1 * (3) + 9 * (4) + 10 * (5) + 7 * (6)
-	//14 * (1) + 43 * (2) + 10 * (3) + 11 * (4) + 8 * (7) + 1086 * (8)
-	//16 * (1) + 10 * (5) + 1 * (6) + 1190 * (8)
+// -> contains the evaluation method of the board, including evaluation weights
+// -> contains the evaluation helper methods to calculate each factor by checking the board state
+// -> contains 2d arrays for adjacent pieces and mills
+
+public class GameState {
 	
 	final int[] phaseOneEvaluationWeights = new int[] { 18, 26, 5, 6, 12, 7, 0, 0 };
 	final int[] phaseTwoEvaluationWeights = new int[] { 14, 43, 22, 8, 0, 0, 42, 1000 };
@@ -18,6 +21,7 @@ public class GameState {
 	int movesWithoutMill = 0;
 	
 	private String[] boardPieces;
+	//each number represents a board piece
 	private int[][] millLocations = {{0,1,2}, {3,4,5}, {6,7,8}, {9,10,11}, {12,13,14}, {15,16,17}, {18,19,20}, {21,22, 23},
 			{0,9,21}, {3,10,18}, {6,11,15}, {1,4,7}, {16,19,22}, {8,12,17}, {5,13,20}, {2,14,23}, {0,3,6}, {2,5,8}, {21,18,15},
 			{23,20,17}
@@ -30,7 +34,7 @@ public class GameState {
 	private ArrayList<Integer> emptySpaces = new ArrayList<Integer>();
 	private String[] millsFound = new String[millLocations.length];
 	
-	//1 = phase 1 - placing stage
+	//1 = phase 1 - placement stage
 	//2 = phase 2 - movement stage
 	//3 = valid piece selected to move adjacently 
 	//4 = mill created - remove opponent's piece
@@ -169,7 +173,6 @@ public class GameState {
 		selectedPiece = piece;
 	}
 	
-	
 	public boolean checkForMill(boolean alterGame) {
 		boolean newMillFound = false;
 		for(int i=0; i<millLocations.length; i++) {
@@ -227,6 +230,7 @@ public class GameState {
 		return mills;
 	}
 	
+	//changes the state of the game based on the piece position that has been clicked
 	public String boardMouseClick(int piecePosition) {
 		
 		if(piecePosition==-1 && gameStage!=3) {
@@ -235,6 +239,7 @@ public class GameState {
 		
 		switch(gameStage) {
 		
+		//if the game is in the placement phase
 		case 1:
 			if(boardPieces[piecePosition]==null) {
 				boardPieces[piecePosition] = turn;
@@ -266,7 +271,8 @@ public class GameState {
 				return turn + "Placed";
 			}
 			break;
-			
+		
+		//if the game is in the movement phase
 		case 2:
 			if((turn=="white" && boardPieces[piecePosition]=="white") || (turn=="black" && boardPieces[piecePosition]=="black")) {
 				gameStage = 3;
@@ -278,6 +284,7 @@ public class GameState {
 				return "invalidPieceSelected";
 			}
 			
+		//if a valid piece has been selected
 		case 3:
 			if(piecePosition==-1) {
 				gameStage = 2;
@@ -307,7 +314,8 @@ public class GameState {
 				return "pieceMoved";
 			}
 			break;
-			
+		
+		//if a mill has been made
 		case 4:
 			if(inMill(piecePosition) && canPieceBeRemoved()) {
     			return "invalidRemoval";
@@ -348,6 +356,7 @@ public class GameState {
 		return null;
 		
 	}
+	
 	public boolean canPieceBeRemoved() {
 		
 		String otherTurn;
@@ -557,12 +566,6 @@ public class GameState {
 	
 	public int countThreePieceConfigurations(String player) {
 		ArrayList<ArrayList<Integer>> configs = findTwoPieceConfigurations(player);
-		/*for(int i=0; i<configs.size(); i++) {
-			System.out.println("Config " + i);
-			for(int j=0; j<configs.get(i).size(); j++) {
-				System.out.println("" + configs.get(i).get(j));
-			}
-		}*/
 		int number = 0;
 		
 		for(int i=0; i<configs.size(); i++) {
@@ -638,20 +641,17 @@ public class GameState {
 	
 	-Winning configuration: 1 if the state is winning for the player, -1 if losing, 0 otherwise
 	
+	For consistency - black is MAXIMISER, white is MINIMISER
+	
 */
 	public int evaluateState(String player, boolean print) {
 		
 		ArrayList<String> prints = new ArrayList<String>();
-		
-		int[] whiteEvaluationWeights;
-		int[] blackEvaluationWeights;
 		int[] evaluationWeights;
 		
 		int score = 0;
 		
-		String otherPlayer;
 		if(player=="white") {
-			otherPlayer="black";
 			switch(whitePhase) {
 			case 1:
 				evaluationWeights = phaseOneEvaluationWeights;
@@ -667,7 +667,6 @@ public class GameState {
 			}
 		}
 		else {
-			otherPlayer="white";
 			switch(blackPhase) {
 			case 1:
 				evaluationWeights = phaseOneEvaluationWeights;
@@ -682,7 +681,6 @@ public class GameState {
 				evaluationWeights = phaseOneEvaluationWeights;
 			}
 		}
-		
 		
 		//evaluation 1
 		if(gameStage==4) {
@@ -766,7 +764,7 @@ public class GameState {
 		return score;
 	}
 	
-	
+	//clones the game state, so that it can be stored in a search tree.
 	public GameState saveGameState() {
 		
 		GameState saveState = new GameState();

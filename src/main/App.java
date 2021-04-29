@@ -7,6 +7,11 @@ import player.MonteCarloTreeSearch;
 import player.Move;
 import player.MoveScore;
 
+//main loop of software
+// -> sets difficulties 
+// -> creates a MainMenu and Game instance
+// -> uses busy waiting loops for user input, otherwise makes computer moves
+
 public class App {
 
 	public static void main(String[] args) {
@@ -29,7 +34,6 @@ public class App {
 		Game game = new Game(menu.getP1Name(), menu.getP2Name(), menu.getGameType(), menu.getComputerType(), menu.getOtherComputerType());
 		int difficulty1 = setDifficulty(menu.getDifficulty(), menu.getComputerType());
 		int difficulty2 = setDifficulty(menu.getOtherDifficulty(), menu.getOtherComputerType());
-		int movesWithoutMill = 0;
 		
 		//randomly start with black for white 
 		if(Math.random() < 0.5) {
@@ -40,7 +44,6 @@ public class App {
 		if(menu.getGameType()=="pvp") {
 			while(game.getState().getGameStage()!=5) {
 				while(game.getState().getTurn()=="white") {
-					game.getState().evaluateState("white", false);
 					try {
 					       Thread.sleep(1000);
 					    } catch(InterruptedException e) {
@@ -48,7 +51,6 @@ public class App {
 				}
 				checkForDrawRule(game);
 				while(game.getState().getTurn()=="black") {
-					game.getState().evaluateState("black", false);
 					try {
 					       Thread.sleep(1000);
 					    } catch(InterruptedException e) {
@@ -56,8 +58,10 @@ public class App {
 				}
 				checkForDrawRule(game);
 			}
-			System.out.print("Game ended");
+			//game has ended at this point
 		}
+		
+		//player vs. AI logic
 		else if(menu.getGameType()=="pvAI") {
 			while(game.getState().getGameStage()!=5) {
 				while(game.getState().getTurn()=="white") {
@@ -71,19 +75,17 @@ public class App {
 					game.showThinking();
 					game.setStopPaining(true);
 					game.getComputer().setCopyState(game.getState().saveGameState());
-					//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
-					MoveScore bestMove = new MoveScore(0, 0, 0);
+					MoveScore bestMove = new MoveScore(-1, -1, -1);
+					
+					//checks for computer type
 					if(game.getComputer() instanceof MonteCarloTreeSearch) {
 						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("black", difficulty1, getTimeForSearch());
 					}
 					else if (game.getComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getComputer()).minimax("black", difficulty1, Integer.MIN_VALUE, Integer.MAX_VALUE, getTimeForSearch());
-						((Minimax)game.getComputer()).reset();
-						System.out.println("Nodes evaluated: " + game.getComputer().getNodesEvaluated());
 					}
 					
 					game.getComputer().makeMove(bestMove, "black");
-					//game.getState().evaluateState("black", false);
 					
 					if(!game.getComputer().getMillCreated()) {
 						game.switchTurn();
@@ -96,21 +98,23 @@ public class App {
 					checkForDrawRule(game);
 				}
 			}
-			System.out.print("Game ended");
+			
 		}
+		
+		//AI vs. AI logic
 		else if(menu.getGameType()=="AIvAI") {
 			while(game.getState().getGameStage()!=5) {
 				if(game.getState().getTurn()=="white") {
 					game.setStopPaining(true);
 					game.getComputer().setCopyState(game.getState().saveGameState());
 					game.showThinking();
-					MoveScore bestMove = new MoveScore(0, 0, 0);
+					MoveScore bestMove = new MoveScore(-1, -1, -1);
+					
 					if(game.getComputer() instanceof MonteCarloTreeSearch) {
 						bestMove = ((MonteCarloTreeSearch)game.getComputer()).monteCarloTreeSearch("white", difficulty1, getTimeForSearch());
 					}
 					else if (game.getComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getComputer()).minimax("white", difficulty1, -1000000, 1000000, getTimeForSearch());
-						((Minimax)game.getComputer()).reset();
 					}
 					game.hideThinking();
 					
@@ -124,18 +128,18 @@ public class App {
 					game.getBoard().repaintPieces();
 					checkForDrawRule(game);
 				}
+				
 				else if(game.getState().getTurn()=="black") {
 					game.setStopPaining(true);
 					game.getOtherComputer().setCopyState(game.getState().saveGameState());
 					game.showThinking();
-					//MoveScore bestMove = game.getComputer().minimax("black", depth, -1000000, 1000000);
-					MoveScore bestMove = new MoveScore(0, 0, 0);
+					MoveScore bestMove = new MoveScore(-1, -1, -1);
+					
 					if(game.getOtherComputer() instanceof MonteCarloTreeSearch) {
 						bestMove = ((MonteCarloTreeSearch)game.getOtherComputer()).monteCarloTreeSearch("black", difficulty2, getTimeForSearch());
 					}
 					else if (game.getOtherComputer() instanceof Minimax){
 						bestMove = ((Minimax)game.getOtherComputer()).minimax("black", difficulty2, -1000000, 1000000, getTimeForSearch());
-						((Minimax)game.getComputer()).reset();
 					}
 					game.hideThinking();
 					
@@ -152,7 +156,6 @@ public class App {
 				
 				
 			}
-			System.out.print("Game ended");
 		}
 		
 	}
@@ -198,7 +201,7 @@ public class App {
 	}
 	
 	private static long getTimeForSearch() {
-		return 7500;
+		return 15000;
 	}
 	
 	private static void checkForDrawRule(Game game) {
